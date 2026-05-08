@@ -1,60 +1,65 @@
-import axios from 'axios'
+import createClient, { type Middleware } from 'openapi-fetch'
+import type { paths } from './schema'
 import { useAuthStore } from '@/store/auth.store'
 
-export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000',
-  headers: { 'Content-Type': 'application/json' },
-})
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
-apiClient.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().accessToken
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
+export const apiClient = createClient<paths>({ baseUrl: BASE_URL })
 
 let isRefreshing = false
 let queue: Array<(token: string) => void> = []
 
-apiClient.interceptors.response.use(
-  (res) => res,
-  async (error) => {
-    const original = error.config
-
-    if (error.response?.status !== 401 || original._retry) {
-      return Promise.reject(error)
+const authMiddleware: Middleware = {
+  async onRequest({ request }) {
+    const token = useAuthStore.getState().accessToken
+    if (token) {
+      request.headers.set('Authorization', `Bearer ${token}`)
     }
+    return request
+  },
+
+  async onResponse({ response, request }) {
+    if (response.status !== 401) return response
+
+    const store = useAuthStore.getState()
 
     if (isRefreshing) {
-      return new Promise((resolve) => {
+      return new Promise<Response>((resolve) => {
         queue.push((token) => {
-          original.headers.Authorization = `Bearer ${token}`
-          resolve(apiClient(original))
+          request.headers.set('Authorization', `Bearer ${token}`)
+          resolve(fetch(request))
         })
       })
     }
 
-    original._retry = true
     isRefreshing = true
 
     try {
-      const store = useAuthStore.getState()
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL ?? 'http://localhost:3000'}/auth/refresh`,
-        {},
-        { headers: { Authorization: `Bearer ${store.refreshToken}` } }
-      )
-      store.setTokens(data.access_token, data.refresh_token)
-      queue.forEach((cb) => cb(data.access_token))
+      const refreshRes = await fetch(`${BASE_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${store.refreshToken}` },
+      })
+
+      if (!refreshRes.ok) {
+        store.logout()
+        return response
+      }
+
+      const tokens = await refreshRes.json() as { access_token: string; refresh_token: string }
+      store.setTokens(tokens.access_token, tokens.refresh_token)
+
+      queue.forEach((cb) => cb(tokens.access_token))
       queue = []
-      original.headers.Authorization = `Bearer ${data.access_token}`
-      return apiClient(original)
+
+      request.headers.set('Authorization', `Bearer ${tokens.access_token}`)
+      return fetch(request)
     } catch {
-      useAuthStore.getState().logout()
-      return Promise.reject(error)
+      store.logout()
+      return response
     } finally {
       isRefreshing = false
     }
-  }
-)
+  },
+}
+
+apiClient.use(authMiddleware)

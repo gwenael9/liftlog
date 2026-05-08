@@ -11,10 +11,17 @@ import {
   HttpStatus,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+} from '@nestjs/swagger';
 import { WorkoutTemplatesService } from './workout-templates.service';
 import { CreateTemplateDto } from './dto/create-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
+import { TemplateResponseDto } from './dto/template-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, CurrentUserData } from '../common/decorators/current-user.decorator';
 
@@ -26,11 +33,13 @@ export class WorkoutTemplatesController {
   constructor(private readonly templatesService: WorkoutTemplatesService) {}
 
   @Get()
+  @ApiOkResponse({ type: [TemplateResponseDto] })
   findAll(@CurrentUser() user: CurrentUserData) {
     return this.templatesService.findAll(user.id);
   }
 
   @Get(':id')
+  @ApiOkResponse({ type: TemplateResponseDto })
   findOne(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: CurrentUserData,
@@ -40,11 +49,13 @@ export class WorkoutTemplatesController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({ type: TemplateResponseDto })
   create(@Body() dto: CreateTemplateDto, @CurrentUser() user: CurrentUserData) {
     return this.templatesService.create(dto, user.id);
   }
 
   @Put(':id')
+  @ApiOkResponse({ type: TemplateResponseDto })
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateTemplateDto,
@@ -55,6 +66,7 @@ export class WorkoutTemplatesController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse()
   remove(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: CurrentUserData,

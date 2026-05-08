@@ -7,10 +7,15 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiOkResponse,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { TokenPairDto } from './dto/token-pair.dto';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { JwtRefreshPayload } from './strategies/jwt-refresh.strategy';
 
@@ -21,12 +26,14 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({ type: TokenPairDto })
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: TokenPairDto })
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }
@@ -34,6 +41,7 @@ export class AuthController {
   @Post('refresh')
   @UseGuards(JwtRefreshGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: TokenPairDto })
   refresh(@Req() req: { user: JwtRefreshPayload }) {
     return this.authService.refresh(req.user.sub, req.user.refreshToken);
   }

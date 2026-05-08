@@ -8,8 +8,17 @@ import {
   ParseIntPipe,
   DefaultValuePipe,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { StatsService } from './stats.service';
+import { ExerciseProgressionPointDto } from './dto/exercise-progression.dto';
+import { VolumePerWeekDto } from './dto/volume-per-week.dto';
+import { FrequencyPerWeekDto } from './dto/frequency-per-week.dto';
+import { PersonalRecordDto } from './dto/personal-record.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, CurrentUserData } from '../common/decorators/current-user.decorator';
 
@@ -21,6 +30,7 @@ export class StatsController {
   constructor(private readonly statsService: StatsService) {}
 
   @Get('exercise/:exerciseId')
+  @ApiOkResponse({ type: [ExerciseProgressionPointDto] })
   getExerciseProgression(
     @Param('exerciseId', ParseUUIDPipe) exerciseId: string,
     @CurrentUser() user: CurrentUserData,
@@ -29,6 +39,8 @@ export class StatsController {
   }
 
   @Get('volume')
+  @ApiOkResponse({ type: [VolumePerWeekDto] })
+  @ApiQuery({ name: 'weeks', required: false, type: Number, example: 12 })
   getVolume(
     @CurrentUser() user: CurrentUserData,
     @Query('weeks', new DefaultValuePipe(12), ParseIntPipe) weeks: number,
@@ -37,6 +49,8 @@ export class StatsController {
   }
 
   @Get('frequency')
+  @ApiOkResponse({ type: [FrequencyPerWeekDto] })
+  @ApiQuery({ name: 'weeks', required: false, type: Number, example: 12 })
   getFrequency(
     @CurrentUser() user: CurrentUserData,
     @Query('weeks', new DefaultValuePipe(12), ParseIntPipe) weeks: number,
@@ -45,6 +59,7 @@ export class StatsController {
   }
 
   @Get('prs')
+  @ApiOkResponse({ type: [PersonalRecordDto] })
   getPersonalRecords(@CurrentUser() user: CurrentUserData) {
     return this.statsService.getPersonalRecords(user.id);
   }

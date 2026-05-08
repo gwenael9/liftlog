@@ -1,31 +1,15 @@
 import { apiClient } from './client'
+import type { components } from './schema'
 
-export interface AuthTokens {
-  access_token: string
-  refresh_token: string
-}
-
-export interface User {
-  id: string
-  email: string
-  display_name?: string
-}
-
-export interface RegisterPayload {
-  email: string
-  password: string
-  display_name?: string
-}
-
-export interface LoginPayload {
-  email: string
-  password: string
-}
+export type TokenPairDto = components['schemas']['TokenPairDto']
+export type UserResponseDto = components['schemas']['UserResponseDto']
+export type RegisterDto = components['schemas']['RegisterDto']
+export type LoginDto = components['schemas']['LoginDto']
 
 export const authApi = {
-  register: (payload: RegisterPayload) =>
-    apiClient.post<AuthTokens>('/auth/register', payload),
+  register: (body: RegisterDto) =>
+    apiClient.POST('/auth/register', { body }),
 
-  login: (payload: LoginPayload) =>
-    apiClient.post<AuthTokens>('/auth/login', payload),
+  login: (body: LoginDto) =>
+    apiClient.POST('/auth/login', { body }),
 }

@@ -12,10 +12,18 @@ import {
   HttpStatus,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { WorkoutSessionsService } from './workout-sessions.service';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
+import { SessionResponseDto } from './dto/session-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, CurrentUserData } from '../common/decorators/current-user.decorator';
 
@@ -27,6 +35,8 @@ export class WorkoutSessionsController {
   constructor(private readonly sessionsService: WorkoutSessionsService) {}
 
   @Get()
+  @ApiOkResponse({ type: [SessionResponseDto] })
+  @ApiQuery({ name: 'month', required: false, example: '2026-05', description: 'Filter by month (YYYY-MM)' })
   findAll(
     @CurrentUser() user: CurrentUserData,
     @Query('month') month?: string,
@@ -35,6 +45,7 @@ export class WorkoutSessionsController {
   }
 
   @Get(':id')
+  @ApiOkResponse({ type: SessionResponseDto })
   findOne(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: CurrentUserData,
@@ -44,11 +55,13 @@ export class WorkoutSessionsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({ type: SessionResponseDto })
   create(@Body() dto: CreateSessionDto, @CurrentUser() user: CurrentUserData) {
     return this.sessionsService.create(dto, user.id);
   }
 
   @Put(':id')
+  @ApiOkResponse({ type: SessionResponseDto })
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateSessionDto,
@@ -59,6 +72,7 @@ export class WorkoutSessionsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse()
   remove(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: CurrentUserData,

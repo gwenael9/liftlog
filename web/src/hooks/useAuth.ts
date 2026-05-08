@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { authApi, type LoginPayload, type RegisterPayload } from '@/api/auth'
+import { authApi, type LoginDto, type RegisterDto } from '@/api/auth'
 import { useAuthStore } from '@/store/auth.store'
 
 export function useLogin() {
@@ -8,8 +8,9 @@ export function useLogin() {
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: (payload: LoginPayload) => authApi.login(payload),
+    mutationFn: (payload: LoginDto) => authApi.login(payload),
     onSuccess: ({ data }) => {
+      if (!data) return
       setTokens(data.access_token, data.refresh_token)
       navigate('/dashboard')
     },
@@ -21,8 +22,9 @@ export function useRegister() {
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: (payload: RegisterPayload) => authApi.register(payload),
+    mutationFn: (payload: RegisterDto) => authApi.register(payload),
     onSuccess: ({ data }) => {
+      if (!data) return
       setTokens(data.access_token, data.refresh_token)
       navigate('/dashboard')
     },

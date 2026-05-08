@@ -12,10 +12,18 @@ import {
   HttpStatus,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { ExercisesService } from './exercises.service';
 import { CreateExerciseDto } from './dto/create-exercise.dto';
 import { UpdateExerciseDto } from './dto/update-exercise.dto';
+import { ExerciseResponseDto } from './dto/exercise-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, CurrentUserData } from '../common/decorators/current-user.decorator';
 import { MuscleGroup } from './entities/exercise.entity';
@@ -28,6 +36,8 @@ export class ExercisesController {
   constructor(private readonly exercisesService: ExercisesService) {}
 
   @Get()
+  @ApiOkResponse({ type: [ExerciseResponseDto] })
+  @ApiQuery({ name: 'muscle_group', enum: MuscleGroup, required: false })
   findAll(
     @CurrentUser() user: CurrentUserData,
     @Query('muscle_group') muscleGroup?: MuscleGroup,
@@ -36,6 +46,7 @@ export class ExercisesController {
   }
 
   @Get(':id')
+  @ApiOkResponse({ type: ExerciseResponseDto })
   findOne(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: CurrentUserData,
@@ -45,11 +56,13 @@ export class ExercisesController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({ type: ExerciseResponseDto })
   create(@Body() dto: CreateExerciseDto, @CurrentUser() user: CurrentUserData) {
     return this.exercisesService.create(dto, user.id);
   }
 
   @Put(':id')
+  @ApiOkResponse({ type: ExerciseResponseDto })
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateExerciseDto,
@@ -60,6 +73,7 @@ export class ExercisesController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse()
   remove(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: CurrentUserData,

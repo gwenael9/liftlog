@@ -10,10 +10,17 @@ import {
   HttpStatus,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiNoContentResponse,
+} from '@nestjs/swagger';
 import { SessionSetsService } from './session-sets.service';
 import { CreateSetDto } from './dto/create-set.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
+import { SetResponseDto } from './dto/set-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, CurrentUserData } from '../common/decorators/current-user.decorator';
 
@@ -26,6 +33,7 @@ export class SessionSetsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({ type: SetResponseDto })
   create(
     @Param('sessionId', ParseUUIDPipe) sessionId: string,
     @Body() dto: CreateSetDto,
@@ -35,6 +43,7 @@ export class SessionSetsController {
   }
 
   @Put(':id')
+  @ApiOkResponse({ type: SetResponseDto })
   update(
     @Param('sessionId', ParseUUIDPipe) sessionId: string,
     @Param('id', ParseUUIDPipe) id: string,
@@ -46,6 +55,7 @@ export class SessionSetsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse()
   remove(
     @Param('sessionId', ParseUUIDPipe) sessionId: string,
     @Param('id', ParseUUIDPipe) id: string,
