@@ -23,6 +23,7 @@ export class WorkoutTemplatesService {
     return this.templatesRepository.find({
       where: { user_id: userId },
       order: { created_at: 'DESC' },
+      relations: ['template_exercises', 'template_exercises.exercise'],
     });
   }
 

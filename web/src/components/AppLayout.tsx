@@ -4,16 +4,19 @@ import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { cn } from '@/lib/utils'
 
-const navLinks = [{ to: '/sessions', label: 'Séances' }]
+const navLinks = [
+  { to: '/sessions', label: 'Séances' },
+  { to: '/templates', label: 'Templates' },
+]
 
 export function AppLayout() {
   const logout = useLogout()
   const { pathname } = useLocation()
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="border-b bg-card sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+    <div className="flex flex-col">
+      <header className="border-b bg-card">
+        <div className="px-4 h-14 flex items-center justify-between">
           <nav className="flex items-center gap-5">
             <Link to="/sessions" className="font-bold tracking-tight">
               LiftLog
@@ -35,7 +38,7 @@ export function AppLayout() {
           </nav>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Button variant="outline" size="sm" onClick={logout}>
+            <Button variant="destructive" size="sm" onClick={logout}>
               Déconnexion
             </Button>
           </div>

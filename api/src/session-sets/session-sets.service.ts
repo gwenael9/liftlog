@@ -136,6 +136,23 @@ export class SessionSetsService {
     if (!set) {
       throw new NotFoundException('Set not found');
     }
+
+    const deletedIndex = set.set_index;
+    const deletedExerciseId = set.exercise_id;
+
     await this.setsRepository.remove(set);
+
+    const remaining = await this.setsRepository.find({
+      where: { session_id: sessionId, exercise_id: deletedExerciseId },
+      order: { set_index: 'ASC' },
+    });
+
+    const toUpdate = remaining.filter(s => s.set_index > deletedIndex);
+    for (const s of toUpdate) {
+      s.set_index -= 1;
+    }
+    if (toUpdate.length > 0) {
+      await this.setsRepository.save(toUpdate);
+    }
   }
 }

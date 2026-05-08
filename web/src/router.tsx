@@ -3,6 +3,8 @@ import { LoginPage } from '@/pages/auth/LoginPage'
 import { RegisterPage } from '@/pages/auth/RegisterPage'
 import { SessionsPage } from '@/pages/sessions/SessionsPage'
 import { SessionDetailPage } from '@/pages/sessions/SessionDetailPage'
+import { TemplatesPage } from '@/pages/templates/TemplatesPage'
+import { TemplateDetailPage } from '@/pages/templates/TemplateDetailPage'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { AppLayout } from '@/components/AppLayout'
 
@@ -17,6 +19,8 @@ export const router = createBrowserRouter([
         children: [
           { path: '/sessions', element: <SessionsPage /> },
           { path: '/sessions/:id', element: <SessionDetailPage /> },
+          { path: '/templates', element: <TemplatesPage /> },
+          { path: '/templates/:id', element: <TemplateDetailPage /> },
         ],
       },
     ],
