@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Calendar } from '@/components/ui/calendar'
 import { useSessions, useCreateSession } from '@/hooks/useSessions'
 
 const STATUS_LABELS: Record<string, string> = {
@@ -31,16 +30,11 @@ function toMonthString(date: Date): string {
   return `${y}-${m}`
 }
 
-function todayString(): string {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
-
 export function SessionsPage() {
   const navigate = useNavigate()
   const [currentMonth, setCurrentMonth] = useState(() => new Date())
   const [showForm, setShowForm] = useState(false)
-  const [scheduledDate, setScheduledDate] = useState(todayString)
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
 
   const monthStr = toMonthString(currentMonth)
   const { data: sessions, isLoading } = useSessions(monthStr)
@@ -54,10 +48,13 @@ export function SessionsPage() {
     setCurrentMonth(d => new Date(d.getFullYear(), d.getMonth() + 1, 1))
   }
 
-  function handleCreate(e: React.FormEvent) {
-    e.preventDefault()
+  function toDateString(d: Date): string {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  }
+
+  function handleCreate() {
     createSession.mutate(
-      { scheduled_date: scheduledDate, status: 'planned' },
+      { scheduled_date: toDateString(selectedDate), status: 'planned' },
       {
         onSuccess: ({ data }) => {
           if (data) navigate(`/sessions/${data.id}`)
@@ -81,25 +78,24 @@ export function SessionsPage() {
 
       {showForm && (
         <Card>
-          <CardContent className="pt-4">
-            <form onSubmit={handleCreate} className="flex items-end gap-3">
-              <div className="flex-1 space-y-1">
-                <Label htmlFor="date">Date</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={scheduledDate}
-                  onChange={e => setScheduledDate(e.target.value)}
-                  required
-                />
-              </div>
-              <Button type="submit" disabled={createSession.isPending}>
+          <CardContent className="pt-2 flex flex-col items-center gap-3">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={d => d && setSelectedDate(d)}
+            />
+            <div className="flex gap-2 w-full">
+              <Button
+                className="flex-1"
+                onClick={handleCreate}
+                disabled={createSession.isPending}
+              >
                 Créer
               </Button>
-              <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+              <Button variant="outline" onClick={() => setShowForm(false)}>
                 Annuler
               </Button>
-            </form>
+            </div>
           </CardContent>
         </Card>
       )}
