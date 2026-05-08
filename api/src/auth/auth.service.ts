@@ -2,14 +2,13 @@ import {
   Injectable,
   ConflictException,
   UnauthorizedException,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import type { StringValue } from 'ms';
-import * as bcrypt from 'bcryptjs';
-import { UsersService } from '../users/users.service';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { User } from '../users/entities/user.entity';
+} from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import type { StringValue } from "ms";
+import * as bcrypt from "bcryptjs";
+import { UsersService } from "../users/users.service";
+import { RegisterDto } from "./dto/register.dto";
+import { LoginDto } from "./dto/login.dto";
 
 export interface TokenPair {
   access_token: string;
@@ -26,7 +25,7 @@ export class AuthService {
   async register(dto: RegisterDto): Promise<TokenPair> {
     const existing = await this.usersService.findByEmail(dto.email);
     if (existing) {
-      throw new ConflictException('Email already in use');
+      throw new ConflictException("Email already in use");
     }
 
     const password_hash = await bcrypt.hash(dto.password, 12);
@@ -44,12 +43,15 @@ export class AuthService {
   async login(dto: LoginDto): Promise<TokenPair> {
     const user = await this.usersService.findByEmail(dto.email);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException("Invalid credentials");
     }
 
-    const passwordValid = await bcrypt.compare(dto.password, user.password_hash);
+    const passwordValid = await bcrypt.compare(
+      dto.password,
+      user.password_hash,
+    );
     if (!passwordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException("Invalid credentials");
     }
 
     const tokens = await this.generateTokens(user.id, user.email);
@@ -60,12 +62,15 @@ export class AuthService {
   async refresh(userId: string, rawRefreshToken: string): Promise<TokenPair> {
     const user = await this.usersService.findById(userId);
     if (!user || !user.refresh_token_hash) {
-      throw new UnauthorizedException('Access denied');
+      throw new UnauthorizedException("Access denied");
     }
 
-    const tokenValid = await bcrypt.compare(rawRefreshToken, user.refresh_token_hash);
+    const tokenValid = await bcrypt.compare(
+      rawRefreshToken,
+      user.refresh_token_hash,
+    );
     if (!tokenValid) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException("Invalid refresh token");
     }
 
     const tokens = await this.generateTokens(user.id, user.email);
@@ -73,24 +78,30 @@ export class AuthService {
     return tokens;
   }
 
-  private async generateTokens(userId: string, email: string): Promise<TokenPair> {
+  private async generateTokens(
+    userId: string,
+    email: string,
+  ): Promise<TokenPair> {
     const payload = { sub: userId, email };
 
     const [access_token, refresh_token] = await Promise.all([
       this.jwtService.signAsync(payload, {
-        secret: process.env.JWT_ACCESS_SECRET || 'default_access_secret',
-        expiresIn: (process.env.JWT_ACCESS_EXPIRES_IN || '15m') as StringValue,
+        secret: process.env.JWT_ACCESS_SECRET || "default_access_secret",
+        expiresIn: process.env.JWT_ACCESS_EXPIRES_IN as StringValue,
       }),
       this.jwtService.signAsync(payload, {
-        secret: process.env.JWT_REFRESH_SECRET || 'default_refresh_secret',
-        expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || '7d') as StringValue,
+        secret: process.env.JWT_REFRESH_SECRET || "default_refresh_secret",
+        expiresIn: process.env.JWT_REFRESH_EXPIRES_IN as StringValue,
       }),
     ]);
 
     return { access_token, refresh_token };
   }
 
-  private async storeRefreshTokenHash(userId: string, rawToken: string): Promise<void> {
+  private async storeRefreshTokenHash(
+    userId: string,
+    rawToken: string,
+  ): Promise<void> {
     const hash = await bcrypt.hash(rawToken, 10);
     await this.usersService.updateRefreshTokenHash(userId, hash);
   }

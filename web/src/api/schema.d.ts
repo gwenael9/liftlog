@@ -307,6 +307,8 @@ export interface components {
             name: string;
             /** @enum {string} */
             muscle_group: "chest" | "back" | "shoulders" | "biceps" | "triceps" | "legs" | "glutes" | "core" | "cardio" | "full_body";
+            /** @enum {string} */
+            tracking_type: "strength" | "duration";
             is_global: boolean;
             notes?: string | null;
             /** Format: uuid */
@@ -319,6 +321,8 @@ export interface components {
             name: string;
             /** @enum {string} */
             muscle_group: "chest" | "back" | "shoulders" | "biceps" | "triceps" | "legs" | "glutes" | "core" | "cardio" | "full_body";
+            /** @enum {string} */
+            tracking_type?: "strength" | "duration";
             /** @default false */
             is_global: boolean;
             notes?: string;
@@ -328,6 +332,8 @@ export interface components {
             name?: string;
             /** @enum {string} */
             muscle_group?: "chest" | "back" | "shoulders" | "biceps" | "triceps" | "legs" | "glutes" | "core" | "cardio" | "full_body";
+            /** @enum {string} */
+            tracking_type?: "strength" | "duration";
             is_global?: boolean;
             notes?: string;
         };
@@ -341,6 +347,7 @@ export interface components {
             target_sets?: number | null;
             target_reps?: number | null;
             rest_seconds?: number | null;
+            target_duration_sec?: number | null;
         };
         TemplateResponseDto: {
             /** Format: uuid */
@@ -363,6 +370,7 @@ export interface components {
             target_sets?: number;
             target_reps?: number;
             rest_seconds?: number;
+            target_duration_sec?: number;
         };
         CreateTemplateDto: {
             /** @example Push Day */

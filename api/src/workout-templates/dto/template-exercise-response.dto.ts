@@ -22,4 +22,7 @@ export class TemplateExerciseResponseDto {
 
   @ApiPropertyOptional({ nullable: true })
   rest_seconds: number | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  target_duration_sec: number | null;
 }

@@ -19,6 +19,7 @@ export interface TemplateExerciseData {
   targetSets?: number
   targetReps?: number
   restSeconds?: number
+  targetDurationSec?: number
 }
 
 type Props = {
@@ -41,6 +42,7 @@ export function AddExerciseDialog(props: Props) {
   const [targetSets, setTargetSets] = useState('')
   const [targetReps, setTargetReps] = useState('')
   const [restSeconds, setRestSeconds] = useState('')
+  const [targetDurationSec, setTargetDurationSec] = useState('')
 
   function reset() {
     setExerciseId('')
@@ -48,6 +50,7 @@ export function AddExerciseDialog(props: Props) {
     setTargetSets('')
     setTargetReps('')
     setRestSeconds('')
+    setTargetDurationSec('')
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -60,6 +63,7 @@ export function AddExerciseDialog(props: Props) {
         targetSets: targetSets ? Number(targetSets) : undefined,
         targetReps: targetReps ? Number(targetReps) : undefined,
         restSeconds: restSeconds ? Number(restSeconds) : undefined,
+        targetDurationSec: targetDurationSec ? Number(targetDurationSec) : undefined,
       })
     }
     reset()
@@ -86,66 +90,94 @@ export function AddExerciseDialog(props: Props) {
             </Select>
           </div>
 
-          {props.mode === 'session' && (
-            <div className="space-y-2">
-              <div className="grid grid-cols-[2rem_1fr_1fr_auto_auto] gap-2 items-center">
-                <span />
-                <span className="text-xs text-muted-foreground">Rép</span>
-                <span className="text-xs text-muted-foreground">kg</span>
-                <span className="text-xs text-muted-foreground">Éch.</span>
-                <span />
-              </div>
-              {rows.map((row, i) => (
-                <div key={i} className="grid grid-cols-[2rem_1fr_1fr_auto_auto] gap-2 items-center">
-                  <span className="text-xs text-muted-foreground text-right">S{i + 1}</span>
-                  <Input
-                    type="number" min={1} placeholder="10" value={row.reps}
-                    onChange={e => setRows(r => r.map((x, idx) => idx === i ? { ...x, reps: e.target.value } : x))}
-                  />
-                  <Input
-                    type="number" min={0} step={0.5} placeholder="80" value={row.weight_kg}
-                    onChange={e => setRows(r => r.map((x, idx) => idx === i ? { ...x, weight_kg: e.target.value } : x))}
-                  />
-                  <Checkbox
-                    className="mx-auto"
-                    checked={row.is_warmup}
-                    onCheckedChange={checked => setRows(r => r.map((x, idx) => idx === i ? { ...x, is_warmup: !!checked } : x))}
-                  />
-                  <Button
-                    type="button" variant="ghost" size="icon-sm"
-                    disabled={rows.length === 1}
-                    onClick={() => setRows(r => r.filter((_, idx) => idx !== i))}
-                  >
-                    <Trash2 className="size-3" />
-                  </Button>
+          {props.mode === 'session' && (() => {
+            const trackingType = exercises?.find(ex => ex.id === exerciseId)?.tracking_type ?? 'strength'
+            const isDuration = trackingType === 'duration'
+            const colClass = isDuration
+              ? 'grid-cols-[2rem_1fr_auto_auto]'
+              : 'grid-cols-[2rem_1fr_1fr_auto_auto]'
+            return (
+              <div className="space-y-2">
+                <div className={`grid ${colClass} gap-2 items-center`}>
+                  <span />
+                  {isDuration
+                    ? <span className="text-xs text-muted-foreground">Durée (s)</span>
+                    : <><span className="text-xs text-muted-foreground">Rép</span><span className="text-xs text-muted-foreground">kg</span></>}
+                  <span className="text-xs text-muted-foreground">Éch.</span>
+                  <span />
                 </div>
-              ))}
-              <Button
-                type="button" variant="outline" size="sm" className="w-full"
-                onClick={() => setRows(r => [...r, emptyAddRow()])}
-              >
-                <Plus className="size-3" />
-                Série
-              </Button>
-            </div>
-          )}
+                {rows.map((row, i) => (
+                  <div key={i} className={`grid ${colClass} gap-2 items-center`}>
+                    <span className="text-xs text-muted-foreground text-right">S{i + 1}</span>
+                    {isDuration ? (
+                      <Input
+                        type="number" min={0} placeholder="60" value={row.duration_sec}
+                        onChange={e => setRows(r => r.map((x, idx) => idx === i ? { ...x, duration_sec: e.target.value } : x))}
+                      />
+                    ) : (
+                      <>
+                        <Input
+                          type="number" min={1} placeholder="10" value={row.reps}
+                          onChange={e => setRows(r => r.map((x, idx) => idx === i ? { ...x, reps: e.target.value } : x))}
+                        />
+                        <Input
+                          type="number" min={0} step={0.5} placeholder="80" value={row.weight_kg}
+                          onChange={e => setRows(r => r.map((x, idx) => idx === i ? { ...x, weight_kg: e.target.value } : x))}
+                        />
+                      </>
+                    )}
+                    <Checkbox
+                      className="mx-auto"
+                      checked={row.is_warmup}
+                      onCheckedChange={checked => setRows(r => r.map((x, idx) => idx === i ? { ...x, is_warmup: !!checked } : x))}
+                    />
+                    <Button
+                      type="button" variant="ghost" size="icon-sm"
+                      disabled={rows.length === 1}
+                      onClick={() => setRows(r => r.filter((_, idx) => idx !== i))}
+                    >
+                      <Trash2 className="size-3" />
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  type="button" variant="outline" size="sm" className="w-full"
+                  onClick={() => setRows(r => [...r, emptyAddRow()])}
+                >
+                  <Plus className="size-3" />
+                  Série
+                </Button>
+              </div>
+            )
+          })()}
 
-          {props.mode === 'template' && (
-            <div className="grid grid-cols-3 gap-2">
-              <div className="space-y-1">
-                <Label>Séries</Label>
-                <Input type="number" min={1} placeholder="3" value={targetSets} onChange={e => setTargetSets(e.target.value)} />
+          {props.mode === 'template' && (() => {
+            const trackingType = exercises?.find(ex => ex.id === exerciseId)?.tracking_type ?? 'strength'
+            const isDuration = trackingType === 'duration'
+            return (
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-1">
+                  <Label>Séries</Label>
+                  <Input type="number" min={1} placeholder="3" value={targetSets} onChange={e => setTargetSets(e.target.value)} />
+                </div>
+                {isDuration ? (
+                  <div className="space-y-1 col-span-1">
+                    <Label>Durée cible (s)</Label>
+                    <Input type="number" min={0} placeholder="60" value={targetDurationSec} onChange={e => setTargetDurationSec(e.target.value)} />
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <Label>Reps</Label>
+                    <Input type="number" min={1} placeholder="10" value={targetReps} onChange={e => setTargetReps(e.target.value)} />
+                  </div>
+                )}
+                <div className="space-y-1">
+                  <Label>Repos (s)</Label>
+                  <Input type="number" min={0} placeholder="90" value={restSeconds} onChange={e => setRestSeconds(e.target.value)} />
+                </div>
               </div>
-              <div className="space-y-1">
-                <Label>Reps</Label>
-                <Input type="number" min={1} placeholder="10" value={targetReps} onChange={e => setTargetReps(e.target.value)} />
-              </div>
-              <div className="space-y-1">
-                <Label>Repos (s)</Label>
-                <Input type="number" min={0} placeholder="90" value={restSeconds} onChange={e => setRestSeconds(e.target.value)} />
-              </div>
-            </div>
-          )}
+            )
+          })()}
 
           <Button type="submit" className="w-full" disabled={isPending || !exerciseId}>
             Ajouter

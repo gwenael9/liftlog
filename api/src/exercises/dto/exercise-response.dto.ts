@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { MuscleGroup } from '../entities/exercise.entity';
+import { MuscleGroup, TrackingType } from '../entities/exercise.entity';
 
 export class ExerciseResponseDto {
   @ApiProperty({ format: 'uuid' })
@@ -10,6 +10,9 @@ export class ExerciseResponseDto {
 
   @ApiProperty({ enum: MuscleGroup })
   muscle_group: MuscleGroup;
+
+  @ApiProperty({ enum: TrackingType })
+  tracking_type: TrackingType;
 
   @ApiProperty()
   is_global: boolean;

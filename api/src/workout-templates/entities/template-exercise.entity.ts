@@ -40,4 +40,7 @@ export class TemplateExercise {
 
   @Column({ type: 'int', nullable: true, name: 'rest_seconds' })
   rest_seconds: number | null;
+
+  @Column({ type: 'int', nullable: true, name: 'target_duration_sec' })
+  target_duration_sec: number | null;
 }

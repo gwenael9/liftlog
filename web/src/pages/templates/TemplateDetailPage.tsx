@@ -49,11 +49,12 @@ export function TemplateDetailPage() {
       target_sets: ex.target_sets ?? undefined,
       target_reps: ex.target_reps ?? undefined,
       rest_seconds: ex.rest_seconds ?? undefined,
+      target_duration_sec: ex.target_duration_sec ?? undefined,
     })))
     setDirty(false)
   }, [template])
 
-  function handleAddExercise(exerciseId: string, data: { targetSets?: number; targetReps?: number; restSeconds?: number }) {
+  function handleAddExercise(exerciseId: string, data: { targetSets?: number; targetReps?: number; restSeconds?: number; targetDurationSec?: number }) {
     setRows(r => [...r, {
       _key: nextKey(),
       exercise_id: exerciseId,
@@ -61,6 +62,7 @@ export function TemplateDetailPage() {
       target_sets: data.targetSets,
       target_reps: data.targetReps,
       rest_seconds: data.restSeconds,
+      target_duration_sec: data.targetDurationSec,
     }])
     setDirty(true)
   }
@@ -183,7 +185,9 @@ export function TemplateDetailPage() {
               </span>
               <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
                 {row.target_sets != null && <span>{row.target_sets}×</span>}
-                {row.target_reps != null && <span>{row.target_reps} rép</span>}
+                {row.target_duration_sec != null
+                  ? <span>{row.target_duration_sec}s</span>
+                  : row.target_reps != null && <span>{row.target_reps} rép</span>}
                 {row.rest_seconds != null && <span>{row.rest_seconds}s repos</span>}
               </div>
               <Button

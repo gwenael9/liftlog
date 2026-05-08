@@ -33,6 +33,11 @@ export function ExerciseCard({
   onSave,
 }: Props) {
   const totalSets = group.sets.length + pendingRows.length
+  const isDuration = group.trackingType === 'duration'
+
+  const colClass = isDuration
+    ? 'grid-cols-[1.5rem_1fr_auto_auto]'
+    : 'grid-cols-[1.5rem_1fr_1fr_auto_auto]'
 
   return (
     <Card>
@@ -44,48 +49,49 @@ export function ExerciseCard({
       </CardHeader>
 
       <CardContent className="space-y-2">
-        <div className="grid grid-cols-[1.5rem_1fr_1fr_auto_auto] gap-2 items-center px-1">
+        {/* Column headers */}
+        <div className={`grid ${colClass} gap-2 items-center px-1`}>
           <span />
-          <span className="text-xs text-muted-foreground">Rép</span>
-          <span className="text-xs text-muted-foreground">kg</span>
+          {isDuration
+            ? <span className="text-xs text-muted-foreground">Durée (s)</span>
+            : <><span className="text-xs text-muted-foreground">Rép</span><span className="text-xs text-muted-foreground">kg</span></>}
           <span className="text-xs text-muted-foreground">Éch.</span>
           <span />
         </div>
 
         {group.sets.map(set => {
-          const vals = editValues[set.id] ?? { reps: '', weight_kg: '', is_warmup: false }
+          const vals = editValues[set.id] ?? { reps: '', weight_kg: '', duration_sec: '', is_warmup: false }
           return (
-            <div key={set.id} className="grid grid-cols-[1.5rem_1fr_1fr_auto_auto] gap-2 items-center">
+            <div key={set.id} className={`grid ${colClass} gap-2 items-center`}>
               <span className="text-xs text-muted-foreground text-right">S{set.set_index}</span>
-              <Input
-                type="number"
-                min={0}
-                placeholder="—"
-                value={vals.reps}
-                onChange={e => onPatchEdit(set.id, { reps: e.target.value })}
-              />
-              <Input
-                type="number"
-                min={0}
-                step={0.5}
-                placeholder="—"
-                value={vals.weight_kg}
-                onChange={e => onPatchEdit(set.id, { weight_kg: e.target.value })}
-              />
+              {isDuration ? (
+                <Input
+                  type="number" min={0} placeholder="—"
+                  value={vals.duration_sec}
+                  onChange={e => onPatchEdit(set.id, { duration_sec: e.target.value })}
+                />
+              ) : (
+                <>
+                  <Input
+                    type="number" min={0} placeholder="—"
+                    value={vals.reps}
+                    onChange={e => onPatchEdit(set.id, { reps: e.target.value })}
+                  />
+                  <Input
+                    type="number" min={0} step={0.5} placeholder="—"
+                    value={vals.weight_kg}
+                    onChange={e => onPatchEdit(set.id, { weight_kg: e.target.value })}
+                  />
+                </>
+              )}
               <Checkbox
                 className="mx-auto"
                 checked={vals.is_warmup}
                 onCheckedChange={checked => onPatchEdit(set.id, { is_warmup: !!checked })}
               />
               <div className="flex items-center gap-1">
-                {set.is_pr && (
-                  <span className="text-xs text-yellow-500 font-semibold">PR</span>
-                )}
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => onDeleteSet(set.id)}
-                >
+                {set.is_pr && <span className="text-xs text-yellow-500 font-semibold">PR</span>}
+                <Button variant="ghost" size="icon-sm" onClick={() => onDeleteSet(set.id)}>
                   <Trash2 className="size-3" />
                 </Button>
               </div>
@@ -94,44 +100,43 @@ export function ExerciseCard({
         })}
 
         {pendingRows.map((row, i) => (
-          <div key={`pending-${i}`} className="grid grid-cols-[1.5rem_1fr_1fr_auto_auto] gap-2 items-center">
+          <div key={`pending-${i}`} className={`grid ${colClass} gap-2 items-center`}>
             <span className="text-xs text-muted-foreground text-right">
               S{group.sets.length + i + 1}
             </span>
-            <Input
-              type="number"
-              min={0}
-              placeholder="—"
-              value={row.reps}
-              onChange={e => onPatchPending(i, { reps: e.target.value })}
-            />
-            <Input
-              type="number"
-              min={0}
-              step={0.5}
-              placeholder="—"
-              value={row.weight_kg}
-              onChange={e => onPatchPending(i, { weight_kg: e.target.value })}
-            />
+            {isDuration ? (
+              <Input
+                type="number" min={0} placeholder="—"
+                value={row.duration_sec}
+                onChange={e => onPatchPending(i, { duration_sec: e.target.value })}
+              />
+            ) : (
+              <>
+                <Input
+                  type="number" min={0} placeholder="—"
+                  value={row.reps}
+                  onChange={e => onPatchPending(i, { reps: e.target.value })}
+                />
+                <Input
+                  type="number" min={0} step={0.5} placeholder="—"
+                  value={row.weight_kg}
+                  onChange={e => onPatchPending(i, { weight_kg: e.target.value })}
+                />
+              </>
+            )}
             <Checkbox
               className="mx-auto"
               checked={row.is_warmup}
               onCheckedChange={checked => onPatchPending(i, { is_warmup: !!checked })}
             />
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => onRemovePending(i)}
-            >
+            <Button variant="ghost" size="icon-sm" onClick={() => onRemovePending(i)}>
               <Trash2 className="size-3" />
             </Button>
           </div>
         ))}
 
         <Button
-          type="button"
-          variant="ghost"
-          size="sm"
+          type="button" variant="ghost" size="sm"
           className="w-full text-muted-foreground"
           onClick={onAddPending}
         >
@@ -142,12 +147,7 @@ export function ExerciseCard({
 
       {isDirty && (
         <CardFooter>
-          <Button
-            size="sm"
-            className="w-full"
-            onClick={onSave}
-            disabled={isSaving}
-          >
+          <Button size="sm" className="w-full" onClick={onSave} disabled={isSaving}>
             Enregistrer
           </Button>
         </CardFooter>

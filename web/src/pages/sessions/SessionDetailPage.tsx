@@ -52,6 +52,7 @@ export function SessionDetailPage() {
       .map(([exId, sets]) => ({
         exerciseId: exId,
         exerciseName: sets[0].exercise.name,
+        trackingType: (sets[0].exercise.tracking_type ?? 'strength') as 'strength' | 'duration',
         sets,
       }))
   }, [session, deletingSetIds])
@@ -65,6 +66,7 @@ export function SessionDetailPage() {
     return {
       reps: patch.reps ?? (set.reps != null ? String(set.reps) : ''),
       weight_kg: patch.weight_kg ?? (set.weight_kg != null ? String(set.weight_kg) : ''),
+      duration_sec: patch.duration_sec ?? (set.duration_sec != null ? String(set.duration_sec) : ''),
       is_warmup: patch.is_warmup ?? set.is_warmup,
     }
   }
@@ -82,6 +84,7 @@ export function SessionDetailPage() {
       return (
         (patch.reps !== undefined && patch.reps !== (set.reps != null ? String(set.reps) : '')) ||
         (patch.weight_kg !== undefined && patch.weight_kg !== (set.weight_kg != null ? String(set.weight_kg) : '')) ||
+        (patch.duration_sec !== undefined && patch.duration_sec !== (set.duration_sec != null ? String(set.duration_sec) : '')) ||
         (patch.is_warmup !== undefined && patch.is_warmup !== set.is_warmup)
       )
     })
@@ -130,6 +133,7 @@ export function SessionDetailPage() {
         body: {
           reps: vals.reps ? Number(vals.reps) : undefined,
           weight_kg: vals.weight_kg ? Number(vals.weight_kg) : undefined,
+          duration_sec: vals.duration_sec ? Number(vals.duration_sec) : undefined,
           is_warmup: vals.is_warmup,
         },
       })
@@ -142,6 +146,7 @@ export function SessionDetailPage() {
         set_index: g.sets.length + i + 1,
         reps: row.reps ? Number(row.reps) : undefined,
         weight_kg: row.weight_kg ? Number(row.weight_kg) : undefined,
+        duration_sec: row.duration_sec ? Number(row.duration_sec) : undefined,
         is_warmup: row.is_warmup,
         performed_at: new Date().toISOString(),
       })
@@ -166,6 +171,7 @@ export function SessionDetailPage() {
         set_index: existingCount + i + 1,
         reps: row.reps ? Number(row.reps) : undefined,
         weight_kg: row.weight_kg ? Number(row.weight_kg) : undefined,
+        duration_sec: row.duration_sec ? Number(row.duration_sec) : undefined,
         is_warmup: row.is_warmup,
         performed_at: new Date().toISOString(),
       })
