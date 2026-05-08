@@ -11,17 +11,17 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/select'
+import PageLayout from '@/components/layout/PageLayout'
 import { useSessions, useCreateSession } from '@/hooks/useSessions'
 import { useTemplates } from '@/hooks/useTemplates'
 import { sessionsApi } from '@/api/sessions'
 import { STATUS_COLORS, STATUS_LABELS } from '@/utils/status'
 import { formatMonth, toDateString, toMonthString } from '@/utils'
-import PageLayout from '@/components/PageLayout'
 
 export function SessionsPage() {
   const navigate = useNavigate()
   const [currentMonth, setCurrentMonth] = useState(() => new Date())
-  const [showForm, setShowForm] = useState(false)
+  const [open, setOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [selectedTemplateId, setSelectedTemplateId] = useState('')
   const [isCreating, setIsCreating] = useState(false)
@@ -30,14 +30,6 @@ export function SessionsPage() {
   const { data: sessions, isLoading } = useSessions(monthStr)
   const { data: templates } = useTemplates()
   const createSession = useCreateSession()
-
-  function prevMonth() {
-    setCurrentMonth(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))
-  }
-
-  function nextMonth() {
-    setCurrentMonth(d => new Date(d.getFullYear(), d.getMonth() + 1, 1))
-  }
 
   async function handleCreate() {
     setIsCreating(true)
@@ -70,8 +62,6 @@ export function SessionsPage() {
       }
 
       navigate(`/sessions/${sessionId}`)
-      setShowForm(false)
-      setSelectedTemplateId('')
     } finally {
       setIsCreating(false)
     }
@@ -79,112 +69,102 @@ export function SessionsPage() {
 
   const sorted = sessions?.slice().sort((a, b) => b.scheduled_date.localeCompare(a.scheduled_date))
 
-  const form = (
-    <Card>
-          <CardContent className="pt-2 flex flex-col items-center gap-3">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={d => d && setSelectedDate(d)}
-            />
+  const dialogContent = (
+    <div className="flex flex-col items-center gap-4">
+      <Calendar
+        mode="single"
+        selected={selectedDate}
+        onSelect={d => d && setSelectedDate(d)}
+      />
 
-            {templates && templates.length > 0 && (
-              <div className="w-full space-y-1">
-                <Label>Template (optionnel)</Label>
-                <Select
-                  value={selectedTemplateId}
-                  onValueChange={v => setSelectedTemplateId(v && v !== '__none__' ? v : '')}
-                >
-                  <SelectTrigger className="w-full">
-                    {selectedTemplateId
-                      ? <span>{templates.find(t => t.id === selectedTemplateId)?.name}</span>
-                      : <span className="text-muted-foreground">Aucun template</span>}
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Aucun template</SelectItem>
-                    {templates.map(t => (
-                      <SelectItem key={t.id} value={t.id}>
-                        {t.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+      {templates && templates.length > 0 && (
+        <div className="w-full space-y-1">
+          <Label>Template (optionnel)</Label>
+          <Select
+            value={selectedTemplateId}
+            onValueChange={v => setSelectedTemplateId(v && v !== '__none__' ? v : '')}
+          >
+            <SelectTrigger className="w-full">
+              {selectedTemplateId
+                ? <span>{templates.find(t => t.id === selectedTemplateId)?.name}</span>
+                : <span className="text-muted-foreground">Aucun template</span>}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__none__">Aucun template</SelectItem>
+              {templates.map(t => (
+                <SelectItem key={t.id} value={t.id}>
+                  {t.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
-            <div className="flex gap-2 w-full">
-              <Button
-                className="flex-1"
-                onClick={handleCreate}
-                disabled={isCreating}
-              >
-                {isCreating ? 'Création...' : 'Créer'}
-              </Button>
-              <Button variant="outline" onClick={() => setShowForm(false)}>
-                Annuler
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+      <Button className="w-full" onClick={handleCreate} disabled={isCreating}>
+        {isCreating ? 'Création...' : 'Créer la séance'}
+      </Button>
+    </div>
   )
 
-  const subForm = (
-<div className="flex items-center justify-between">
-        <Button variant="ghost" size="icon" onClick={prevMonth}>
-          <ChevronLeft />
-        </Button>
-        <span className="text-sm font-medium capitalize">{formatMonth(currentMonth)}</span>
-        <Button variant="ghost" size="icon" onClick={nextMonth}>
-          <ChevronRight />
-        </Button>
-      </div>
+  const monthNav = (
+    <div className="flex items-center justify-between">
+      <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}>
+        <ChevronLeft />
+      </Button>
+      <span className="text-sm font-medium capitalize">{formatMonth(currentMonth)}</span>
+      <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(d => new Date(d.getFullYear(), d.getMonth() + 1, 1))}>
+        <ChevronRight />
+      </Button>
+    </div>
   )
 
   return (
-    <PageLayout 
-      title='Séance' 
-      onClickCreate={() => setShowForm(v => !v)} 
+    <PageLayout
+      title="Séance"
       female
-      data={{ isLoading: isLoading, items: sorted }}
-      form={{
-        show: showForm,
-        content: form,
-        subForm: subForm
+      data={{ isLoading, items: sorted }}
+      dialog={{
+        open,
+        onOpenChange: setOpen,
+        title: 'Nouvelle séance',
+        content: dialogContent,
       }}
+      subContent={monthNav}
     >
-        {sorted?.map(session => {
-          const sets = session.session_sets ?? []
-          const exerciseCount = new Set(sets.map(s => s.exercise_id)).size
-          return (
-            <Card
-              key={session.id}
-              className="cursor-pointer hover:ring-2 hover:ring-primary/40 transition-all"
-              onClick={() => navigate(`/sessions/${session.id}`)}
-            >
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="capitalize">
-                    {new Date(session.scheduled_date + 'T00:00:00').toLocaleDateString('fr-FR', {
-                      weekday: 'long',
-                      day: 'numeric',
-                      month: 'long',
-                    })}
-                  </CardTitle>
-                  <span className={`text-xs font-medium ${STATUS_COLORS[session.status]}`}>
-                    {STATUS_LABELS[session.status]}
-                  </span>
-                </div>
-              </CardHeader>
-              {sets.length > 0 && (
-                <CardContent>
-                  <p className="text-xs text-muted-foreground">
-                    {exerciseCount} exercice{exerciseCount > 1 ? 's' : ''}
-                  </p>
-                </CardContent>
-              )}
-            </Card>
-          )
-        })}
+      {sorted?.map(session => {
+        const sets = session.session_sets ?? []
+        const exerciseCount = new Set(sets.map(s => s.exercise_id)).size
+        return (
+          <Card
+            key={session.id}
+            className="cursor-pointer hover:ring-2 hover:ring-primary/40 transition-all"
+            onClick={() => navigate(`/sessions/${session.id}`)}
+          >
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="capitalize text-base">
+                  {new Date(session.scheduled_date + 'T00:00:00').toLocaleDateString('fr-FR', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                  })}
+                </CardTitle>
+                <span className={`text-xs font-medium ${STATUS_COLORS[session.status]}`}>
+                  {STATUS_LABELS[session.status]}
+                </span>
+              </div>
+            </CardHeader>
+            {exerciseCount > 0 && (
+              <CardContent>
+                <p className="text-xs text-muted-foreground">
+                  {exerciseCount} exercice{exerciseCount > 1 ? 's' : ''}
+                </p>
+              </CardContent>
+            )}
+          </Card>
+        )
+      })}
     </PageLayout>
   )
 }

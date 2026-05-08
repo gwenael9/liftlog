@@ -5,14 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from '@/components/ui/select'
 import { useTemplate, useUpdateTemplate, useDeleteTemplate } from '@/hooks/useTemplates'
 import { useExercises } from '@/hooks/useSessions'
+import { AddExerciseDialog } from '@/components/AddExerciseDialog'
 import type { TemplateExerciseItemDto } from '@/api/templates'
 
 interface ExerciseRow extends TemplateExerciseItemDto {
@@ -41,10 +36,7 @@ export function TemplateDetailPage() {
   const [rows, setRows] = useState<ExerciseRow[]>([])
   const [dirty, setDirty] = useState(false)
 
-  const [addExerciseId, setAddExerciseId] = useState('')
-  const [addTargetSets, setAddTargetSets] = useState('')
-  const [addTargetReps, setAddTargetReps] = useState('')
-  const [addRestSeconds, setAddRestSeconds] = useState('')
+  const [addOpen, setAddOpen] = useState(false)
 
   useEffect(() => {
     if (!template) return
@@ -61,21 +53,15 @@ export function TemplateDetailPage() {
     setDirty(false)
   }, [template])
 
-  function handleAddExercise() {
-    if (!addExerciseId) return
-    const newRow: ExerciseRow = {
+  function handleAddExercise(exerciseId: string, data: { targetSets?: number; targetReps?: number; restSeconds?: number }) {
+    setRows(r => [...r, {
       _key: nextKey(),
-      exercise_id: addExerciseId,
-      order_index: rows.length + 1,
-      target_sets: addTargetSets ? Number(addTargetSets) : undefined,
-      target_reps: addTargetReps ? Number(addTargetReps) : undefined,
-      rest_seconds: addRestSeconds ? Number(addRestSeconds) : undefined,
-    }
-    setRows(r => [...r, newRow])
-    setAddExerciseId('')
-    setAddTargetSets('')
-    setAddTargetReps('')
-    setAddRestSeconds('')
+      exercise_id: exerciseId,
+      order_index: r.length + 1,
+      target_sets: data.targetSets,
+      target_reps: data.targetReps,
+      rest_seconds: data.restSeconds,
+    }])
     setDirty(true)
   }
 
@@ -212,73 +198,18 @@ export function TemplateDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Add exercise */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Ajouter un exercice</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="space-y-1">
-            <Label>Exercice</Label>
-            <Select value={addExerciseId} onValueChange={v => v && setAddExerciseId(v)}>
-              <SelectTrigger className="w-full">
-                {addExerciseId
-                  ? <span>{exerciseName(addExerciseId)}</span>
-                  : <span className="text-muted-foreground">Sélectionner un exercice</span>}
-              </SelectTrigger>
-              <SelectContent>
-                {exercises?.map(ex => (
-                  <SelectItem key={ex.id} value={ex.id}>
-                    {ex.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <div className="space-y-1">
-              <Label>Séries</Label>
-              <Input
-                type="number"
-                min={1}
-                placeholder="3"
-                value={addTargetSets}
-                onChange={e => setAddTargetSets(e.target.value)}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label>Reps</Label>
-              <Input
-                type="number"
-                min={1}
-                placeholder="10"
-                value={addTargetReps}
-                onChange={e => setAddTargetReps(e.target.value)}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label>Repos (s)</Label>
-              <Input
-                type="number"
-                min={0}
-                placeholder="90"
-                value={addRestSeconds}
-                onChange={e => setAddRestSeconds(e.target.value)}
-              />
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={handleAddExercise}
-            disabled={!addExerciseId}
-          >
-            <Plus />
-            Ajouter
-          </Button>
-        </CardContent>
-      </Card>
+      <Button variant="outline" className="w-full" onClick={() => setAddOpen(true)}>
+        <Plus className="size-4" />
+        Ajouter un exercice
+      </Button>
+
+      <AddExerciseDialog
+        mode="template"
+        exercises={exercises}
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        onSubmit={handleAddExercise}
+      />
 
       {/* Save */}
       <Button

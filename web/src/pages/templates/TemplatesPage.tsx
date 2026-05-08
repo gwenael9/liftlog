@@ -5,15 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import PageLayout from '@/components/layout/PageLayout'
 import { useTemplates, useCreateTemplate } from '@/hooks/useTemplates'
-import PageLayout from '@/components/PageLayout'
 
 export function TemplatesPage() {
   const navigate = useNavigate()
   const { data: templates, isLoading } = useTemplates()
   const createTemplate = useCreateTemplate()
 
-  const [showForm, setShowForm] = useState(false)
+  const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [duration, setDuration] = useState('')
@@ -30,7 +30,7 @@ export function TemplatesPage() {
       {
         onSuccess: ({ data }) => {
           if (data) navigate(`/templates/${data.id}`)
-          setShowForm(false)
+          setOpen(false)
           setName('')
           setDescription('')
           setDuration('')
@@ -39,98 +39,90 @@ export function TemplatesPage() {
     )
   }
 
-  const form = (
-    <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Nouveau template</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleCreate} className="space-y-3">
-              <div className="space-y-1">
-                <Label htmlFor="name">Nom</Label>
-                <Input
-                  id="name"
-                  placeholder="Push Day"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="description">Description</Label>
-                <Input
-                  id="description"
-                  placeholder="Optionnel"
-                  value={description}
-                  onChange={e => setDescription(e.target.value)}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="duration">Durée estimée (min)</Label>
-                <Input
-                  id="duration"
-                  type="number"
-                  min={1}
-                  placeholder="60"
-                  value={duration}
-                  onChange={e => setDuration(e.target.value)}
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button type="submit" disabled={createTemplate.isPending}>
-                  Créer
-                </Button>
-                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
-                  Annuler
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+  const dialogContent = (
+    <form onSubmit={handleCreate} className="space-y-4">
+      <div className="space-y-1">
+        <Label htmlFor="name">Nom</Label>
+        <Input
+          id="name"
+          placeholder="Push Day"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          required
+        />
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor="description">Description</Label>
+        <Input
+          id="description"
+          placeholder="Optionnel"
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+        />
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor="duration">Durée estimée (min)</Label>
+        <Input
+          id="duration"
+          type="number"
+          min={1}
+          placeholder="60"
+          value={duration}
+          onChange={e => setDuration(e.target.value)}
+        />
+      </div>
+      <Button type="submit" className="w-full" disabled={createTemplate.isPending || !name}>
+        Créer le template
+      </Button>
+    </form>
   )
 
   return (
-    <PageLayout 
-      title="Template" 
-      onClickCreate={() => setShowForm(v => !v)} 
+    <PageLayout
+      title="Template"
       data={{ isLoading, items: templates ?? [] }}
-      form={{ show: showForm, content: form }} 
+      dialog={{
+        open,
+        onOpenChange: setOpen,
+        title: 'Nouveau template',
+        content: dialogContent,
+      }}
     >
-        {templates?.map(template => {
-          const exercises = template.template_exercises ?? []
-          return (
-            <Card
-              key={template.id}
-              className="cursor-pointer hover:ring-2 hover:ring-primary/40 transition-all"
-              onClick={() => navigate(`/templates/${template.id}`)}
-            >
-              <CardHeader>
-                <CardTitle>{template.name}</CardTitle>
-                {template.description && (
-                  <CardDescription>{template.description}</CardDescription>
-                )}
-              </CardHeader>
-              {(exercises.length > 0 || template.estimated_duration) && (
-                <CardContent>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    {exercises.length > 0 && (
-                      <span className="flex items-center gap-1">
-                        <Dumbbell className="size-3" />
-                        {exercises.length} exercice{exercises.length > 1 ? 's' : ''}
-                      </span>
-                    )}
-                    {template.estimated_duration && (
-                      <span className="flex items-center gap-1">
-                        <Clock className="size-3" />
-                        {template.estimated_duration} min
-                      </span>
-                    )}
-                  </div>
-                </CardContent>
+      {templates?.map(template => {
+        const exercises = template.template_exercises ?? []
+        return (
+          <Card
+            key={template.id}
+            className="cursor-pointer hover:ring-2 hover:ring-primary/40 transition-all"
+            onClick={() => navigate(`/templates/${template.id}`)}
+          >
+            <CardHeader>
+              <CardTitle>{template.name}</CardTitle>
+              {template.description && (
+                <CardDescription>{template.description}</CardDescription>
               )}
-            </Card>
-          )
-        })}
+            </CardHeader>
+            {(exercises.length > 0 || template.estimated_duration) && (
+              <CardContent>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  {exercises.length > 0 && (
+                    <span className="flex items-center gap-1">
+                      <Dumbbell className="size-3" />
+                      {exercises.length} exercice{exercises.length > 1 ? 's' : ''}
+                    </span>
+                  )}
+                  {template.estimated_duration && (
+                    <span className="flex items-center gap-1">
+                      <Clock className="size-3" />
+                      {template.estimated_duration} min
+                    </span>
+                  )}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        )
+      })}
     </PageLayout>
   )
 }

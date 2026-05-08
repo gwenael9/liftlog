@@ -9,13 +9,13 @@ export function Calendar({ className, ...props }: CalendarProps) {
   return (
     <DayPicker
       locale={fr}
-      className={cn('p-3', className)}
+      className={cn('relative p-3', className)}
       classNames={{
         months: 'flex flex-col',
         month: 'space-y-3',
         month_caption: 'flex justify-center relative items-center h-7',
         caption_label: 'text-sm font-medium capitalize',
-        nav: 'flex items-center justify-between absolute inset-x-3 top-3',
+        nav: 'flex items-center justify-between absolute inset-x-3 top-3 z-10',
         button_previous:
           'size-7 flex items-center justify-center rounded-lg border border-input bg-transparent hover:bg-muted transition-colors',
         button_next:
