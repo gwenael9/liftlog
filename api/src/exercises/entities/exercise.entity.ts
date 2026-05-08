@@ -8,6 +8,11 @@ import {
 } from "typeorm";
 import { User } from "../../users/entities/user.entity";
 
+export enum TrackingType {
+  STRENGTH = "strength",
+  DURATION = "duration",
+}
+
 export enum MuscleGroup {
   CHEST = "chest",
   BACK = "back",
@@ -41,6 +46,9 @@ export class Exercise {
 
   @Column({ type: "boolean", default: false, name: "is_global" })
   is_global: boolean;
+
+  @Column({ type: "enum", enum: TrackingType, default: TrackingType.STRENGTH, name: "tracking_type" })
+  tracking_type: TrackingType;
 
   @Column({ type: "text", nullable: true })
   notes: string | null;

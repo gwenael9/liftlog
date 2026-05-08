@@ -6,7 +6,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { MuscleGroup } from '../entities/exercise.entity';
+import { MuscleGroup, TrackingType } from '../entities/exercise.entity';
 
 export class CreateExerciseDto {
   @ApiProperty({ example: 'Bench Press', maxLength: 150 })
@@ -22,6 +22,11 @@ export class CreateExerciseDto {
   @IsOptional()
   @IsBoolean()
   is_global?: boolean;
+
+  @ApiPropertyOptional({ enum: TrackingType, default: 'strength' })
+  @IsOptional()
+  @IsEnum(TrackingType)
+  tracking_type?: TrackingType;
 
   @ApiPropertyOptional()
   @IsOptional()

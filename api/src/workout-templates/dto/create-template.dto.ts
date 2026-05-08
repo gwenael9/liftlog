@@ -38,6 +38,12 @@ export class TemplateExerciseItemDto {
   @IsInt()
   @Min(0)
   rest_seconds?: number;
+
+  @ApiPropertyOptional({ minimum: 0 })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  target_duration_sec?: number;
 }
 
 export class CreateTemplateDto {

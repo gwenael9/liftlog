@@ -23,6 +23,7 @@ export class WorkoutTemplatesService {
     return this.templatesRepository.find({
       where: { user_id: userId },
       order: { created_at: 'DESC' },
+      relations: ['template_exercises', 'template_exercises.exercise'],
     });
   }
 
@@ -59,6 +60,7 @@ export class WorkoutTemplatesService {
           target_sets: ex.target_sets ?? null,
           target_reps: ex.target_reps ?? null,
           rest_seconds: ex.rest_seconds ?? null,
+          target_duration_sec: ex.target_duration_sec ?? null,
         }),
       );
       await this.templateExercisesRepository.save(templateExercises);
@@ -93,6 +95,7 @@ export class WorkoutTemplatesService {
             target_sets: ex.target_sets ?? null,
             target_reps: ex.target_reps ?? null,
             rest_seconds: ex.rest_seconds ?? null,
+            target_duration_sec: ex.target_duration_sec ?? null,
           }),
         );
         await this.templateExercisesRepository.save(templateExercises);
