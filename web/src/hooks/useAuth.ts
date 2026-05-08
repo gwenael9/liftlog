@@ -12,7 +12,7 @@ export function useLogin() {
     onSuccess: ({ data }) => {
       if (!data) return
       setTokens(data.access_token, data.refresh_token)
-      navigate('/dashboard')
+      navigate('/sessions')
     },
   })
 }
@@ -26,7 +26,7 @@ export function useRegister() {
     onSuccess: ({ data }) => {
       if (!data) return
       setTokens(data.access_token, data.refresh_token)
-      navigate('/dashboard')
+      navigate('/sessions')
     },
   })
 }

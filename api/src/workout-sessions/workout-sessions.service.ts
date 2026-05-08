@@ -29,7 +29,11 @@ export class WorkoutSessionsService {
       );
     }
 
-    return this.sessionsRepository.find({ where, order: { scheduled_date: 'ASC' } });
+    return this.sessionsRepository.find({
+      where,
+      order: { scheduled_date: 'ASC' },
+      relations: ['session_sets', 'session_sets.exercise'],
+    });
   }
 
   async findOne(id: string, userId: string): Promise<WorkoutSession> {
