@@ -21,7 +21,7 @@ export interface FrequencyPerWeek {
 
 export interface PersonalRecord {
   exercise_id: string;
-  exercise_name: string;
+  exercise_slug: string;
   max_weight_kg: number;
   performed_at: Date | null;
 }
@@ -116,22 +116,22 @@ export class StatsService {
       .andWhere('ss.is_warmup = false')
       .select([
         'ss.exercise_id AS exercise_id',
-        'e.name AS exercise_name',
+        'e.slug AS exercise_slug',
         'MAX(ss.weight_kg) AS max_weight_kg',
         'MAX(ss.performed_at) AS performed_at',
       ])
-      .groupBy('ss.exercise_id, e.name')
-      .orderBy('e.name', 'ASC')
+      .groupBy('ss.exercise_id, e.slug')
+      .orderBy('e.slug', 'ASC')
       .getRawMany<{
         exercise_id: string;
-        exercise_name: string;
+        exercise_slug: string;
         max_weight_kg: string;
         performed_at: Date | null;
       }>();
 
-    return rows.map((r: { exercise_id: string; exercise_name: string; max_weight_kg: string; performed_at: Date | null }) => ({
+    return rows.map((r: { exercise_id: string; exercise_slug: string; max_weight_kg: string; performed_at: Date | null }) => ({
       exercise_id: r.exercise_id,
-      exercise_name: r.exercise_name,
+      exercise_slug: r.exercise_slug,
       max_weight_kg: parseFloat(r.max_weight_kg),
       performed_at: r.performed_at,
     }));

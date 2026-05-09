@@ -12,8 +12,9 @@ import {
   SelectTrigger,
 } from '@/components/ui/select'
 import type { ExerciseResponseDto } from '@/api/exercises'
-import type { AddRow } from '@/pages/sessions/types'
-import { emptyAddRow } from '@/pages/sessions/types'
+import type { AddRow } from '@/types/session'
+import { emptyAddRow } from '@/types/session'
+import { useTranslation } from 'react-i18next'
 
 export interface TemplateExerciseData {
   targetSets?: number
@@ -34,11 +35,11 @@ type Props = {
 
 export function AddExerciseDialog(props: Props) {
   const { exercises, open, onOpenChange, isPending } = props
+  const { t } = useTranslation()
 
   const [exerciseId, setExerciseId] = useState('')
-  // Session state
   const [rows, setRows] = useState<AddRow[]>([emptyAddRow()])
-  // Template state
+
   const [targetSets, setTargetSets] = useState('')
   const [targetReps, setTargetReps] = useState('')
   const [restSeconds, setRestSeconds] = useState('')
@@ -72,19 +73,19 @@ export function AddExerciseDialog(props: Props) {
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) reset(); onOpenChange(v) }}>
-      <DialogContent title="Ajouter un exercice">
+      <DialogContent title={t('exerciseForm.title')}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1">
-            <Label>Exercice</Label>
+            <Label>{t('exerciseForm.exercise')}</Label>
             <Select value={exerciseId} onValueChange={v => v && setExerciseId(v)}>
               <SelectTrigger className="w-full">
                 {exerciseId
-                  ? <span>{exercises?.find(ex => ex.id === exerciseId)?.name}</span>
-                  : <span className="text-muted-foreground">Sélectionner un exercice</span>}
+                  ? <span>{t(`exercises.${exercises?.find(ex => ex.id === exerciseId)?.slug ?? ''}`)}</span>
+                  : <span className="text-muted-foreground">{t('exerciseForm.selectExercise')}</span>}
               </SelectTrigger>
               <SelectContent>
                 {exercises?.map(ex => (
-                  <SelectItem key={ex.id} value={ex.id}>{ex.name}</SelectItem>
+                  <SelectItem key={ex.id} value={ex.id}>{t(`exercises.${ex.slug}`)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -101,9 +102,9 @@ export function AddExerciseDialog(props: Props) {
                 <div className={`grid ${colClass} gap-2 items-center`}>
                   <span />
                   {isDuration
-                    ? <span className="text-xs text-muted-foreground">Durée (s)</span>
-                    : <><span className="text-xs text-muted-foreground">Rép</span><span className="text-xs text-muted-foreground">kg</span></>}
-                  <span className="text-xs text-muted-foreground">Éch.</span>
+                    ? <span className="text-xs text-muted-foreground">{t('exerciseForm.duration')}</span>
+                    : <><span className="text-xs text-muted-foreground">{t('exerciseForm.reps')}</span><span className="text-xs text-muted-foreground">{t('exerciseForm.weight')}</span></>}
+                  <span className="text-xs text-muted-foreground">{t('exerciseForm.warmup')}</span>
                   <span />
                 </div>
                 {rows.map((row, i) => (
@@ -145,7 +146,7 @@ export function AddExerciseDialog(props: Props) {
                   onClick={() => setRows(r => [...r, emptyAddRow()])}
                 >
                   <Plus className="size-3" />
-                  Série
+                  {t('exerciseForm.addSet')}
                 </Button>
               </div>
             )
@@ -157,22 +158,22 @@ export function AddExerciseDialog(props: Props) {
             return (
               <div className="grid grid-cols-3 gap-2">
                 <div className="space-y-1">
-                  <Label>Séries</Label>
+                  <Label>{t('exerciseForm.sets')}</Label>
                   <Input type="number" min={1} placeholder="3" value={targetSets} onChange={e => setTargetSets(e.target.value)} />
                 </div>
                 {isDuration ? (
                   <div className="space-y-1 col-span-1">
-                    <Label>Durée cible (s)</Label>
+                    <Label>{t('exerciseForm.targetDuration')}</Label>
                     <Input type="number" min={0} placeholder="60" value={targetDurationSec} onChange={e => setTargetDurationSec(e.target.value)} />
                   </div>
                 ) : (
                   <div className="space-y-1">
-                    <Label>Reps</Label>
+                    <Label>{t('exerciseForm.targetReps')}</Label>
                     <Input type="number" min={1} placeholder="10" value={targetReps} onChange={e => setTargetReps(e.target.value)} />
                   </div>
                 )}
                 <div className="space-y-1">
-                  <Label>Repos (s)</Label>
+                  <Label>{t('exerciseForm.rest')}</Label>
                   <Input type="number" min={0} placeholder="90" value={restSeconds} onChange={e => setRestSeconds(e.target.value)} />
                 </div>
               </div>
@@ -180,7 +181,7 @@ export function AddExerciseDialog(props: Props) {
           })()}
 
           <Button type="submit" className="w-full" disabled={isPending || !exerciseId}>
-            Ajouter
+            {t('exerciseForm.add')}
           </Button>
         </form>
       </DialogContent>

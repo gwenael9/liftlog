@@ -9,10 +9,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { MuscleGroup, TrackingType } from '../entities/exercise.entity';
 
 export class CreateExerciseDto {
-  @ApiProperty({ example: 'Bench Press', maxLength: 150 })
+  @ApiProperty({ example: 'bench_press', maxLength: 150 })
   @IsString()
   @MaxLength(150)
-  name: string;
+  slug: string;
 
   @ApiProperty({ enum: MuscleGroup })
   @IsEnum(MuscleGroup)

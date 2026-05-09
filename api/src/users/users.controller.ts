@@ -2,6 +2,8 @@ import {
   Controller,
   Get,
   Put,
+  Delete,
+  Param,
   Body,
   UseGuards,
   HttpCode,
@@ -11,11 +13,14 @@ import {
   ApiTags,
   ApiBearerAuth,
   ApiOkResponse,
+  ApiNoContentResponse,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser, CurrentUserData } from '../common/decorators/current-user.decorator';
 
 @ApiTags('users')
@@ -24,6 +29,14 @@ import { CurrentUser, CurrentUserData } from '../common/decorators/current-user.
 @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOkResponse({ type: [UserResponseDto] })
+  findAll() {
+    return this.usersService.findAll();
+  }
 
   @Get('me')
   @ApiOkResponse({ type: UserResponseDto })
@@ -36,5 +49,14 @@ export class UsersController {
   @ApiOkResponse({ type: UserResponseDto })
   updateMe(@CurrentUser() user: CurrentUserData, @Body() dto: UpdateUserDto) {
     return this.usersService.update(user.id, dto);
+  }
+
+  @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse()
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
   }
 }

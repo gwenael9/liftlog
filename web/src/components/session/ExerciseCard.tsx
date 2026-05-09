@@ -3,7 +3,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
-import type { ExerciseGroup, SetEditValue, AddRow } from '../../pages/sessions/types'
+import type { ExerciseGroup, SetEditValue, AddRow } from '@/types/session'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   group: ExerciseGroup
@@ -32,6 +33,7 @@ export function ExerciseCard({
   onDeleteSet,
   onSave,
 }: Props) {
+  const { t } = useTranslation()
   const totalSets = group.sets.length + pendingRows.length
   const isDuration = group.trackingType === 'duration'
 
@@ -43,19 +45,18 @@ export function ExerciseCard({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-baseline gap-2">
-          {group.exerciseName}
+          {t(`exercises.${group.exerciseSlug}`)}
           <span className="text-sm font-normal text-muted-foreground">×{totalSets}</span>
         </CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-2">
-        {/* Column headers */}
         <div className={`grid ${colClass} gap-2 items-center px-1`}>
           <span />
           {isDuration
-            ? <span className="text-xs text-muted-foreground">Durée (s)</span>
-            : <><span className="text-xs text-muted-foreground">Rép</span><span className="text-xs text-muted-foreground">kg</span></>}
-          <span className="text-xs text-muted-foreground">Éch.</span>
+            ? <span className="text-xs text-muted-foreground">{t('exerciseForm.duration')}</span>
+            : <><span className="text-xs text-muted-foreground">{t('exerciseForm.reps')}</span><span className="text-xs text-muted-foreground">{t('exerciseForm.weight')}</span></>}
+          <span className="text-xs text-muted-foreground">{t('exerciseForm.warmup')}</span>
           <span />
         </div>
 
@@ -90,7 +91,7 @@ export function ExerciseCard({
                 onCheckedChange={checked => onPatchEdit(set.id, { is_warmup: !!checked })}
               />
               <div className="flex items-center gap-1">
-                {set.is_pr && <span className="text-xs text-yellow-500 font-semibold">PR</span>}
+                {set.is_pr && <span className="text-xs text-yellow-500 font-semibold">{t('exerciseForm.pr')}</span>}
                 <Button variant="ghost" size="icon-sm" onClick={() => onDeleteSet(set.id)}>
                   <Trash2 className="size-3" />
                 </Button>
@@ -141,14 +142,14 @@ export function ExerciseCard({
           onClick={onAddPending}
         >
           <Plus />
-          Série
+          {t('exerciseForm.addSet')}
         </Button>
       </CardContent>
 
       {isDirty && (
         <CardFooter>
           <Button size="sm" className="w-full" onClick={onSave} disabled={isSaving}>
-            Enregistrer
+            {t('exerciseForm.save')}
           </Button>
         </CardFooter>
       )}

@@ -42,6 +42,18 @@ export class UsersService {
     await this.usersRepository.update(id, { refresh_token_hash: hash });
   }
 
+  async findAll(): Promise<User[]> {
+    return this.usersRepository.find({ order: { created_at: 'DESC' } });
+  }
+
+  async remove(id: string): Promise<void> {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.usersRepository.remove(user);
+  }
+
   async getMe(id: string): Promise<Omit<User, 'password_hash' | 'refresh_token_hash'>> {
     const user = await this.findById(id);
     if (!user) {

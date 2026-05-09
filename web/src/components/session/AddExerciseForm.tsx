@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Trash2, Plus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,8 +13,8 @@ import {
   SelectTrigger,
 } from '@/components/ui/select'
 import type { ExerciseResponseDto } from '@/api/exercises'
-import type { AddRow } from '../../pages/sessions/types'
-import { emptyAddRow } from '../../pages/sessions/types'
+import type { AddRow } from '@/types/session'
+import { emptyAddRow } from '@/types/session'
 
 interface Props {
   exercises: ExerciseResponseDto[] | undefined
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export function AddExerciseForm({ exercises, isPending, onSubmit }: Props) {
+  const { t } = useTranslation()
   const [exerciseId, setExerciseId] = useState('')
   const [rows, setRows] = useState<AddRow[]>([emptyAddRow()])
 
@@ -36,22 +38,22 @@ export function AddExerciseForm({ exercises, isPending, onSubmit }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Ajouter un exercice</CardTitle>
+        <CardTitle className="text-base">{t('exerciseForm.title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1">
-            <Label>Exercice</Label>
+            <Label>{t('exerciseForm.exercise')}</Label>
             <Select value={exerciseId} onValueChange={v => v && setExerciseId(v)}>
               <SelectTrigger className="w-full">
                 {exerciseId
-                  ? <span>{exercises?.find(ex => ex.id === exerciseId)?.name}</span>
-                  : <span className="text-muted-foreground">Sélectionner un exercice</span>}
+                  ? <span>{t(`exercises.${exercises?.find(ex => ex.id === exerciseId)?.slug ?? ''}`)}</span>
+                  : <span className="text-muted-foreground">{t('exerciseForm.selectExercise')}</span>}
               </SelectTrigger>
               <SelectContent>
                 {exercises?.map(ex => (
                   <SelectItem key={ex.id} value={ex.id}>
-                    {ex.name}
+                    {t(`exercises.${ex.slug}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -61,9 +63,9 @@ export function AddExerciseForm({ exercises, isPending, onSubmit }: Props) {
           <div className="space-y-2">
             <div className="grid grid-cols-[2rem_1fr_1fr_auto_auto] gap-2 items-center">
               <span />
-              <span className="text-xs text-muted-foreground">Répétitions</span>
-              <span className="text-xs text-muted-foreground">Poids (kg)</span>
-              <span className="text-xs text-muted-foreground">Échauff.</span>
+              <span className="text-xs text-muted-foreground">{t('exerciseForm.repsLong')}</span>
+              <span className="text-xs text-muted-foreground">{t('exerciseForm.weightLong')}</span>
+              <span className="text-xs text-muted-foreground">{t('exerciseForm.warmup')}</span>
               <span />
             </div>
 
@@ -111,11 +113,11 @@ export function AddExerciseForm({ exercises, isPending, onSubmit }: Props) {
             onClick={() => setRows(r => [...r, emptyAddRow()])}
           >
             <Plus />
-            Ajouter une série
+            {t('exerciseForm.addSetLong')}
           </Button>
 
           <Button type="submit" className="w-full" disabled={isPending || !exerciseId}>
-            Enregistrer
+            {t('exerciseForm.save')}
           </Button>
         </form>
       </CardContent>

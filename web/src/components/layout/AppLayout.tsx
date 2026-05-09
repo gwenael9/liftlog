@@ -1,17 +1,23 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useLogout } from '@/hooks/useAuth'
+import { useAuthStore } from '@/store/auth.store'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { LanguageToggle } from '@/components/ui/language-toggle'
 import { cn } from '@/lib/utils'
-
-const navLinks = [
-  { to: '/sessions', label: 'Séances' },
-  { to: '/templates', label: 'Templates' },
-]
+import { useTranslation } from 'react-i18next'
 
 export function AppLayout() {
+  const { t } = useTranslation()
   const logout = useLogout()
   const { pathname } = useLocation()
+  const role = useAuthStore((s) => s.role)
+
+  const navLinks = [
+    { to: '/sessions', label: t('nav.sessions') },
+    { to: '/templates', label: t('nav.templates') },
+    { to: '/stats', label: t('nav.stats') },
+  ]
 
   return (
     <div className="flex flex-col">
@@ -35,11 +41,25 @@ export function AppLayout() {
                 {link.label}
               </Link>
             ))}
+            {role === 'admin' && (
+              <Link
+                to="/admin"
+                className={cn(
+                  'text-sm transition-colors',
+                  pathname.startsWith('/admin')
+                    ? 'text-foreground font-medium'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {t('nav.admin')}
+              </Link>
+            )}
           </nav>
           <div className="flex items-center gap-2">
+            <LanguageToggle />
             <ThemeToggle />
             <Button variant="destructive" size="sm" onClick={logout}>
-              Déconnexion
+              {t('nav.logout')}
             </Button>
           </div>
         </div>

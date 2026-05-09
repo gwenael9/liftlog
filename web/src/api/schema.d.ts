@@ -52,6 +52,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UsersController_findAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/me": {
         parameters: {
             query?: never;
@@ -63,6 +79,22 @@ export interface paths {
         put: operations["UsersController_updateMe"];
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["UsersController_remove"];
         options?: never;
         head?: never;
         patch?: never;
@@ -290,6 +322,8 @@ export interface components {
             display_name?: string | null;
             /** @enum {string} */
             unit_system: "kg" | "lbs";
+            /** @enum {string} */
+            role: "user" | "admin";
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
@@ -303,8 +337,8 @@ export interface components {
         ExerciseResponseDto: {
             /** Format: uuid */
             id: string;
-            /** @example Bench Press */
-            name: string;
+            /** @example bench_press */
+            slug: string;
             /** @enum {string} */
             muscle_group: "chest" | "back" | "shoulders" | "biceps" | "triceps" | "legs" | "glutes" | "core" | "cardio" | "full_body";
             /** @enum {string} */
@@ -317,24 +351,30 @@ export interface components {
             created_at: string;
         };
         CreateExerciseDto: {
-            /** @example Bench Press */
-            name: string;
+            /** @example bench_press */
+            slug: string;
             /** @enum {string} */
             muscle_group: "chest" | "back" | "shoulders" | "biceps" | "triceps" | "legs" | "glutes" | "core" | "cardio" | "full_body";
-            /** @enum {string} */
-            tracking_type?: "strength" | "duration";
             /** @default false */
             is_global: boolean;
+            /**
+             * @default strength
+             * @enum {string}
+             */
+            tracking_type: "strength" | "duration";
             notes?: string;
         };
         UpdateExerciseDto: {
-            /** @example Bench Press */
-            name?: string;
+            /** @example bench_press */
+            slug?: string;
             /** @enum {string} */
             muscle_group?: "chest" | "back" | "shoulders" | "biceps" | "triceps" | "legs" | "glutes" | "core" | "cardio" | "full_body";
-            /** @enum {string} */
-            tracking_type?: "strength" | "duration";
             is_global?: boolean;
+            /**
+             * @default strength
+             * @enum {string}
+             */
+            tracking_type: "strength" | "duration";
             notes?: string;
         };
         TemplateExerciseResponseDto: {
@@ -481,7 +521,7 @@ export interface components {
         PersonalRecordDto: {
             /** Format: uuid */
             exercise_id: string;
-            exercise_name: string;
+            exercise_slug: string;
             max_weight_kg: number;
             /** Format: date-time */
             performed_at?: string | null;
@@ -560,6 +600,25 @@ export interface operations {
             };
         };
     };
+    UsersController_findAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserResponseDto"][];
+                };
+            };
+        };
+    };
     UsersController_getMe: {
         parameters: {
             query?: never;
@@ -599,6 +658,25 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["UserResponseDto"];
                 };
+            };
+        };
+    };
+    UsersController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
