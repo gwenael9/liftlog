@@ -32,6 +32,8 @@ import { SessionSet } from "./session-sets/entities/session-set.entity";
         SessionSet,
       ],
       synchronize: process.env.NODE_ENV !== "production",
+      migrationsRun: process.env.NODE_ENV === "production",
+      migrations: [__dirname + "/migrations/*{.ts,.js}"],
       logging: process.env.NODE_ENV === "development",
     }),
     AuthModule,

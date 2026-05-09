@@ -8,6 +8,9 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
+    "typeorm": "typeorm-ts-node-commonjs -d src/data-source.ts",
+    "migration:generate": "npm run typeorm migration:generate",
+    "migration:run": "npm run typeorm migration:run",
     "seed": "ts-node -r tsconfig-paths/register seeds/exercises.seed.ts"
   },
   "dependencies": {
