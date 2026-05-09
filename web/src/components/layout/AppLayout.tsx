@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 const navLinks = [
   { to: '/sessions', label: 'Séances' },
   { to: '/templates', label: 'Templates' },
+  { to: '/stats', label: 'Stats' },
 ]
 
 export function AppLayout() {
