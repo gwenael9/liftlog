@@ -197,7 +197,7 @@ export function StatsPage() {
               </CardTitle>
               <Select
                 value={selectedExerciseId}
-                onValueChange={(v) => setSelectedExerciseId(v)}
+                onValueChange={(v) => setSelectedExerciseId(v ?? "")}
               >
                 <SelectTrigger className="w-52 text-sm">
                   {selectedExerciseSlug ? (

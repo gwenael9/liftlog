@@ -146,7 +146,7 @@ export function AdminPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <Select value={muscleFilter} onValueChange={v => { setMuscleFilter(v); exPager.setPage(0) }}>
+              <Select value={muscleFilter} onValueChange={v => { setMuscleFilter(v ?? 'all'); exPager.setPage(0) }}>
                 <SelectTrigger className="w-40">
                   <span className={muscleFilter === 'all' ? 'text-muted-foreground' : ''}>
                     {muscleFilter === 'all' ? t('admin.allMuscles') : t(`muscleGroups.${muscleFilter}`)}
@@ -383,7 +383,7 @@ function ExerciseFields({ form, onChange }: { form: ExerciseFormState; onChange:
       </div>
       <div className="space-y-1">
         <Label>{t('admin.form.muscleGroup')}</Label>
-        <Select value={form.muscle_group} onValueChange={v => onChange({ ...form, muscle_group: v })}>
+        <Select value={form.muscle_group} onValueChange={v => onChange({ ...form, muscle_group: v ?? form.muscle_group })}>
           <SelectTrigger className="w-full">
             <span>{t(`muscleGroups.${form.muscle_group}`)}</span>
           </SelectTrigger>
