@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, Trash2, Plus } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   useSession,
@@ -11,12 +11,15 @@ import {
   useDeleteSet,
   useExercises,
 } from '@/hooks/useSessions'
-import { STATUS_COLORS } from '@/utils'
+import { formatSessionDateLong } from '@/utils'
+import { DetailHeader } from '@/components/layout/DetailHeader'
+import { StatusBadge } from '@/components/StatusBadge'
 import type { UpdateSessionDto, SetResponseDto } from '@/api/sessions'
 import type { SetEditValue, AddRow, ExerciseGroup } from '@/types/session'
 import { emptyAddRow } from '@/types/session'
 import { ExerciseCard } from '@/components/session'
 import { AddExerciseDialog } from '@/components/AddExerciseDialog'
+import { ConfirmDeleteDialog } from '@/components/ConfirmDeleteDialog'
 import Loader from '@/components/Loader'
 import { useTranslation } from 'react-i18next'
 
@@ -39,6 +42,7 @@ export function SessionDetailPage() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [deletingSetIds, setDeletingSetIds] = useState<Set<string>>(new Set())
   const [addOpen, setAddOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
 
   const setsByExercise = useMemo((): ExerciseGroup[] => {
     if (!session) return []
@@ -190,7 +194,6 @@ export function SessionDetailPage() {
   }
 
   function handleDeleteSession() {
-    if (!confirm(t('sessions.deleteConfirm'))) return
     deleteSession.mutate(id!, { onSuccess: () => navigate('/sessions') })
   }
 
@@ -199,24 +202,12 @@ export function SessionDetailPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-4">
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/sessions')}>
-          <ChevronLeft />
-        </Button>
-        <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-bold capitalize">
-            {new Date(session.scheduled_date + 'T00:00:00').toLocaleDateString('fr-FR', {
-              weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-            })}
-          </h1>
-          <span className={`text-sm ${STATUS_COLORS[session.status]}`}>
-            {t(`status.${session.status}`)}
-          </span>
-        </div>
-        <Button variant="ghost" size="icon" onClick={handleDeleteSession}>
-          <Trash2 className="text-destructive" />
-        </Button>
-      </div>
+      <DetailHeader
+        onBack={() => navigate('/sessions')}
+        title={formatSessionDateLong(session.scheduled_date)}
+        subtitle={<StatusBadge status={session.status} />}
+        onDelete={() => setDeleteOpen(true)}
+      />
 
       <div className="flex gap-2">
         {session.status === 'planned' && (
@@ -307,6 +298,14 @@ export function SessionDetailPage() {
         onOpenChange={setAddOpen}
         onSubmit={handleAddExercise}
         isPending={createSet.isPending}
+      />
+
+      <ConfirmDeleteDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title={t('sessions.deleteConfirm')}
+        onConfirm={handleDeleteSession}
+        isPending={deleteSession.isPending}
       />
     </div>
   )

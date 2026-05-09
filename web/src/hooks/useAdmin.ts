@@ -42,3 +42,11 @@ export function useAdminDeleteExercise() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['exercises'] }),
   })
 }
+
+export function useAdminDeleteUser() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => usersApi.remove(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'users'] }),
+  })
+}

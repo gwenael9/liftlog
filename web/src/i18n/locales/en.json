@@ -61,6 +61,7 @@
     "cancel": "Cancel",
     "create": "Create",
     "delete": "Delete",
+    "deleteWarning": "This action cannot be undone.",
     "edit": "Edit",
     "loading": "Loading…",
     "noData": "No data",
@@ -82,6 +83,8 @@
     "newExercise": "New exercise",
     "noExercises": "No exercises",
     "noUsers": "No users",
+    "deleteExerciseConfirm": "Delete this exercise?",
+    "deleteUserConfirm": "Delete this user?",
     "scope": {
       "global": "Global",
       "personal": "Personal"

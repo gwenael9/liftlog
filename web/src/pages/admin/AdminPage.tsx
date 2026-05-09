@@ -20,7 +20,8 @@ import {
   TableCell,
 } from '@/components/ui/table'
 import { useExercises } from '@/hooks/useSessions'
-import { useAdminUsers, useAdminCreateExercise, useAdminUpdateExercise, useAdminDeleteExercise } from '@/hooks/useAdmin'
+import { useAdminUsers, useAdminCreateExercise, useAdminUpdateExercise, useAdminDeleteExercise, useAdminDeleteUser } from '@/hooks/useAdmin'
+import { ConfirmDeleteDialog } from '@/components/ConfirmDeleteDialog'
 import type { ExerciseResponseDto } from '@/api/exercises'
 
 type Tab = 'exercises' | 'users'
@@ -72,12 +73,15 @@ export function AdminPage() {
   const [tab, setTab] = useState<Tab>('exercises')
   const [dialog, setDialog] = useState<DialogState>(closedDialog())
   const [muscleFilter, setMuscleFilter] = useState('all')
+  const [pendingDeleteExId, setPendingDeleteExId] = useState<string | null>(null)
+  const [pendingDeleteUserId, setPendingDeleteUserId] = useState<string | null>(null)
 
   const { data: exercises = [] } = useExercises()
   const { data: users = [] } = useAdminUsers()
   const createExercise = useAdminCreateExercise()
   const updateExercise = useAdminUpdateExercise()
   const deleteExercise = useAdminDeleteExercise()
+  const deleteUser = useAdminDeleteUser()
 
   const filteredExercises = muscleFilter === 'all'
     ? exercises
@@ -206,8 +210,7 @@ export function AdminPage() {
                         </Button>
                         <Button
                           variant="ghost" size="icon-sm"
-                          onClick={() => deleteExercise.mutate(ex.id)}
-                          disabled={deleteExercise.isPending}
+                          onClick={() => setPendingDeleteExId(ex.id)}
                         >
                           <Trash2 className="size-3 text-destructive" />
                         </Button>
@@ -233,6 +236,7 @@ export function AdminPage() {
                   <TableHead>{t('admin.table.email')}</TableHead>
                   <TableHead>{t('admin.table.role')}</TableHead>
                   <TableHead>{t('admin.table.createdAt')}</TableHead>
+                  <TableHead className="w-12" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -261,6 +265,14 @@ export function AdminPage() {
                     <TableCell className="text-muted-foreground text-xs">
                       {new Date(u.created_at).toLocaleDateString('fr-FR')}
                     </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost" size="icon-sm"
+                        onClick={() => setPendingDeleteUserId(u.id)}
+                      >
+                        <Trash2 className="size-3 text-destructive" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -279,6 +291,26 @@ export function AdminPage() {
         onOpenChange={v => { if (!v) setDialog(closedDialog()) }}
         onSubmit={handleDialogSubmit}
         isPending={createExercise.isPending || updateExercise.isPending}
+      />
+
+      <ConfirmDeleteDialog
+        open={!!pendingDeleteExId}
+        onOpenChange={v => { if (!v) setPendingDeleteExId(null) }}
+        title={t('admin.deleteExerciseConfirm')}
+        onConfirm={() => {
+          if (pendingDeleteExId) deleteExercise.mutate(pendingDeleteExId, { onSuccess: () => setPendingDeleteExId(null) })
+        }}
+        isPending={deleteExercise.isPending}
+      />
+
+      <ConfirmDeleteDialog
+        open={!!pendingDeleteUserId}
+        onOpenChange={v => { if (!v) setPendingDeleteUserId(null) }}
+        title={t('admin.deleteUserConfirm')}
+        onConfirm={() => {
+          if (pendingDeleteUserId) deleteUser.mutate(pendingDeleteUserId, { onSuccess: () => setPendingDeleteUserId(null) })
+        }}
+        isPending={deleteUser.isPending}
       />
     </div>
   )

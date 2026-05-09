@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ChevronLeft, Trash2, GripVertical, Plus } from 'lucide-react'
+import { GripVertical, Plus, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label'
 import { useTemplate, useUpdateTemplate, useDeleteTemplate } from '@/hooks/useTemplates'
 import { useExercises } from '@/hooks/useSessions'
 import { AddExerciseDialog } from '@/components/AddExerciseDialog'
+import { ConfirmDeleteDialog } from '@/components/ConfirmDeleteDialog'
+import { DetailHeader } from '@/components/layout/DetailHeader'
 import type { TemplateExerciseItemDto } from '@/api/templates'
 import { useTranslation } from 'react-i18next'
 
@@ -39,6 +41,7 @@ export function TemplateDetailPage() {
   const [dirty, setDirty] = useState(false)
 
   const [addOpen, setAddOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
 
   useEffect(() => {
     if (!template) return
@@ -90,7 +93,6 @@ export function TemplateDetailPage() {
   }
 
   function handleDelete() {
-    if (!confirm(t('templates.deleteConfirm'))) return
     deleteTemplate.mutate(id!, {
       onSuccess: () => navigate('/templates'),
     })
@@ -111,20 +113,14 @@ export function TemplateDetailPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-4">
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/templates')}>
-          <ChevronLeft />
-        </Button>
-        <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-bold truncate">{template.name}</h1>
-          {template.description && (
-            <p className="text-sm text-muted-foreground truncate">{template.description}</p>
-          )}
-        </div>
-        <Button variant="ghost" size="icon" onClick={handleDelete}>
-          <Trash2 className="text-destructive" />
-        </Button>
-      </div>
+      <DetailHeader
+        onBack={() => navigate('/templates')}
+        title={template.name}
+        subtitle={template.description ? (
+          <span className="text-muted-foreground">{template.description}</span>
+        ) : undefined}
+        onDelete={() => setDeleteOpen(true)}
+      />
 
       <Card>
         <CardHeader>
@@ -222,6 +218,14 @@ export function TemplateDetailPage() {
       >
         {updateTemplate.isPending ? t('templates.saving') : t('templates.save')}
       </Button>
+
+      <ConfirmDeleteDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title={t('templates.deleteConfirm')}
+        onConfirm={handleDelete}
+        isPending={deleteTemplate.isPending}
+      />
     </div>
   )
 }

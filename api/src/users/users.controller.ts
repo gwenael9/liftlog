@@ -2,6 +2,8 @@ import {
   Controller,
   Get,
   Put,
+  Delete,
+  Param,
   Body,
   UseGuards,
   HttpCode,
@@ -11,6 +13,7 @@ import {
   ApiTags,
   ApiBearerAuth,
   ApiOkResponse,
+  ApiNoContentResponse,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -46,5 +49,14 @@ export class UsersController {
   @ApiOkResponse({ type: UserResponseDto })
   updateMe(@CurrentUser() user: CurrentUserData, @Body() dto: UpdateUserDto) {
     return this.usersService.update(user.id, dto);
+  }
+
+  @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse()
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
   }
 }

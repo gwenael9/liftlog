@@ -61,6 +61,7 @@
     "cancel": "Annuler",
     "create": "Créer",
     "delete": "Supprimer",
+    "deleteWarning": "Cette action est irréversible.",
     "edit": "Modifier",
     "loading": "Chargement…",
     "noData": "Aucune donnée",
@@ -82,6 +83,8 @@
     "newExercise": "Nouvel exercice",
     "noExercises": "Aucun exercice",
     "noUsers": "Aucun utilisateur",
+    "deleteExerciseConfirm": "Supprimer cet exercice ?",
+    "deleteUserConfirm": "Supprimer cet utilisateur ?",
     "scope": {
       "global": "Global",
       "personal": "Perso"

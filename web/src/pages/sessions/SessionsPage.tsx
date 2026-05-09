@@ -12,11 +12,11 @@ import {
   SelectTrigger,
 } from '@/components/ui/select'
 import PageLayout from '@/components/layout/PageLayout'
+import { StatusBadge } from '@/components/StatusBadge'
 import { useSessions, useCreateSession } from '@/hooks/useSessions'
 import { useTemplates } from '@/hooks/useTemplates'
 import { sessionsApi } from '@/api/sessions'
-import { STATUS_COLORS } from '@/utils/status'
-import { formatMonth, toDateString, toMonthString } from '@/utils'
+import { formatMonth, formatSessionDate, toDateString, toMonthString } from '@/utils'
 import { useTranslation } from 'react-i18next'
 
 export function SessionsPage() {
@@ -146,15 +146,9 @@ export function SessionsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="capitalize text-base">
-                  {new Date(session.scheduled_date + 'T00:00:00').toLocaleDateString('fr-FR', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                  })}
+                  {formatSessionDate(session.scheduled_date)}
                 </CardTitle>
-                <span className={`text-xs font-medium ${STATUS_COLORS[session.status]}`}>
-                  {t(`status.${session.status}`)}
-                </span>
+                <StatusBadge status={session.status} className="text-xs font-medium" />
               </div>
             </CardHeader>
             {exerciseCount > 0 && (
