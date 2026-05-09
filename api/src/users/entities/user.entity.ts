@@ -12,6 +12,11 @@ export enum UnitSystem {
   LBS = 'lbs',
 }
 
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+}
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -33,6 +38,14 @@ export class User {
     name: 'unit_system',
   })
   unit_system: UnitSystem;
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+    name: 'role',
+  })
+  role: UserRole;
 
   @Column({ type: 'varchar', nullable: true, name: 'refresh_token_hash' })
   refresh_token_hash: string | null;

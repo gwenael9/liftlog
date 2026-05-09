@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useLogout } from '@/hooks/useAuth'
+import { useAuthStore } from '@/store/auth.store'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { cn } from '@/lib/utils'
@@ -12,6 +13,7 @@ const navLinks = [
 export function AppLayout() {
   const logout = useLogout()
   const { pathname } = useLocation()
+  const role = useAuthStore((s) => s.role)
 
   return (
     <div className="flex flex-col">
@@ -35,6 +37,19 @@ export function AppLayout() {
                 {link.label}
               </Link>
             ))}
+            {role === 'admin' && (
+              <Link
+                to="/admin"
+                className={cn(
+                  'text-sm transition-colors',
+                  pathname.startsWith('/admin')
+                    ? 'text-foreground font-medium'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                Admin
+              </Link>
+            )}
           </nav>
           <div className="flex items-center gap-2">
             <ThemeToggle />

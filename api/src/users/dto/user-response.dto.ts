@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { UnitSystem } from '../entities/user.entity';
+import { UnitSystem, UserRole } from '../entities/user.entity';
 
 export class UserResponseDto {
   @ApiProperty({ format: 'uuid' })
@@ -13,6 +13,9 @@ export class UserResponseDto {
 
   @ApiProperty({ enum: UnitSystem })
   unit_system: UnitSystem;
+
+  @ApiProperty({ enum: UserRole })
+  role: UserRole;
 
   @ApiProperty({ format: 'date-time' })
   created_at: Date;

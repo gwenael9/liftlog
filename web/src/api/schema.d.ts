@@ -52,6 +52,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            responses: {
+                200: {
+                    content: {
+                        "application/json": components["schemas"]["UserResponseDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/me": {
         parameters: {
             query?: never;
@@ -290,6 +314,8 @@ export interface components {
             display_name?: string | null;
             /** @enum {string} */
             unit_system: "kg" | "lbs";
+            /** @enum {string} */
+            role: "user" | "admin";
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
