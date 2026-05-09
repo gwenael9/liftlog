@@ -38,8 +38,8 @@ export class Exercise {
   @JoinColumn({ name: "created_by" })
   creator: User | null;
 
-  @Column({ type: "varchar", length: 150 })
-  name: string;
+  @Column({ type: "varchar", length: 150, unique: true })
+  slug: string;
 
   @Column({ type: "enum", enum: MuscleGroup, name: "muscle_group" })
   muscle_group: MuscleGroup;
@@ -47,7 +47,12 @@ export class Exercise {
   @Column({ type: "boolean", default: false, name: "is_global" })
   is_global: boolean;
 
-  @Column({ type: "enum", enum: TrackingType, default: TrackingType.STRENGTH, name: "tracking_type" })
+  @Column({
+    type: "enum",
+    enum: TrackingType,
+    default: TrackingType.STRENGTH,
+    name: "tracking_type",
+  })
   tracking_type: TrackingType;
 
   @Column({ type: "text", nullable: true })

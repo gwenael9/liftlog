@@ -7,8 +7,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import PageLayout from '@/components/layout/PageLayout'
 import { useTemplates, useCreateTemplate } from '@/hooks/useTemplates'
+import { useTranslation } from 'react-i18next'
 
 export function TemplatesPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { data: templates, isLoading } = useTemplates()
   const createTemplate = useCreateTemplate()
@@ -42,7 +44,7 @@ export function TemplatesPage() {
   const dialogContent = (
     <form onSubmit={handleCreate} className="space-y-4">
       <div className="space-y-1">
-        <Label htmlFor="name">Nom</Label>
+        <Label htmlFor="name">{t('templates.form.name')}</Label>
         <Input
           id="name"
           placeholder="Push Day"
@@ -52,16 +54,16 @@ export function TemplatesPage() {
         />
       </div>
       <div className="space-y-1">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">{t('templates.form.description')}</Label>
         <Input
           id="description"
-          placeholder="Optionnel"
+          placeholder={t('common.optional')}
           value={description}
           onChange={e => setDescription(e.target.value)}
         />
       </div>
       <div className="space-y-1">
-        <Label htmlFor="duration">Durée estimée (min)</Label>
+        <Label htmlFor="duration">{t('templates.form.duration')}</Label>
         <Input
           id="duration"
           type="number"
@@ -72,19 +74,19 @@ export function TemplatesPage() {
         />
       </div>
       <Button type="submit" className="w-full" disabled={createTemplate.isPending || !name}>
-        Créer le template
+        {t('templates.createTemplate')}
       </Button>
     </form>
   )
 
   return (
     <PageLayout
-      title="Template"
+      title={t('templates.title')}
       data={{ isLoading, items: templates ?? [] }}
       dialog={{
         open,
         onOpenChange: setOpen,
-        title: 'Nouveau template',
+        title: t('templates.newTemplate'),
         content: dialogContent,
       }}
     >
@@ -108,7 +110,7 @@ export function TemplatesPage() {
                   {exercises.length > 0 && (
                     <span className="flex items-center gap-1">
                       <Dumbbell className="size-3" />
-                      {exercises.length} exercice{exercises.length > 1 ? 's' : ''}
+                      {t('common.exerciseCount', { count: exercises.length })}
                     </span>
                   )}
                   {template.estimated_duration && (

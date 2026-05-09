@@ -2,6 +2,7 @@ import { Plus } from 'lucide-react'
 import Loader from '../Loader'
 import { Button } from '../ui/button'
 import { Dialog, DialogContent } from '../ui/dialog'
+import { useTranslation } from 'react-i18next'
 
 interface DialogConfig {
   open: boolean
@@ -30,6 +31,7 @@ export default function PageLayout<T>({
   subContent,
   children,
 }: PageLayoutProps<T>) {
+  const { t } = useTranslation()
   const items = data.items ?? []
 
   return (
@@ -38,12 +40,12 @@ export default function PageLayout<T>({
         <h1 className="text-2xl font-bold">{title}s</h1>
         <Button size="sm" onClick={() => dialog.onOpenChange(true)}>
           <Plus className="size-4" />
-          {female ? 'Nouvelle' : 'Nouveau'} {title.toLowerCase()}
+          {t(`common.new_${female ? 'female' : 'male'}`, { title: title.toLowerCase() })}
         </Button>
       </div>
 
       <Dialog open={dialog.open} onOpenChange={dialog.onOpenChange}>
-        <DialogContent title={dialog.title ?? `${female ? 'Nouvelle' : 'Nouveau'} ${title.toLowerCase()}`}>
+        <DialogContent title={dialog.title ?? t(`common.new_${female ? 'female' : 'male'}`, { title: title.toLowerCase()})}>
           {dialog.content}
         </DialogContent>
       </Dialog>
@@ -54,7 +56,7 @@ export default function PageLayout<T>({
 
       {!data.isLoading && items.length === 0 && (
         <p className="text-center text-muted-foreground py-8">
-          Aucun{female ? 'e' : ''} {title.toLowerCase()} pour le moment
+          {t('common.noData')}
         </p>
       )}
 

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Trash2, Pencil, Plus, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -29,21 +30,16 @@ const MUSCLE_GROUPS = [
   'legs', 'glutes', 'core', 'cardio', 'full_body',
 ] as const
 
-const MUSCLE_LABELS: Record<string, string> = {
-  chest: 'Pectoraux', back: 'Dos', shoulders: 'Épaules',
-  biceps: 'Biceps', triceps: 'Triceps', legs: 'Jambes',
-  glutes: 'Fessiers', core: 'Core', cardio: 'Cardio', full_body: 'Full body',
-}
 
 interface ExerciseFormState {
-  name: string
+  slug: string
   muscle_group: string
   tracking_type: 'strength' | 'duration'
   notes: string
 }
 
 const emptyForm = (): ExerciseFormState => ({
-  name: '', muscle_group: 'chest', tracking_type: 'strength', notes: '',
+  slug: '', muscle_group: 'chest', tracking_type: 'strength', notes: '',
 })
 
 const PAGE_SIZE = 5
@@ -72,6 +68,7 @@ interface DialogState {
 const closedDialog = (): DialogState => ({ open: false, editingId: null, initialForm: emptyForm() })
 
 export function AdminPage() {
+  const { t } = useTranslation()
   const [tab, setTab] = useState<Tab>('exercises')
   const [dialog, setDialog] = useState<DialogState>(closedDialog())
   const [muscleFilter, setMuscleFilter] = useState('all')
@@ -97,7 +94,7 @@ export function AdminPage() {
       open: true,
       editingId: ex.id,
       initialForm: {
-        name: ex.name,
+        slug: ex.slug,
         muscle_group: ex.muscle_group,
         tracking_type: ex.tracking_type as 'strength' | 'duration',
         notes: ex.notes ?? '',
@@ -107,8 +104,9 @@ export function AdminPage() {
 
   async function handleDialogSubmit(form: ExerciseFormState) {
     const body = {
-      name: form.name,
+      slug: form.slug,
       muscle_group: form.muscle_group as ExerciseResponseDto['muscle_group'],
+      is_global: true,
       tracking_type: form.tracking_type,
       notes: form.notes || undefined,
     }
@@ -122,18 +120,20 @@ export function AdminPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-4">
-      <h1 className="text-xl font-bold">Administration</h1>
+      <h1 className="text-xl font-bold">{t('admin.title')}</h1>
 
       <div className="flex gap-2 border-b">
-        {(['exercises', 'users'] as Tab[]).map(t => (
+        {(['exercises', 'users'] as Tab[]).map(tabKey => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={tabKey}
+            onClick={() => setTab(tabKey)}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-              tab === t ? 'border-foreground text-foreground' : 'border-transparent text-muted-foreground'
+              tab === tabKey ? 'border-foreground text-foreground' : 'border-transparent text-muted-foreground'
             }`}
           >
-            {t === 'exercises' ? `Exercices (${exercises.length})` : `Utilisateurs (${users.length})`}
+            {tabKey === 'exercises'
+              ? t('admin.tabs.exercises', { count: exercises.length })
+              : t('admin.tabs.users', { count: users.length })}
           </button>
         ))}
       </div>
@@ -145,20 +145,20 @@ export function AdminPage() {
               <Select value={muscleFilter} onValueChange={v => { setMuscleFilter(v); exPager.setPage(0) }}>
                 <SelectTrigger className="w-40">
                   <span className={muscleFilter === 'all' ? 'text-muted-foreground' : ''}>
-                    {muscleFilter === 'all' ? 'Tous les muscles' : MUSCLE_LABELS[muscleFilter]}
+                    {muscleFilter === 'all' ? t('admin.allMuscles') : t(`muscleGroups.${muscleFilter}`)}
                   </span>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les muscles</SelectItem>
+                  <SelectItem value="all">{t('admin.allMuscles')}</SelectItem>
                   {MUSCLE_GROUPS.map(g => (
-                    <SelectItem key={g} value={g}>{MUSCLE_LABELS[g]}</SelectItem>
+                    <SelectItem key={g} value={g}>{t(`muscleGroups.${g}`)}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <Button size="sm" onClick={openCreate}>
               <Plus className="size-4" />
-              Nouvel exercice
+              {t('admin.newExercise')}
             </Button>
           </div>
 
@@ -166,10 +166,10 @@ export function AdminPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nom</TableHead>
-                  <TableHead>Muscle</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Portée</TableHead>
+                  <TableHead>{t('admin.table.name')}</TableHead>
+                  <TableHead>{t('admin.table.muscle')}</TableHead>
+                  <TableHead>{t('admin.table.type')}</TableHead>
+                  <TableHead>{t('admin.table.scope')}</TableHead>
                   <TableHead className="w-20" />
                 </TableRow>
               </TableHeader>
@@ -177,18 +177,18 @@ export function AdminPage() {
                 {exPager.slice.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground py-6">
-                      Aucun exercice
+                      {t('admin.noExercises')}
                     </TableCell>
                   </TableRow>
                 )}
                 {exPager.slice.map(ex => (
                   <TableRow key={ex.id}>
-                    <TableCell className="font-medium">{ex.name}</TableCell>
+                    <TableCell className="font-medium">{t(`exercises.${ex.slug}`)}</TableCell>
                     <TableCell className="text-muted-foreground">
-                      {MUSCLE_LABELS[ex.muscle_group] ?? ex.muscle_group}
+                      {t(`muscleGroups.${ex.muscle_group}`)}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {ex.tracking_type === 'duration' ? 'Durée' : 'Force'}
+                      {t(`trackingTypes.${ex.tracking_type}`)}
                     </TableCell>
                     <TableCell>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
@@ -196,7 +196,7 @@ export function AdminPage() {
                           ? 'bg-primary/10 text-primary font-medium'
                           : 'bg-muted text-muted-foreground'
                       }`}>
-                        {ex.is_global ? 'Global' : 'Perso'}
+                        {ex.is_global ? t('admin.scope.global') : t('admin.scope.personal')}
                       </span>
                     </TableCell>
                     <TableCell>
@@ -229,17 +229,17 @@ export function AdminPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nom</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Rôle</TableHead>
-                  <TableHead>Inscription</TableHead>
+                  <TableHead>{t('admin.table.name')}</TableHead>
+                  <TableHead>{t('admin.table.email')}</TableHead>
+                  <TableHead>{t('admin.table.role')}</TableHead>
+                  <TableHead>{t('admin.table.createdAt')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {userPager.slice.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center text-muted-foreground py-6">
-                      Aucun utilisateur
+                      {t('admin.noUsers')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -309,6 +309,7 @@ function ExerciseDialog({
   onSubmit: (form: ExerciseFormState) => Promise<void>
   isPending: boolean
 }) {
+  const { t } = useTranslation()
   const [form, setForm] = useState<ExerciseFormState>(initialForm)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -318,16 +319,16 @@ function ExerciseDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent title={editingId ? 'Modifier l\'exercice' : 'Nouvel exercice'}>
+      <DialogContent title={editingId ? t('admin.dialog.editTitle') : t('admin.dialog.createTitle')}>
         <form onSubmit={handleSubmit} className="space-y-3">
           <ExerciseFields form={form} onChange={setForm} />
           <div className="flex gap-2 pt-1">
-            <Button type="submit" size="sm" disabled={isPending || !form.name}>
+            <Button type="submit" size="sm" disabled={isPending || !form.slug}>
               <Check className="size-3" />
-              {editingId ? 'Enregistrer' : 'Créer'}
+              {editingId ? t('common.save') : t('common.create')}
             </Button>
             <Button type="button" size="sm" variant="ghost" onClick={() => onOpenChange(false)}>
-              Annuler
+              {t('common.cancel')}
             </Button>
           </div>
         </form>
@@ -337,46 +338,47 @@ function ExerciseDialog({
 }
 
 function ExerciseFields({ form, onChange }: { form: ExerciseFormState; onChange: (f: ExerciseFormState) => void }) {
+  const { t } = useTranslation()
   return (
     <div className="grid grid-cols-2 gap-2">
       <div className="space-y-1 col-span-2">
-        <Label>Nom</Label>
+        <Label>{t('admin.form.slug')}</Label>
         <Input
-          value={form.name}
-          onChange={e => onChange({ ...form, name: e.target.value })}
-          placeholder="Bench Press"
+          value={form.slug}
+          onChange={e => onChange({ ...form, slug: e.target.value })}
+          placeholder="bench_press"
         />
       </div>
       <div className="space-y-1">
-        <Label>Groupe musculaire</Label>
+        <Label>{t('admin.form.muscleGroup')}</Label>
         <Select value={form.muscle_group} onValueChange={v => onChange({ ...form, muscle_group: v })}>
           <SelectTrigger className="w-full">
-            <span>{MUSCLE_LABELS[form.muscle_group] ?? form.muscle_group}</span>
+            <span>{t(`muscleGroups.${form.muscle_group}`)}</span>
           </SelectTrigger>
           <SelectContent>
             {MUSCLE_GROUPS.map(g => (
-              <SelectItem key={g} value={g}>{MUSCLE_LABELS[g]}</SelectItem>
+              <SelectItem key={g} value={g}>{t(`muscleGroups.${g}`)}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
       <div className="space-y-1">
-        <Label>Type</Label>
+        <Label>{t('admin.form.type')}</Label>
         <Select
           value={form.tracking_type}
           onValueChange={v => onChange({ ...form, tracking_type: v as 'strength' | 'duration' })}
         >
           <SelectTrigger className="w-full">
-            <span>{form.tracking_type === 'duration' ? 'Durée' : 'Force'}</span>
+            <span>{t(`trackingTypes.${form.tracking_type}`)}</span>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="strength">Force</SelectItem>
-            <SelectItem value="duration">Durée</SelectItem>
+            <SelectItem value="strength">{t(`trackingTypes.${form.tracking_type}`)}</SelectItem>
+            <SelectItem value="duration">{t(`trackingTypes.${form.tracking_type}`)}</SelectItem>
           </SelectContent>
         </Select>
       </div>
       <div className="space-y-1 col-span-2">
-        <Label>Notes (optionnel)</Label>
+        <Label>{t('admin.form.notes')}</Label>
         <Input
           value={form.notes}
           onChange={e => onChange({ ...form, notes: e.target.value })}

@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/select'
 import { useVolume, useFrequency, usePersonalRecords, useExerciseProgression } from '@/hooks/useStats'
 import { useExercises } from '@/hooks/useSessions'
+import { useTranslation } from 'react-i18next'
 
 const WEEK_OPTIONS = [4, 8, 12, 24] as const
 type Weeks = (typeof WEEK_OPTIONS)[number]
@@ -49,6 +50,7 @@ function EmptyChart({ message }: { message: string }) {
 }
 
 export function StatsPage() {
+  const { t } = useTranslation()
   const [weeks, setWeeks] = useState<Weeks>(12)
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>('')
 
@@ -60,14 +62,14 @@ export function StatsPage() {
   )
   const { data: exercises } = useExercises()
 
-  const selectedExerciseName = exercises?.find((e) => e.id === selectedExerciseId)?.name
+  const selectedExerciseSlug = exercises?.find((e) => e.id === selectedExerciseId)?.slug
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Statistiques</h1>
+        <h1 className="text-2xl font-bold">{t('stats.title')}</h1>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Période :</span>
+          <span className="text-sm text-muted-foreground">{t('stats.period')}</span>
           <div className="flex gap-1">
             {WEEK_OPTIONS.map((w) => (
               <button
@@ -89,13 +91,13 @@ export function StatsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Volume / semaine (kg)</CardTitle>
+            <CardTitle className="text-base">{t('stats.volumeChart')}</CardTitle>
           </CardHeader>
           <CardContent>
             {loadingVolume ? (
               <ChartLoader />
             ) : !volume?.length ? (
-              <EmptyChart message="Pas de données" />
+              <EmptyChart message={t('stats.noData')} />
             ) : (
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={volume} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -131,13 +133,13 @@ export function StatsPage() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Fréquence / semaine</CardTitle>
+            <CardTitle className="text-base">{t('stats.frequencyChart')}</CardTitle>
           </CardHeader>
           <CardContent>
             {loadingFrequency ? (
               <ChartLoader />
             ) : !frequency?.length ? (
-              <EmptyChart message="Pas de données" />
+              <EmptyChart message={t('stats.noData')} />
             ) : (
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={frequency} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -157,7 +159,7 @@ export function StatsPage() {
                   />
                   <Tooltip
                     labelFormatter={(v) => formatWeekLabel(v as string)}
-                    formatter={(v) => [v, 'Séances']}
+                    formatter={(v) => [v, t('sessions.title')]}
                     contentStyle={{
                       fontSize: 12,
                       background: 'var(--card)',
@@ -175,27 +177,27 @@ export function StatsPage() {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Records personnels</CardTitle>
+          <CardTitle className="text-base">{t('stats.personalRecords')}</CardTitle>
         </CardHeader>
         <CardContent>
           {loadingPrs ? (
             <ChartLoader />
           ) : !prs?.length ? (
-            <EmptyChart message="Aucun record enregistré" />
+            <EmptyChart message={t('stats.noRecords')} />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left pb-2 font-medium text-muted-foreground">Exercice</th>
-                    <th className="text-right pb-2 font-medium text-muted-foreground">Max (kg)</th>
-                    <th className="text-right pb-2 font-medium text-muted-foreground">Date</th>
+                    <th className="text-left pb-2 font-medium text-muted-foreground">{t('stats.table.exercise')}</th>
+                    <th className="text-right pb-2 font-medium text-muted-foreground">{t('stats.table.max')}</th>
+                    <th className="text-right pb-2 font-medium text-muted-foreground">{t('stats.table.date')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {prs.map((pr) => (
                     <tr key={pr.exercise_id} className="border-b last:border-0">
-                      <td className="py-2">{pr.exercise_name}</td>
+                      <td className="py-2">{t(`exercises.${pr.exercise_slug}`)}</td>
                       <td className="py-2 text-right font-medium">{pr.max_weight_kg} kg</td>
                       <td className="py-2 text-right text-muted-foreground">
                         {pr.performed_at ? formatDateFull(pr.performed_at) : '—'}
@@ -212,22 +214,22 @@ export function StatsPage() {
       <Card>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between gap-4">
-            <CardTitle className="text-base">Progression par exercice</CardTitle>
+            <CardTitle className="text-base">{t('stats.progression')}</CardTitle>
             <Select
               value={selectedExerciseId}
               onValueChange={(v) => setSelectedExerciseId(v)}
             >
               <SelectTrigger className="w-52 text-sm">
-                {selectedExerciseName ? (
-                  <span>{selectedExerciseName}</span>
+                {selectedExerciseSlug ? (
+                  <span>{t(`exercises.${selectedExerciseSlug}`)}</span>
                 ) : (
-                  <span className="text-muted-foreground">Choisir un exercice</span>
+                  <span className="text-muted-foreground">{t('stats.selectExercise')}</span>
                 )}
               </SelectTrigger>
               <SelectContent>
                 {(exercises ?? []).map((ex) => (
                   <SelectItem key={ex.id} value={ex.id}>
-                    {ex.name}
+                    {t(`exercises.${ex.slug}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -236,11 +238,11 @@ export function StatsPage() {
         </CardHeader>
         <CardContent>
           {!selectedExerciseId ? (
-            <EmptyChart message="Sélectionner un exercice pour voir sa progression" />
+            <EmptyChart message={t('stats.selectPlaceholder')} />
           ) : loadingProgression ? (
             <ChartLoader />
           ) : !progression?.length ? (
-            <EmptyChart message="Aucune donnée pour cet exercice" />
+            <EmptyChart message={t('stats.noDataForExercise')} />
           ) : (
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={progression} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>

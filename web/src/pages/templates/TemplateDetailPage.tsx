@@ -9,6 +9,7 @@ import { useTemplate, useUpdateTemplate, useDeleteTemplate } from '@/hooks/useTe
 import { useExercises } from '@/hooks/useSessions'
 import { AddExerciseDialog } from '@/components/AddExerciseDialog'
 import type { TemplateExerciseItemDto } from '@/api/templates'
+import { useTranslation } from 'react-i18next'
 
 interface ExerciseRow extends TemplateExerciseItemDto {
   _key: string
@@ -23,6 +24,7 @@ function rowFromItem(item: TemplateExerciseItemDto): ExerciseRow {
 
 export function TemplateDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const { data: template, isLoading } = useTemplate(id!)
@@ -88,27 +90,27 @@ export function TemplateDetailPage() {
   }
 
   function handleDelete() {
-    if (!confirm('Supprimer ce template ?')) return
+    if (!confirm(t('templates.deleteConfirm'))) return
     deleteTemplate.mutate(id!, {
       onSuccess: () => navigate('/templates'),
     })
   }
 
   function exerciseName(exerciseId: string) {
-    return exercises?.find(ex => ex.id === exerciseId)?.name ?? exerciseId
+    const slug = exercises?.find(ex => ex.id === exerciseId)?.slug
+    return slug ? t(`exercises.${slug}`) : exerciseId
   }
 
   if (isLoading) {
-    return <div className="p-8 text-center text-muted-foreground">Chargement...</div>
+    return <div className="p-8 text-center text-muted-foreground">{t('templates.loading')}</div>
   }
 
   if (!template) {
-    return <div className="p-8 text-center text-muted-foreground">Template introuvable</div>
+    return <div className="p-8 text-center text-muted-foreground">{t('templates.notFound')}</div>
   }
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-4">
-      {/* Header */}
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon" onClick={() => navigate('/templates')}>
           <ChevronLeft />
@@ -124,14 +126,13 @@ export function TemplateDetailPage() {
         </Button>
       </div>
 
-      {/* Meta fields */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Informations</CardTitle>
+          <CardTitle className="text-base">{t('templates.section.info')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-1">
-            <Label>Nom</Label>
+            <Label>{t('templates.form.name')}</Label>
             <Input
               value={name}
               onChange={e => { setName(e.target.value); setDirty(true) }}
@@ -139,15 +140,15 @@ export function TemplateDetailPage() {
             />
           </div>
           <div className="space-y-1">
-            <Label>Description</Label>
+            <Label>{t('templates.form.description')}</Label>
             <Input
               value={description}
               onChange={e => { setDescription(e.target.value); setDirty(true) }}
-              placeholder="Optionnel"
+              placeholder={t('common.optional')}
             />
           </div>
           <div className="space-y-1">
-            <Label>Durée estimée (min)</Label>
+            <Label>{t('templates.form.duration')}</Label>
             <Input
               type="number"
               min={1}
@@ -159,11 +160,10 @@ export function TemplateDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Exercises list */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">
-            Exercices
+            {t('templates.section.exercises')}
             {rows.length > 0 && (
               <span className="ml-2 text-sm font-normal text-muted-foreground">
                 ×{rows.length}
@@ -174,7 +174,7 @@ export function TemplateDetailPage() {
         <CardContent className="space-y-2">
           {rows.length === 0 && (
             <p className="text-sm text-muted-foreground text-center py-2">
-              Aucun exercice — ajoutez-en ci-dessous
+              {t('templates.noExercises')}
             </p>
           )}
           {rows.map(row => (
@@ -204,7 +204,7 @@ export function TemplateDetailPage() {
 
       <Button variant="outline" className="w-full" onClick={() => setAddOpen(true)}>
         <Plus className="size-4" />
-        Ajouter un exercice
+        {t('templates.addExercise')}
       </Button>
 
       <AddExerciseDialog
@@ -215,13 +215,12 @@ export function TemplateDetailPage() {
         onSubmit={handleAddExercise}
       />
 
-      {/* Save */}
       <Button
         className="w-full"
         onClick={handleSave}
         disabled={updateTemplate.isPending || !dirty}
       >
-        {updateTemplate.isPending ? 'Sauvegarde...' : 'Sauvegarder'}
+        {updateTemplate.isPending ? t('templates.saving') : t('templates.save')}
       </Button>
     </div>
   )

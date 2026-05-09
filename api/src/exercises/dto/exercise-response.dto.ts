@@ -1,12 +1,12 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { MuscleGroup, TrackingType } from '../entities/exercise.entity';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { MuscleGroup, TrackingType } from "../entities/exercise.entity";
 
 export class ExerciseResponseDto {
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ format: "uuid" })
   id: string;
 
-  @ApiProperty({ example: 'Bench Press' })
-  name: string;
+  @ApiProperty({ example: "bench_press" })
+  slug: string;
 
   @ApiProperty({ enum: MuscleGroup })
   muscle_group: MuscleGroup;
@@ -20,9 +20,9 @@ export class ExerciseResponseDto {
   @ApiPropertyOptional({ nullable: true })
   notes: string | null;
 
-  @ApiPropertyOptional({ format: 'uuid', nullable: true })
+  @ApiPropertyOptional({ format: "uuid", nullable: true })
   created_by: string | null;
 
-  @ApiProperty({ format: 'date-time' })
+  @ApiProperty({ format: "date-time" })
   created_at: Date;
 }

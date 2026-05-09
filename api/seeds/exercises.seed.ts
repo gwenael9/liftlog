@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 import {
   Exercise,
   MuscleGroup,
+  TrackingType,
 } from "../src/exercises/entities/exercise.entity";
 import { User } from "../src/users/entities/user.entity";
 import { WorkoutTemplate } from "../src/workout-templates/entities/workout-template.entity";
@@ -28,53 +29,41 @@ const dataSource = new DataSource({
   synchronize: false,
 });
 
-interface SeedExercise {
-  name: string;
-  muscle_group: MuscleGroup;
-}
-
-const globalExercises: SeedExercise[] = [
+const exercises: { slug: string; muscle_group: MuscleGroup; tracking_type: TrackingType }[] = [
   // Chest
-  { name: "Bench Press", muscle_group: MuscleGroup.CHEST },
-  { name: "Incline Dumbbell Press", muscle_group: MuscleGroup.CHEST },
-  { name: "Cable Fly", muscle_group: MuscleGroup.CHEST },
-
+  { slug: "bench_press", muscle_group: MuscleGroup.CHEST, tracking_type: TrackingType.STRENGTH },
+  { slug: "incline_dumbbell_press", muscle_group: MuscleGroup.CHEST, tracking_type: TrackingType.STRENGTH },
+  { slug: "cable_fly", muscle_group: MuscleGroup.CHEST, tracking_type: TrackingType.STRENGTH },
   // Back
-  { name: "Pull-up", muscle_group: MuscleGroup.BACK },
-  { name: "Barbell Row", muscle_group: MuscleGroup.BACK },
-  { name: "Lat Pulldown", muscle_group: MuscleGroup.BACK },
-  { name: "Seated Cable Row", muscle_group: MuscleGroup.BACK },
-
+  { slug: "pull_up", muscle_group: MuscleGroup.BACK, tracking_type: TrackingType.STRENGTH },
+  { slug: "barbell_row", muscle_group: MuscleGroup.BACK, tracking_type: TrackingType.STRENGTH },
+  { slug: "lat_pulldown", muscle_group: MuscleGroup.BACK, tracking_type: TrackingType.STRENGTH },
+  { slug: "seated_cable_row", muscle_group: MuscleGroup.BACK, tracking_type: TrackingType.STRENGTH },
   // Shoulders
-  { name: "Overhead Press", muscle_group: MuscleGroup.SHOULDERS },
-  { name: "Lateral Raise", muscle_group: MuscleGroup.SHOULDERS },
-  { name: "Face Pull", muscle_group: MuscleGroup.SHOULDERS },
-
+  { slug: "overhead_press", muscle_group: MuscleGroup.SHOULDERS, tracking_type: TrackingType.STRENGTH },
+  { slug: "lateral_raise", muscle_group: MuscleGroup.SHOULDERS, tracking_type: TrackingType.STRENGTH },
+  { slug: "face_pull", muscle_group: MuscleGroup.SHOULDERS, tracking_type: TrackingType.STRENGTH },
   // Biceps
-  { name: "Barbell Curl", muscle_group: MuscleGroup.BICEPS },
-  { name: "Hammer Curl", muscle_group: MuscleGroup.BICEPS },
-
+  { slug: "barbell_curl", muscle_group: MuscleGroup.BICEPS, tracking_type: TrackingType.STRENGTH },
+  { slug: "hammer_curl", muscle_group: MuscleGroup.BICEPS, tracking_type: TrackingType.STRENGTH },
   // Triceps
-  { name: "Tricep Pushdown", muscle_group: MuscleGroup.TRICEPS },
-  { name: "Skull Crusher", muscle_group: MuscleGroup.TRICEPS },
-  { name: "Dips", muscle_group: MuscleGroup.TRICEPS },
-
+  { slug: "tricep_pushdown", muscle_group: MuscleGroup.TRICEPS, tracking_type: TrackingType.STRENGTH },
+  { slug: "skull_crusher", muscle_group: MuscleGroup.TRICEPS, tracking_type: TrackingType.STRENGTH },
+  { slug: "dips", muscle_group: MuscleGroup.TRICEPS, tracking_type: TrackingType.STRENGTH },
   // Legs
-  { name: "Squat", muscle_group: MuscleGroup.LEGS },
-  { name: "Romanian Deadlift", muscle_group: MuscleGroup.LEGS },
-  { name: "Leg Press", muscle_group: MuscleGroup.LEGS },
-  { name: "Leg Curl", muscle_group: MuscleGroup.LEGS },
-  { name: "Calf Raise", muscle_group: MuscleGroup.LEGS },
-
+  { slug: "squat", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
+  { slug: "romanian_deadlift", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
+  { slug: "leg_press", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
+  { slug: "leg_curl", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
+  { slug: "calf_raise", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
   // Core
-  { name: "Plank", muscle_group: MuscleGroup.CORE },
-  { name: "Crunch", muscle_group: MuscleGroup.CORE },
-  { name: "Hanging Leg Raise", muscle_group: MuscleGroup.CORE },
-
+  { slug: "plank", muscle_group: MuscleGroup.CORE, tracking_type: TrackingType.DURATION },
+  { slug: "crunch", muscle_group: MuscleGroup.CORE, tracking_type: TrackingType.STRENGTH },
+  { slug: "hanging_leg_raise", muscle_group: MuscleGroup.CORE, tracking_type: TrackingType.STRENGTH },
   // Cardio
-  { name: "Running", muscle_group: MuscleGroup.CARDIO },
-  { name: "Cycling", muscle_group: MuscleGroup.CARDIO },
-  { name: "Jump Rope", muscle_group: MuscleGroup.CARDIO },
+  { slug: "running", muscle_group: MuscleGroup.CARDIO, tracking_type: TrackingType.DURATION },
+  { slug: "cycling", muscle_group: MuscleGroup.CARDIO, tracking_type: TrackingType.DURATION },
+  { slug: "jump_rope", muscle_group: MuscleGroup.CARDIO, tracking_type: TrackingType.DURATION },
 ];
 
 async function seed() {
@@ -87,29 +76,30 @@ async function seed() {
   let inserted = 0;
   let skipped = 0;
 
-  for (const exerciseData of globalExercises) {
+  for (const exerciseData of exercises) {
     const existing = await exerciseRepo.findOne({
       where: {
-        name: exerciseData.name,
+        slug: exerciseData.slug,
         is_global: true,
       },
     });
 
     if (existing) {
-      console.log(`  SKIP  ${exerciseData.name} (already exists)`);
+      console.log(`  SKIP  ${exerciseData.slug} (already exists)`);
       skipped++;
       continue;
     }
 
     const exercise = exerciseRepo.create({
-      name: exerciseData.name,
+      slug: exerciseData.slug,
       muscle_group: exerciseData.muscle_group,
+      tracking_type: exerciseData.tracking_type,
       is_global: true,
       created_by: null,
     });
 
     await exerciseRepo.save(exercise);
-    console.log(`  INSERT ${exerciseData.name} (${exerciseData.muscle_group})`);
+    console.log(`  INSERT ${exercise.slug} (${exercise.muscle_group})`);
     inserted++;
   }
 

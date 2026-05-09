@@ -11,18 +11,20 @@ import {
   useDeleteSet,
   useExercises,
 } from '@/hooks/useSessions'
-import { STATUS_COLORS, STATUS_LABELS } from '@/utils'
+import { STATUS_COLORS } from '@/utils'
 import type { UpdateSessionDto, SetResponseDto } from '@/api/sessions'
-import type { SetEditValue, AddRow, ExerciseGroup } from './types'
-import { emptyAddRow } from './types'
+import type { SetEditValue, AddRow, ExerciseGroup } from '@/types/session'
+import { emptyAddRow } from '@/types/session'
 import { ExerciseCard } from '@/components/session'
 import { AddExerciseDialog } from '@/components/AddExerciseDialog'
 import Loader from '@/components/Loader'
+import { useTranslation } from 'react-i18next'
 
 export function SessionDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 
+  const { t } = useTranslation()
   const { data: session, isLoading } = useSession(id!)
   const { data: exercises } = useExercises()
   const updateSession = useUpdateSession(id!)
@@ -51,7 +53,7 @@ export function SessionDetailPage() {
       .filter(([, sets]) => sets.length > 0)
       .map(([exId, sets]) => ({
         exerciseId: exId,
-        exerciseName: sets[0].exercise.name,
+        exerciseSlug: sets[0].exercise.slug,
         trackingType: (sets[0].exercise.tracking_type ?? 'strength') as 'strength' | 'duration',
         sets,
       }))
@@ -188,12 +190,12 @@ export function SessionDetailPage() {
   }
 
   function handleDeleteSession() {
-    if (!confirm('Supprimer cette séance ?')) return
+    if (!confirm(t('sessions.deleteConfirm'))) return
     deleteSession.mutate(id!, { onSuccess: () => navigate('/sessions') })
   }
 
   if (isLoading) return <Loader />;
-  if (!session) return <div className="p-8 text-center text-muted-foreground">Séance introuvable</div>
+  if (!session) return <div className="p-8 text-center text-muted-foreground">{t('sessions.notFound')}</div>
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-4">
@@ -208,7 +210,7 @@ export function SessionDetailPage() {
             })}
           </h1>
           <span className={`text-sm ${STATUS_COLORS[session.status]}`}>
-            {STATUS_LABELS[session.status]}
+            {t(`status.${session.status}`)}
           </span>
         </div>
         <Button variant="ghost" size="icon" onClick={handleDeleteSession}>
@@ -220,28 +222,28 @@ export function SessionDetailPage() {
         {session.status === 'planned' && (
           <>
             <Button size="sm" onClick={() => handleStatusUpdate('in_progress')} disabled={updateSession.isPending}>
-              Démarrer
+              {t('sessions.start')}
             </Button>
             <Button size="sm" variant="outline" onClick={() => handleStatusUpdate('skipped')} disabled={updateSession.isPending}>
-              Annuler
+              {t('sessions.skip')}
             </Button>
           </>
         )}
         {session.status === 'in_progress' && (
           <Button size="sm" onClick={() => handleStatusUpdate('completed')} disabled={updateSession.isPending}>
-            Terminer
+            {t('sessions.finish')}
           </Button>
         )}
         {(session.status === 'completed' || session.status === 'skipped') && (
           <Button size="sm" variant="outline" onClick={() => handleStatusUpdate('planned')} disabled={updateSession.isPending}>
-            Réouvrir
+            {t('sessions.reopen')}
           </Button>
         )}
       </div>
 
       {total === 0 ? (
         <p className="text-center text-muted-foreground text-sm py-4">
-          Aucun exercice — ajoutez-en ci-dessous
+          {t('sessions.noExercises')}
         </p>
       ) : (
         <div className="space-y-3">
@@ -295,7 +297,7 @@ export function SessionDetailPage() {
 
       <Button variant="outline" className="w-full" onClick={() => setAddOpen(true)}>
         <Plus className="size-4" />
-        Ajouter un exercice
+        {t('sessions.addExercise')}
       </Button>
 
       <AddExerciseDialog

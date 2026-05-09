@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -14,23 +15,26 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { useLogin } from '@/hooks/useAuth'
+import { useTranslation } from 'react-i18next'
 
-const schema = z.object({
-  email: z.string().email('Email invalide'),
-  password: z.string().min(8, 'Minimum 8 caractères'),
-})
-
-type FormValues = z.infer<typeof schema>
+type FormValues = { email: string; password: string }
 
 export function LoginPage() {
+  const { t } = useTranslation()
   const login = useLogin()
+
+  const schema = useMemo(() => z.object({
+    email: z.email(t('auth.validation.invalidEmail')),
+    password: z.string().min(8, t('auth.validation.minPassword')),
+  }), [t])
+
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { email: '', password: '' },
   })
 
   return (
-    <AuthLayout title="Connexion">
+    <AuthLayout title={t('auth.login.title')}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit((v) => login.mutate(v))} className="space-y-4">
           <FormField
@@ -38,7 +42,7 @@ export function LoginPage() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t('auth.fields.email')}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
@@ -57,7 +61,7 @@ export function LoginPage() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Mot de passe</FormLabel>
+                <FormLabel>{t('auth.fields.password')}</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
@@ -73,20 +77,20 @@ export function LoginPage() {
 
           {login.error && (
             <p className="text-destructive text-sm">
-              Email ou mot de passe incorrect.
+              {t('auth.login.error')}
             </p>
           )}
 
           <Button type="submit" className="w-full" disabled={login.isPending}>
-            {login.isPending ? 'Connexion…' : 'Se connecter'}
+            {login.isPending ? t('auth.login.submitting') : t('auth.login.submit')}
           </Button>
         </form>
       </Form>
 
       <p className="mt-4 text-center text-sm text-muted-foreground">
-        Pas encore de compte ?{' '}
+        {t('auth.login.noAccount')}{' '}
         <Link to="/register" className="text-primary underline-offset-4 hover:underline">
-          Créer un compte
+          {t('auth.login.createAccount')}
         </Link>
       </p>
     </AuthLayout>

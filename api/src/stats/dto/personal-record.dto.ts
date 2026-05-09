@@ -5,7 +5,7 @@ export class PersonalRecordDto {
   exercise_id: string;
 
   @ApiProperty()
-  exercise_name: string;
+  exercise_slug: string;
 
   @ApiProperty()
   max_weight_kg: number;

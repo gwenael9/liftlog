@@ -15,10 +15,12 @@ import PageLayout from '@/components/layout/PageLayout'
 import { useSessions, useCreateSession } from '@/hooks/useSessions'
 import { useTemplates } from '@/hooks/useTemplates'
 import { sessionsApi } from '@/api/sessions'
-import { STATUS_COLORS, STATUS_LABELS } from '@/utils/status'
+import { STATUS_COLORS } from '@/utils/status'
 import { formatMonth, toDateString, toMonthString } from '@/utils'
+import { useTranslation } from 'react-i18next'
 
 export function SessionsPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [currentMonth, setCurrentMonth] = useState(() => new Date())
   const [open, setOpen] = useState(false)
@@ -79,7 +81,7 @@ export function SessionsPage() {
 
       {templates && templates.length > 0 && (
         <div className="w-full space-y-1">
-          <Label>Template (optionnel)</Label>
+          <Label>{t('sessions.templateOptional')}</Label>
           <Select
             value={selectedTemplateId}
             onValueChange={v => setSelectedTemplateId(v && v !== '__none__' ? v : '')}
@@ -87,10 +89,10 @@ export function SessionsPage() {
             <SelectTrigger className="w-full">
               {selectedTemplateId
                 ? <span>{templates.find(t => t.id === selectedTemplateId)?.name}</span>
-                : <span className="text-muted-foreground">Aucun template</span>}
+                : <span className="text-muted-foreground">{t('sessions.noTemplate')}</span>}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__none__">Aucun template</SelectItem>
+              <SelectItem value="__none__">{t('sessions.noTemplate')}</SelectItem>
               {templates.map(t => (
                 <SelectItem key={t.id} value={t.id}>
                   {t.name}
@@ -102,7 +104,7 @@ export function SessionsPage() {
       )}
 
       <Button className="w-full" onClick={handleCreate} disabled={isCreating}>
-        {isCreating ? 'Création...' : 'Créer la séance'}
+        {isCreating ? t('sessions.creating') : t('sessions.create')}
       </Button>
     </div>
   )
@@ -121,13 +123,13 @@ export function SessionsPage() {
 
   return (
     <PageLayout
-      title="Séance"
+      title={t('sessions.title')}
       female
       data={{ isLoading, items: sorted }}
       dialog={{
         open,
         onOpenChange: setOpen,
-        title: 'Nouvelle séance',
+        title: t('sessions.newSession'),
         content: dialogContent,
       }}
       subContent={monthNav}
@@ -151,14 +153,14 @@ export function SessionsPage() {
                   })}
                 </CardTitle>
                 <span className={`text-xs font-medium ${STATUS_COLORS[session.status]}`}>
-                  {STATUS_LABELS[session.status]}
+                  {t(`status.${session.status}`)}
                 </span>
               </div>
             </CardHeader>
             {exerciseCount > 0 && (
               <CardContent>
                 <p className="text-xs text-muted-foreground">
-                  {exerciseCount} exercice{exerciseCount > 1 ? 's' : ''}
+                  {t('common.exerciseCount', { count: exerciseCount })}
                 </p>
               </CardContent>
             )}
