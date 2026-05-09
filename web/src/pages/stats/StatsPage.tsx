@@ -63,7 +63,7 @@ export function StatsPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <h2 className="text-2xl font-bold">{t("stats.title")}</h2>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">
@@ -191,7 +191,7 @@ export function StatsPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <CardTitle className="text-base">
                 {t("stats.progression")}
               </CardTitle>
@@ -199,7 +199,7 @@ export function StatsPage() {
                 value={selectedExerciseId}
                 onValueChange={(v) => setSelectedExerciseId(v ?? "")}
               >
-                <SelectTrigger className="w-52 text-sm">
+                <SelectTrigger className="w-full sm:w-52 text-sm">
                   {selectedExerciseSlug ? (
                     <span>{t(`exercises.${selectedExerciseSlug}`)}</span>
                   ) : (
