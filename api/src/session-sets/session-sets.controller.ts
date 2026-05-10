@@ -20,6 +20,7 @@ import {
 import { SessionSetsService } from './session-sets.service';
 import { CreateSetDto } from './dto/create-set.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
+import { BulkUpdateSetsDto } from './dto/bulk-update-sets.dto';
 import { SetResponseDto } from './dto/set-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, CurrentUserData } from '../common/decorators/current-user.decorator';
@@ -30,6 +31,16 @@ import { CurrentUser, CurrentUserData } from '../common/decorators/current-user.
 @UseGuards(JwtAuthGuard)
 export class SessionSetsController {
   constructor(private readonly setsService: SessionSetsService) {}
+
+  @Put('bulk')
+  @ApiOkResponse({ type: [SetResponseDto] })
+  bulkUpdate(
+    @Param('sessionId', ParseUUIDPipe) sessionId: string,
+    @Body() dto: BulkUpdateSetsDto,
+    @CurrentUser() user: CurrentUserData,
+  ) {
+    return this.setsService.bulkUpdate(sessionId, dto, user.id);
+  }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)

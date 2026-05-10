@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import PageLayout from '@/components/layout/PageLayout'
 import { useTemplates, useCreateTemplate } from '@/hooks/useTemplates'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 export function TemplatesPage() {
   const { t } = useTranslation()
@@ -31,7 +32,10 @@ export function TemplatesPage() {
       },
       {
         onSuccess: ({ data }) => {
-          if (data) navigate(`/templates/${data.id}`)
+          if (data) {
+            toast.success(t('templates.created'))
+            navigate(`/templates/${data.id}`)
+          }
           setOpen(false)
           setName('')
           setDescription('')

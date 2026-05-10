@@ -7,6 +7,7 @@ export type CreateSessionDto = components['schemas']['CreateSessionDto']
 export type UpdateSessionDto = components['schemas']['UpdateSessionDto']
 export type CreateSetDto = components['schemas']['CreateSetDto']
 export type UpdateSetDto = components['schemas']['UpdateSetDto']
+export type BulkUpdateSetsDto = components['schemas']['BulkUpdateSetsDto']
 
 export const sessionsApi = {
   getAll: (month?: string) =>
@@ -33,6 +34,12 @@ export const sessionsApi = {
   updateSet: (sessionId: string, id: string, body: UpdateSetDto) =>
     apiClient.PUT('/sessions/{sessionId}/sets/{id}', {
       params: { path: { sessionId, id } },
+      body,
+    }),
+
+  bulkUpdateSets: (sessionId: string, body: BulkUpdateSetsDto) =>
+    apiClient.PUT('/sessions/{sessionId}/sets/bulk', {
+      params: { path: { sessionId } },
       body,
     }),
 

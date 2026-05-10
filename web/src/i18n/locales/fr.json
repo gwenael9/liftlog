@@ -43,12 +43,6 @@
     "strength": "Force",
     "duration": "Durée"
   },
-  "status": {
-    "planned": "Planifiée",
-    "in_progress": "En cours",
-    "completed": "Terminée",
-    "skipped": "Annulée"
-  },
   "nav": {
     "sessions": "Séances",
     "templates": "Templates",
@@ -134,14 +128,14 @@
     "noTemplate": "Aucun template",
     "creating": "Création...",
     "create": "Créer la séance",
-    "start": "Démarrer",
-    "skip": "Annuler",
-    "finish": "Terminer",
-    "reopen": "Réouvrir",
     "noExercises": "Aucun exercice — ajoutez-en ci-dessous",
     "addExercise": "Ajouter un exercice",
     "deleteConfirm": "Supprimer cette séance ?",
-    "notFound": "Séance introuvable"
+    "notFound": "Séance introuvable",
+    "notes": "Notes",
+    "notesPlaceholder": "Ajouter des notes sur cette séance...",
+    "created": "Séance créée",
+    "saved": "Séance enregistrée"
   },
   "templates": {
     "title": "Template",
@@ -162,7 +156,9 @@
     "save": "Sauvegarder",
     "deleteConfirm": "Supprimer ce template ?",
     "notFound": "Template introuvable",
-    "loading": "Chargement..."
+    "loading": "Chargement...",
+    "created": "Template créé",
+    "saved": "Template sauvegardé"
   },
   "auth": {
     "login": {

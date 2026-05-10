@@ -34,6 +34,9 @@ export class SessionSet {
   @Column({ type: 'int', name: 'set_index' })
   set_index: number;
 
+  @Column({ type: 'int', default: 0, name: 'exercise_order' })
+  exercise_order: number;
+
   @Column({ type: 'int', nullable: true })
   reps: number | null;
 

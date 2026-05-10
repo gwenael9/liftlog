@@ -20,6 +20,7 @@ export interface ExerciseGroup {
   exerciseId: string;
   exerciseSlug: string;
   trackingType: TrackingType;
+  exerciseOrder: number;
   sets: SetResponseDto[];
 }
 

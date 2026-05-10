@@ -196,6 +196,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/sessions/{sessionId}/sets/bulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["SessionSetsController_bulkUpdate"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sessions/{sessionId}/sets": {
         parameters: {
             query?: never;
@@ -436,6 +452,7 @@ export interface components {
             exercise_id: string;
             exercise: components["schemas"]["ExerciseResponseDto"];
             set_index: number;
+            exercise_order: number;
             reps?: number | null;
             weight_kg?: number | null;
             duration_sec?: number | null;
@@ -451,8 +468,6 @@ export interface components {
             user_id: string;
             /** Format: uuid */
             template_id?: string | null;
-            /** @enum {string} */
-            status: "planned" | "in_progress" | "completed" | "skipped";
             /** @example 2026-05-08 */
             scheduled_date: string;
             /** Format: date-time */
@@ -467,25 +482,31 @@ export interface components {
             scheduled_date: string;
             /** Format: uuid */
             template_id?: string;
-            /**
-             * @default planned
-             * @enum {string}
-             */
-            status: "planned" | "in_progress" | "completed" | "skipped";
         };
         UpdateSessionDto: {
-            /** @enum {string} */
-            status?: "planned" | "in_progress" | "completed" | "skipped";
             /** Format: date-time */
             started_at?: string;
             /** Format: date-time */
             ended_at?: string;
             notes?: string;
         };
+        UpdateSetItemDto: {
+            set_index?: number;
+            reps?: number;
+            weight_kg?: number;
+            duration_sec?: number;
+            is_warmup?: boolean;
+            /** Format: date-time */
+            performed_at?: string;
+            /** Format: uuid */
+            id: string;
+        };
         CreateSetDto: {
             /** Format: uuid */
             exercise_id: string;
             set_index: number;
+            /** @default 0 */
+            exercise_order: number;
             reps?: number;
             weight_kg?: number;
             duration_sec?: number;
@@ -493,6 +514,10 @@ export interface components {
             is_warmup: boolean;
             /** Format: date-time */
             performed_at?: string;
+        };
+        BulkUpdateSetsDto: {
+            updates: components["schemas"]["UpdateSetItemDto"][];
+            creates?: components["schemas"]["CreateSetDto"][];
         };
         UpdateSetDto: {
             set_index?: number;
@@ -1003,6 +1028,31 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    SessionSetsController_bulkUpdate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sessionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BulkUpdateSetsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SetResponseDto"][];
+                };
             };
         };
     };

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Label } from '@/components/ui/label'
@@ -12,12 +12,12 @@ import {
   SelectTrigger,
 } from '@/components/ui/select'
 import PageLayout from '@/components/layout/PageLayout'
-import { StatusBadge } from '@/components/StatusBadge'
 import { useSessions, useCreateSession } from '@/hooks/useSessions'
 import { useTemplates } from '@/hooks/useTemplates'
 import { sessionsApi } from '@/api/sessions'
 import { formatMonth, formatSessionDate, toDateString, toMonthString } from '@/utils'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 export function SessionsPage() {
   const { t } = useTranslation()
@@ -38,7 +38,6 @@ export function SessionsPage() {
     try {
       const result = await createSession.mutateAsync({
         scheduled_date: toDateString(selectedDate),
-        status: 'planned',
         template_id: selectedTemplateId || undefined,
       })
 
@@ -51,18 +50,21 @@ export function SessionsPage() {
           .slice()
           .sort((a, b) => a.order_index - b.order_index)
 
-        for (const ex of exercises) {
+        for (let exIdx = 0; exIdx < exercises.length; exIdx++) {
+          const ex = exercises[exIdx]
           const setCount = ex.target_sets ?? 1
           for (let i = 1; i <= setCount; i++) {
             await sessionsApi.createSet(sessionId, {
               exercise_id: ex.exercise_id,
               set_index: i,
               is_warmup: false,
+              exercise_order: exIdx,
             })
           }
         }
       }
 
+      toast.success(t('sessions.created'))
       navigate(`/sessions/${sessionId}`)
     } finally {
       setIsCreating(false)
@@ -137,6 +139,9 @@ export function SessionsPage() {
       {sorted?.map(session => {
         const sets = session.session_sets ?? []
         const exerciseCount = new Set(sets.map(s => s.exercise_id)).size
+        const templateName = session.template_id
+          ? templates?.find(t => t.id === session.template_id)?.name
+          : null
         return (
           <Card
             key={session.id}
@@ -144,12 +149,16 @@ export function SessionsPage() {
             onClick={() => navigate(`/sessions/${session.id}`)}
           >
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="capitalize text-base">
-                  {formatSessionDate(session.scheduled_date)}
-                </CardTitle>
-                <StatusBadge status={session.status} className="text-xs font-medium" />
-              </div>
+              <CardTitle className="capitalize text-base">
+                {formatSessionDate(session.scheduled_date)}
+              </CardTitle>
+              {templateName && (
+                <CardAction>
+                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                    {templateName}
+                  </span>
+                </CardAction>
+              )}
             </CardHeader>
             {exerciseCount > 0 && (
               <CardContent>

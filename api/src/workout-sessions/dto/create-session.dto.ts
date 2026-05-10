@@ -1,12 +1,10 @@
 import {
   IsString,
   IsOptional,
-  IsEnum,
   IsUUID,
   Matches,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SessionStatus } from '../entities/workout-session.entity';
 
 export class CreateSessionDto {
   @ApiProperty({ example: '2026-05-08', pattern: '^\\d{4}-\\d{2}-\\d{2}$' })
@@ -18,9 +16,4 @@ export class CreateSessionDto {
   @IsOptional()
   @IsUUID()
   template_id?: string;
-
-  @ApiPropertyOptional({ enum: SessionStatus, default: SessionStatus.PLANNED })
-  @IsOptional()
-  @IsEnum(SessionStatus)
-  status?: SessionStatus;
 }

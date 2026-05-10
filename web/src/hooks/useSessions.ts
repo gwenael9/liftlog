@@ -5,6 +5,7 @@ import {
   type UpdateSessionDto,
   type CreateSetDto,
   type UpdateSetDto,
+  type BulkUpdateSetsDto,
 } from '@/api/sessions'
 import { exercisesApi } from '@/api/exercises'
 
@@ -70,6 +71,14 @@ export function useUpdateSet(sessionId: string) {
   return useMutation({
     mutationFn: ({ id, body }: { id: string; body: UpdateSetDto }) =>
       sessionsApi.updateSet(sessionId, id, body),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['session', sessionId] }),
+  })
+}
+
+export function useBulkUpdateSets(sessionId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (body: BulkUpdateSetsDto) => sessionsApi.bulkUpdateSets(sessionId, body),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['session', sessionId] }),
   })
 }

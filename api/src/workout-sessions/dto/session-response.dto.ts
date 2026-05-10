@@ -1,5 +1,4 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SessionStatus } from '../entities/workout-session.entity';
 import { SetResponseDto } from '../../session-sets/dto/set-response.dto';
 
 export class SessionResponseDto {
@@ -11,9 +10,6 @@ export class SessionResponseDto {
 
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
   template_id: string | null;
-
-  @ApiProperty({ enum: SessionStatus })
-  status: SessionStatus;
 
   @ApiProperty({ example: '2026-05-08' })
   scheduled_date: string;
