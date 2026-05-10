@@ -35,9 +35,12 @@ export function SessionDetailPage() {
   const deleteSession = useDeleteSession();
   const deleteSet = useDeleteSet(id!);
 
-  const [notesOverride, setNotesOverride] = useState<string | undefined>(undefined);
-  const notes = notesOverride ?? (session?.notes ?? "");
-  const notesDirty = notesOverride !== undefined && notesOverride !== (session?.notes ?? "");
+  const [notesOverride, setNotesOverride] = useState<string | undefined>(
+    undefined,
+  );
+  const notes = notesOverride ?? session?.notes ?? "";
+  const notesDirty =
+    notesOverride !== undefined && notesOverride !== (session?.notes ?? "");
 
   // Overlay of user edits keyed by set ID — server values are the baseline
   const [patches, setPatches] = useState<Record<string, Partial<SetEditValue>>>(
@@ -188,7 +191,7 @@ export function SessionDetailPage() {
       const pending = pendingRows[g.exerciseId] ?? [];
       for (let i = 0; i < pending.length; i++) {
         const row = pending[i];
-        body.creates.push({
+        body.creates?.push({
           exercise_id: g.exerciseId,
           exercise_order: g.exerciseOrder,
           set_index: g.sets.length + i + 1,
@@ -218,7 +221,9 @@ export function SessionDetailPage() {
   }
 
   async function handleAddExercise(exerciseId: string, rows: AddRow[]) {
-    const existingGroup = setsByExercise.find((g) => g.exerciseId === exerciseId);
+    const existingGroup = setsByExercise.find(
+      (g) => g.exerciseId === exerciseId,
+    );
     const exerciseOrder = existingGroup?.exerciseOrder ?? setsByExercise.length;
     const existingCount = existingGroup?.sets.length ?? 0;
     const body: BulkUpdateSetsDto = {
