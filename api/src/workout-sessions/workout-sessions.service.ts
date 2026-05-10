@@ -47,7 +47,11 @@ export class WorkoutSessionsService {
       throw new ForbiddenException('Access denied');
     }
     if (session.session_sets) {
-      session.session_sets.sort((a, b) => a.set_index - b.set_index);
+      session.session_sets.sort((a, b) =>
+        a.exercise_order !== b.exercise_order
+          ? a.exercise_order - b.exercise_order
+          : a.set_index - b.set_index,
+      );
     }
     return session;
   }

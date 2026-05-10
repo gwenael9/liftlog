@@ -17,6 +17,9 @@ export class SetResponseDto {
   @ApiProperty()
   set_index: number;
 
+  @ApiProperty()
+  exercise_order: number;
+
   @ApiPropertyOptional({ nullable: true })
   reps: number | null;
 

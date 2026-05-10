@@ -39,6 +39,7 @@ export function ExerciseCard({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-baseline gap-2">
+          <span className="text-sm font-normal text-muted-foreground">#{group.exerciseOrder + 1}</span>
           {t(`exercises.${group.exerciseSlug}`)}
           <span className="text-sm font-normal text-muted-foreground">×{totalSets}</span>
         </CardTitle>

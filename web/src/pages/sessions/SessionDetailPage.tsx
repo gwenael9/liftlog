@@ -51,8 +51,10 @@ export function SessionDetailPage() {
   const setsByExercise = useMemo((): ExerciseGroup[] => {
     if (!session) return [];
     const map = new Map<string, SetResponseDto[]>();
-    for (const s of [...(session.session_sets ?? [])].sort(
-      (a, b) => a.set_index - b.set_index,
+    for (const s of [...(session.session_sets ?? [])].sort((a, b) =>
+      a.exercise_order !== b.exercise_order
+        ? a.exercise_order - b.exercise_order
+        : a.set_index - b.set_index,
     )) {
       if (deletingSetIds.has(s.id)) continue;
       const list = map.get(s.exercise_id) ?? [];
@@ -67,6 +69,7 @@ export function SessionDetailPage() {
         trackingType: (sets[0].exercise.tracking_type ?? "strength") as
           | "strength"
           | "duration",
+        exerciseOrder: sets[0].exercise_order,
         sets,
       }));
   }, [session, deletingSetIds]);
@@ -186,6 +189,7 @@ export function SessionDetailPage() {
         const row = pending[i];
         body.creates.push({
           exercise_id: g.exerciseId,
+          exercise_order: g.exerciseOrder,
           set_index: g.sets.length + i + 1,
           reps: row.reps ? Number(row.reps) : undefined,
           weight_kg: row.weight_kg ? Number(row.weight_kg) : undefined,
@@ -211,13 +215,14 @@ export function SessionDetailPage() {
   }
 
   async function handleAddExercise(exerciseId: string, rows: AddRow[]) {
-    const existingCount = (session?.session_sets ?? []).filter(
-      (s) => s.exercise_id === exerciseId,
-    ).length;
+    const existingGroup = setsByExercise.find((g) => g.exerciseId === exerciseId);
+    const exerciseOrder = existingGroup?.exerciseOrder ?? setsByExercise.length;
+    const existingCount = existingGroup?.sets.length ?? 0;
     const body: BulkUpdateSetsDto = {
       updates: [],
       creates: rows.map((row, i) => ({
         exercise_id: exerciseId,
+        exercise_order: exerciseOrder,
         set_index: existingCount + i + 1,
         reps: row.reps ? Number(row.reps) : undefined,
         weight_kg: row.weight_kg ? Number(row.weight_kg) : undefined,

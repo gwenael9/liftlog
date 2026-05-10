@@ -452,6 +452,7 @@ export interface components {
             exercise_id: string;
             exercise: components["schemas"]["ExerciseResponseDto"];
             set_index: number;
+            exercise_order: number;
             reps?: number | null;
             weight_kg?: number | null;
             duration_sec?: number | null;
@@ -504,6 +505,8 @@ export interface components {
             /** Format: uuid */
             exercise_id: string;
             set_index: number;
+            /** @default 0 */
+            exercise_order: number;
             reps?: number;
             weight_kg?: number;
             duration_sec?: number;

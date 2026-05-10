@@ -19,6 +19,12 @@ export class CreateSetDto {
   @Min(0)
   set_index: number;
 
+  @ApiPropertyOptional({ minimum: 0, default: 0 })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  exercise_order?: number;
+
   @ApiPropertyOptional({ minimum: 0 })
   @IsOptional()
   @IsInt()
