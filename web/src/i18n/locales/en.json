@@ -133,7 +133,9 @@
     "deleteConfirm": "Delete this session?",
     "notFound": "Session not found",
     "notes": "Notes",
-    "notesPlaceholder": "Add notes about this session..."
+    "notesPlaceholder": "Add notes about this session...",
+    "created": "Session created",
+    "saved": "Session saved"
   },
   "templates": {
     "title": "Template",
@@ -154,7 +156,9 @@
     "save": "Save",
     "deleteConfirm": "Delete this template?",
     "notFound": "Template not found",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "created": "Template created",
+    "saved": "Template saved"
   },
   "auth": {
     "login": {

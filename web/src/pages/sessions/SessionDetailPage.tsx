@@ -20,6 +20,7 @@ import { AddExerciseDialog } from "@/components/AddExerciseDialog";
 import { ConfirmDeleteDialog } from "@/components/ConfirmDeleteDialog";
 import Loader from "@/components/Loader";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 
 export function SessionDetailPage() {
@@ -206,6 +207,8 @@ export function SessionDetailPage() {
     setPatches({});
     setPendingRows({});
     setNotesOverride(undefined);
+    toast.success(t("sessions.saved"));
+    navigate("/sessions");
   }
 
   function cancelAll() {

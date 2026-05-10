@@ -133,7 +133,9 @@
     "deleteConfirm": "Supprimer cette séance ?",
     "notFound": "Séance introuvable",
     "notes": "Notes",
-    "notesPlaceholder": "Ajouter des notes sur cette séance..."
+    "notesPlaceholder": "Ajouter des notes sur cette séance...",
+    "created": "Séance créée",
+    "saved": "Séance enregistrée"
   },
   "templates": {
     "title": "Template",
@@ -154,7 +156,9 @@
     "save": "Sauvegarder",
     "deleteConfirm": "Supprimer ce template ?",
     "notFound": "Template introuvable",
-    "loading": "Chargement..."
+    "loading": "Chargement...",
+    "created": "Template créé",
+    "saved": "Template sauvegardé"
   },
   "auth": {
     "login": {

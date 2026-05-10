@@ -17,6 +17,7 @@ import { useTemplates } from '@/hooks/useTemplates'
 import { sessionsApi } from '@/api/sessions'
 import { formatMonth, formatSessionDate, toDateString, toMonthString } from '@/utils'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 export function SessionsPage() {
   const { t } = useTranslation()
@@ -63,6 +64,7 @@ export function SessionsPage() {
         }
       }
 
+      toast.success(t('sessions.created'))
       navigate(`/sessions/${sessionId}`)
     } finally {
       setIsCreating(false)
