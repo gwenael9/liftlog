@@ -11,13 +11,6 @@ import { User } from '../../users/entities/user.entity';
 import { WorkoutTemplate } from '../../workout-templates/entities/workout-template.entity';
 import { SessionSet } from '../../session-sets/entities/session-set.entity';
 
-export enum SessionStatus {
-  PLANNED = 'planned',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  SKIPPED = 'skipped',
-}
-
 @Entity('workout_sessions')
 @Index(['user_id', 'scheduled_date'])
 export class WorkoutSession {
@@ -37,9 +30,6 @@ export class WorkoutSession {
   @ManyToOne(() => WorkoutTemplate, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'template_id' })
   template: WorkoutTemplate | null;
-
-  @Column({ type: 'enum', enum: SessionStatus, default: SessionStatus.PLANNED })
-  status: SessionStatus;
 
   @Column({ type: 'date', name: 'scheduled_date' })
   scheduled_date: string;

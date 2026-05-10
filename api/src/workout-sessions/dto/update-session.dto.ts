@@ -1,13 +1,7 @@
-import { IsOptional, IsEnum, IsString, IsDateString } from 'class-validator';
+import { IsOptional, IsString, IsDateString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { SessionStatus } from '../entities/workout-session.entity';
 
 export class UpdateSessionDto {
-  @ApiPropertyOptional({ enum: SessionStatus })
-  @IsOptional()
-  @IsEnum(SessionStatus)
-  status?: SessionStatus;
-
   @ApiPropertyOptional({ format: 'date-time' })
   @IsOptional()
   @IsDateString()

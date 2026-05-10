@@ -8,7 +8,6 @@ import { Repository, Between, FindOptionsWhere } from 'typeorm';
 import { WorkoutSession } from './entities/workout-session.entity';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
-import { SessionStatus } from './entities/workout-session.entity';
 
 @Injectable()
 export class WorkoutSessionsService {
@@ -58,7 +57,6 @@ export class WorkoutSessionsService {
       user_id: userId,
       scheduled_date: dto.scheduled_date,
       template_id: dto.template_id ?? null,
-      status: dto.status ?? SessionStatus.PLANNED,
     });
     return this.sessionsRepository.save(session);
   }
@@ -72,7 +70,6 @@ export class WorkoutSessionsService {
       throw new ForbiddenException('Access denied');
     }
 
-    if (dto.status !== undefined) session.status = dto.status;
     if (dto.started_at !== undefined) session.started_at = new Date(dto.started_at);
     if (dto.ended_at !== undefined) session.ended_at = new Date(dto.ended_at);
     if (dto.notes !== undefined) session.notes = dto.notes;

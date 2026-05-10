@@ -1,5 +1,5 @@
 import { Trash2, Plus } from 'lucide-react'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -10,28 +10,22 @@ interface Props {
   group: ExerciseGroup
   editValues: Record<string, SetEditValue>
   pendingRows: AddRow[]
-  isDirty: boolean
-  isSaving: boolean
   onPatchEdit: (setId: string, patch: Partial<SetEditValue>) => void
   onAddPending: () => void
   onPatchPending: (i: number, patch: Partial<AddRow>) => void
   onRemovePending: (i: number) => void
   onDeleteSet: (setId: string) => void
-  onSave: () => void
 }
 
 export function ExerciseCard({
   group,
   editValues,
   pendingRows,
-  isDirty,
-  isSaving,
   onPatchEdit,
   onAddPending,
   onPatchPending,
   onRemovePending,
   onDeleteSet,
-  onSave,
 }: Props) {
   const { t } = useTranslation()
   const totalSets = group.sets.length + pendingRows.length
@@ -146,13 +140,6 @@ export function ExerciseCard({
         </Button>
       </CardContent>
 
-      {isDirty && (
-        <CardFooter>
-          <Button size="sm" className="w-full" onClick={onSave} disabled={isSaving}>
-            {t('exerciseForm.save')}
-          </Button>
-        </CardFooter>
-      )}
     </Card>
   )
 }

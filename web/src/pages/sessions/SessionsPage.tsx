@@ -12,7 +12,6 @@ import {
   SelectTrigger,
 } from '@/components/ui/select'
 import PageLayout from '@/components/layout/PageLayout'
-import { StatusBadge } from '@/components/StatusBadge'
 import { useSessions, useCreateSession } from '@/hooks/useSessions'
 import { useTemplates } from '@/hooks/useTemplates'
 import { sessionsApi } from '@/api/sessions'
@@ -38,7 +37,6 @@ export function SessionsPage() {
     try {
       const result = await createSession.mutateAsync({
         scheduled_date: toDateString(selectedDate),
-        status: 'planned',
         template_id: selectedTemplateId || undefined,
       })
 
@@ -144,12 +142,9 @@ export function SessionsPage() {
             onClick={() => navigate(`/sessions/${session.id}`)}
           >
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="capitalize text-base">
-                  {formatSessionDate(session.scheduled_date)}
-                </CardTitle>
-                <StatusBadge status={session.status} className="text-xs font-medium" />
-              </div>
+              <CardTitle className="capitalize text-base">
+                {formatSessionDate(session.scheduled_date)}
+              </CardTitle>
             </CardHeader>
             {exerciseCount > 0 && (
               <CardContent>
