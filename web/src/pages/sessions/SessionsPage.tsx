@@ -5,6 +5,7 @@ import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/componen
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Select,
   SelectContent,
@@ -127,11 +128,30 @@ export function SessionsPage() {
     </div>
   )
 
+  const sessionSkeleton = (
+    <>
+      {[0, 1, 2].map(i => (
+        <Card key={i}>
+          <CardHeader>
+            <Skeleton className="h-5 w-1/2" />
+            <div className="ml-auto">
+              <Skeleton className="h-5 w-20 rounded-full" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-3 w-28" />
+          </CardContent>
+        </Card>
+      ))}
+    </>
+  )
+
   return (
     <PageLayout
       title={t('sessions.title')}
       female
       data={{ isLoading, items: sorted }}
+      skeleton={sessionSkeleton}
       dialog={{
         open,
         onOpenChange: setOpen,

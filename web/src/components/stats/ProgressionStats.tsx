@@ -15,7 +15,7 @@ import { useState } from "react";
 import { useExercises } from "@/hooks/useSessions";
 import { useExerciseProgression } from "@/hooks/useStats";
 import Empty from "../Empty";
-import Loader from "../Loader";
+import { Skeleton } from "../ui/skeleton";
 
 export default function ProgressionStats() {
   const { t } = useTranslation();
@@ -61,7 +61,7 @@ export default function ProgressionStats() {
         {!selectedExerciseId ? (
           <Empty message={t("stats.selectPlaceholder")} />
         ) : loadingProgression ? (
-          <Loader />
+          <Skeleton className="h-44 w-full rounded-lg" />
         ) : !progression?.length ? (
           <Empty message={t("stats.noDataForExercise")} />
         ) : (

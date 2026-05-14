@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { usePersonalRecords } from "@/hooks/useStats";
 import { useTranslation } from "react-i18next";
 import Empty from "../Empty";
-import Loader from "../Loader";
+import { Skeleton } from "../ui/skeleton";
 
 export default function RecordStats() {
   const { t } = useTranslation();
@@ -18,8 +18,15 @@ export default function RecordStats() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          //   <ChartLoader />
-          <Loader />
+          <div className="space-y-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex justify-between">
+                <Skeleton className="h-4 w-1/3" />
+                <Skeleton className="h-4 w-12" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+            ))}
+          </div>
         ) : !prs?.length ? (
           <Empty message={t("stats.noRecords")} />
         ) : (
