@@ -17,7 +17,6 @@ import {
 import { StatsService } from './stats.service';
 import { ExerciseProgressionPointDto } from './dto/exercise-progression.dto';
 import { VolumePerWeekDto } from './dto/volume-per-week.dto';
-import { FrequencyPerWeekDto } from './dto/frequency-per-week.dto';
 import { PersonalRecordDto } from './dto/personal-record.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, CurrentUserData } from '../common/decorators/current-user.decorator';
@@ -48,14 +47,22 @@ export class StatsController {
     return this.statsService.getVolumePerWeek(user.id, weeks);
   }
 
-  @Get('frequency')
-  @ApiOkResponse({ type: [FrequencyPerWeekDto] })
-  @ApiQuery({ name: 'weeks', required: false, type: Number, example: 12 })
-  getFrequency(
-    @CurrentUser() user: CurrentUserData,
-    @Query('weeks', new DefaultValuePipe(12), ParseIntPipe) weeks: number,
-  ) {
-    return this.statsService.getFrequencyPerWeek(user.id, weeks);
+  @Get('activity-dates')
+  @ApiOkResponse({
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          date: { type: 'string', example: '2026-05-14' },
+          session_id: { type: 'string', format: 'uuid' },
+        },
+        required: ['date', 'session_id'],
+      },
+    },
+  })
+  getActivityDates(@CurrentUser() user: CurrentUserData) {
+    return this.statsService.getActivityDates(user.id);
   }
 
   @Get('prs')

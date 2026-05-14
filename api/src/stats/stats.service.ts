@@ -14,11 +14,6 @@ export interface VolumePerWeek {
   total_volume_kg: number;
 }
 
-export interface FrequencyPerWeek {
-  week_start: string;
-  session_count: number;
-}
-
 export interface PersonalRecord {
   exercise_id: string;
   exercise_slug: string;
@@ -84,26 +79,21 @@ export class StatsService {
     }));
   }
 
-  async getFrequencyPerWeek(userId: string, weeks: number = 12): Promise<FrequencyPerWeek[]> {
+  async getActivityDates(userId: string): Promise<{ date: string; session_id: string }[]> {
     const rows = await this.sessionsRepository
       .createQueryBuilder('s')
       .where('s.user_id = :userId', { userId })
-      .andWhere('s.status = :status', { status: 'completed' })
-      .andWhere('s.scheduled_date >= :since', {
-        since: new Date(Date.now() - weeks * 7 * 24 * 60 * 60 * 1000),
-      })
+      .andWhere(
+        'EXISTS (SELECT 1 FROM session_sets ss WHERE ss.session_id = s.id)',
+      )
       .select([
-        "DATE_TRUNC('week', s.scheduled_date::timestamp) AS week_start",
-        'COUNT(s.id) AS session_count',
+        's.id AS session_id',
+        "TO_CHAR(s.scheduled_date, 'YYYY-MM-DD') AS date",
       ])
-      .groupBy("DATE_TRUNC('week', s.scheduled_date::timestamp)")
-      .orderBy("DATE_TRUNC('week', s.scheduled_date::timestamp)", 'ASC')
-      .getRawMany<{ week_start: string; session_count: string }>();
+      .orderBy('s.scheduled_date', 'ASC')
+      .getRawMany<{ session_id: string; date: string }>();
 
-    return rows.map((r: { week_start: string; session_count: string }) => ({
-      week_start: r.week_start,
-      session_count: parseInt(r.session_count, 10),
-    }));
+    return rows;
   }
 
   async getPersonalRecords(userId: string): Promise<PersonalRecord[]> {
@@ -118,7 +108,7 @@ export class StatsService {
         'ss.exercise_id AS exercise_id',
         'e.slug AS exercise_slug',
         'MAX(ss.weight_kg) AS max_weight_kg',
-        'MAX(ss.performed_at) AS performed_at',
+        'COALESCE(MAX(ss.performed_at), MAX(s.scheduled_date::timestamp)) AS performed_at',
       ])
       .groupBy('ss.exercise_id, e.slug')
       .orderBy('e.slug', 'ASC')

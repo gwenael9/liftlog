@@ -105,10 +105,7 @@
   },
   "stats": {
     "title": "Statistics",
-    "period": "Period:",
     "volumeChart": "Volume / week (kg)",
-    "noData": "No data",
-    "frequencyChart": "Frequency / week",
     "personalRecords": "Personal Records",
     "noRecords": "No records yet",
     "table": {
@@ -119,7 +116,8 @@
     "progression": "Exercise progression",
     "selectExercise": "Select an exercise",
     "selectPlaceholder": "Select an exercise to see its progression",
-    "noDataForExercise": "No data for this exercise"
+    "noDataForExercise": "No data for this exercise",
+    "activityCalendar": "Activity"
   },
   "sessions": {
     "title": "Session",

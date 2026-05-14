@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import PageLayout from '@/components/layout/PageLayout'
 import { useTemplates, useCreateTemplate } from '@/hooks/useTemplates'
 import { useTranslation } from 'react-i18next'
@@ -83,10 +84,30 @@ export function TemplatesPage() {
     </form>
   )
 
+  const templateSkeleton = (
+    <>
+      {[0, 1, 2].map(i => (
+        <Card key={i}>
+          <CardHeader>
+            <Skeleton className="h-5 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-4">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </>
+  )
+
   return (
     <PageLayout
       title={t('templates.title')}
       data={{ isLoading, items: templates ?? [] }}
+      skeleton={templateSkeleton}
       dialog={{
         open,
         onOpenChange: setOpen,
