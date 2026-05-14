@@ -14,7 +14,7 @@ import {
 import PageLayout from '@/components/layout/PageLayout'
 import { useSessions, useCreateSession } from '@/hooks/useSessions'
 import { useTemplates } from '@/hooks/useTemplates'
-import { sessionsApi } from '@/api/sessions'
+import { sessionsApi, type CreateSetDto } from '@/api/sessions'
 import { formatMonth, formatSessionDate, toDateString, toMonthString } from '@/utils'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -31,7 +31,7 @@ export function SessionsPage() {
   const monthStr = toMonthString(currentMonth)
   const { data: sessions, isLoading } = useSessions(monthStr)
   const { data: templates } = useTemplates()
-  const createSession = useCreateSession()
+  const createSession = useCreateSession(monthStr)
 
   async function handleCreate() {
     setIsCreating(true)
@@ -50,17 +50,21 @@ export function SessionsPage() {
           .slice()
           .sort((a, b) => a.order_index - b.order_index)
 
+        const setsToCreate: CreateSetDto[] = []
         for (let exIdx = 0; exIdx < exercises.length; exIdx++) {
           const ex = exercises[exIdx]
           const setCount = ex.target_sets ?? 1
           for (let i = 1; i <= setCount; i++) {
-            await sessionsApi.createSet(sessionId, {
+            setsToCreate.push({
               exercise_id: ex.exercise_id,
               set_index: i,
               is_warmup: false,
               exercise_order: exIdx,
             })
           }
+        }
+        if (setsToCreate.length > 0) {
+          await sessionsApi.bulkUpdateSets(sessionId, { updates: [], creates: setsToCreate })
         }
       }
 

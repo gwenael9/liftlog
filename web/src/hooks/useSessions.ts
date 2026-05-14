@@ -31,11 +31,11 @@ export function useSession(id: string) {
   })
 }
 
-export function useCreateSession() {
+export function useCreateSession(month?: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (body: CreateSessionDto) => sessionsApi.create(body),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['sessions'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['sessions', month] }),
   })
 }
 
