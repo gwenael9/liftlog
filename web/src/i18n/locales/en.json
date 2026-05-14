@@ -105,10 +105,7 @@
   },
   "stats": {
     "title": "Statistics",
-    "period": "Period:",
     "volumeChart": "Volume / week (kg)",
-    "noData": "No data",
-    "frequencyChart": "Frequency / week",
     "personalRecords": "Personal Records",
     "noRecords": "No records yet",
     "table": {

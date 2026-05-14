@@ -14,11 +14,6 @@ export interface VolumePerWeek {
   total_volume_kg: number;
 }
 
-export interface FrequencyPerWeek {
-  week_start: string;
-  session_count: number;
-}
-
 export interface PersonalRecord {
   exercise_id: string;
   exercise_slug: string;
@@ -81,30 +76,6 @@ export class StatsService {
     return rows.map((r) => ({
       week_start: r.week_start,
       total_volume_kg: parseFloat(r.total_volume_kg),
-    }));
-  }
-
-  async getFrequencyPerWeek(userId: string, weeks: number = 12): Promise<FrequencyPerWeek[]> {
-    const rows = await this.sessionsRepository
-      .createQueryBuilder('s')
-      .where('s.user_id = :userId', { userId })
-      .andWhere(
-        'EXISTS (SELECT 1 FROM session_sets ss WHERE ss.session_id = s.id)',
-      )
-      .andWhere('s.scheduled_date >= :since', {
-        since: new Date(Date.now() - weeks * 7 * 24 * 60 * 60 * 1000),
-      })
-      .select([
-        "DATE_TRUNC('week', s.scheduled_date::timestamp) AS week_start",
-        'COUNT(s.id) AS session_count',
-      ])
-      .groupBy("DATE_TRUNC('week', s.scheduled_date::timestamp)")
-      .orderBy("DATE_TRUNC('week', s.scheduled_date::timestamp)", 'ASC')
-      .getRawMany<{ week_start: string; session_count: string }>();
-
-    return rows.map((r: { week_start: string; session_count: string }) => ({
-      week_start: r.week_start,
-      session_count: parseInt(r.session_count, 10),
     }));
   }
 

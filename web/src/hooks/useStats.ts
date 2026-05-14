@@ -1,17 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { statsApi } from "@/api/stats";
 
-export function useFrequency(weeks: number) {
-  return useQuery({
-    queryKey: ["stats", "frequency", weeks],
-    queryFn: async () => {
-      const { data, error } = await statsApi.getFrequency(weeks);
-      if (error) throw error;
-      return data!;
-    },
-  });
-}
-
 export function usePersonalRecords() {
   return useQuery({
     queryKey: ["stats", "prs"],
