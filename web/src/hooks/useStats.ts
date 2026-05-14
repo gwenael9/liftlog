@@ -23,6 +23,17 @@ export function usePersonalRecords() {
   });
 }
 
+export function useActivityDates() {
+  return useQuery({
+    queryKey: ["stats", "activity-dates"],
+    queryFn: async () => {
+      const { data, error } = await statsApi.getActivityDates();
+      if (error) throw error;
+      return data!;
+    },
+  });
+}
+
 export function useExerciseProgression(exerciseId: string | null) {
   return useQuery({
     queryKey: ["stats", "exercise", exerciseId],

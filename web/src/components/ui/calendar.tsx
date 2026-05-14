@@ -25,7 +25,7 @@ export function Calendar({ className, ...props }: CalendarProps) {
         weekday: 'text-muted-foreground w-9 font-normal text-xs text-center pb-1',
         weeks: '',
         week: 'flex w-full',
-        day: 'flex items-center justify-center p-0',
+        day: 'flex items-center justify-center p-0 w-9 h-9',
         day_button: cn(
           'size-9 p-0 text-sm rounded-lg font-normal',
           'hover:bg-accent hover:text-accent-foreground transition-colors',
@@ -33,7 +33,7 @@ export function Calendar({ className, ...props }: CalendarProps) {
         ),
         selected:
           '[&>button]:bg-primary [&>button]:text-primary-foreground [&>button]:hover:bg-primary [&>button]:hover:text-primary-foreground',
-        today: '[&>button]:font-semibold [&>button]:ring-1 [&>button]:ring-primary',
+        today: '[&>button]:font-semibold',
         outside: '[&>button]:text-muted-foreground [&>button]:opacity-40',
         disabled: '[&>button]:text-muted-foreground [&>button]:opacity-30 [&>button]:pointer-events-none',
         hidden: 'invisible',

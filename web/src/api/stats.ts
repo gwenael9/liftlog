@@ -18,4 +18,7 @@ export const statsApi = {
 
   getPersonalRecords: () =>
     apiClient.GET('/stats/prs', {}),
+
+  getActivityDates: () =>
+    apiClient.GET('/stats/activity-dates', {}),
 }

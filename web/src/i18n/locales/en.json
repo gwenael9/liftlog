@@ -119,7 +119,8 @@
     "progression": "Exercise progression",
     "selectExercise": "Select an exercise",
     "selectPlaceholder": "Select an exercise to see its progression",
-    "noDataForExercise": "No data for this exercise"
+    "noDataForExercise": "No data for this exercise",
+    "activityCalendar": "Activity"
   },
   "sessions": {
     "title": "Session",

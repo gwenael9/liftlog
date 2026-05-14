@@ -58,6 +58,24 @@ export class StatsController {
     return this.statsService.getFrequencyPerWeek(user.id, weeks);
   }
 
+  @Get('activity-dates')
+  @ApiOkResponse({
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          date: { type: 'string', example: '2026-05-14' },
+          session_id: { type: 'string', format: 'uuid' },
+        },
+        required: ['date', 'session_id'],
+      },
+    },
+  })
+  getActivityDates(@CurrentUser() user: CurrentUserData) {
+    return this.statsService.getActivityDates(user.id);
+  }
+
   @Get('prs')
   @ApiOkResponse({ type: [PersonalRecordDto] })
   getPersonalRecords(@CurrentUser() user: CurrentUserData) {

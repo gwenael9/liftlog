@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import {
   BarChart,
@@ -22,7 +23,9 @@ import {
   useFrequency,
   usePersonalRecords,
   useExerciseProgression,
+  useActivityDates,
 } from "@/hooks/useStats";
+import { Calendar } from "@/components/ui/calendar";
 import { useExercises } from "@/hooks/useSessions";
 import { formatDateShort, formatDateFull } from "@/utils";
 import { useTranslation } from "react-i18next";
@@ -48,14 +51,28 @@ function EmptyChart({ message }: { message: string }) {
 
 export function StatsPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [weeks, setWeeks] = useState<Weeks>(12);
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>("");
 
+  const { data: activityDates } = useActivityDates();
   const { data: frequency, isLoading: loadingFrequency } = useFrequency(weeks);
   const { data: prs, isLoading: loadingPrs } = usePersonalRecords();
   const { data: progression, isLoading: loadingProgression } =
     useExerciseProgression(selectedExerciseId || null);
   const { data: exercises } = useExercises();
+
+  const sessionByDate = new Map(activityDates?.map((d) => [d.date, d.session_id]) ?? []);
+
+  const toDateStr = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+  const isWorkoutDay = (date: Date) => sessionByDate.has(toDateStr(date));
+
+  const handleDayClick = (date: Date) => {
+    const sessionId = sessionByDate.get(toDateStr(date));
+    if (sessionId) navigate(`/sessions/${sessionId}`);
+  };
 
   const selectedExerciseSlug = exercises?.find(
     (e) => e.id === selectedExerciseId,
@@ -86,6 +103,27 @@ export function StatsPage() {
           </div>
         </div>
       </div>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">
+            {t("stats.activityCalendar")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex justify-center">
+          <Calendar
+            modifiers={{
+              workout: isWorkoutDay,
+              rest: (date) => !isWorkoutDay(date),
+            }}
+            modifiersClassNames={{
+              workout: "[&>button]:bg-primary/20 [&>button]:text-primary [&>button]:font-semibold [&>button]:cursor-pointer",
+              rest: "[&>button]:cursor-default [&>button]:hover:bg-transparent [&>button]:hover:text-foreground",
+            }}
+            onDayClick={handleDayClick}
+          />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader className="pb-2">

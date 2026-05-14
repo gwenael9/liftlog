@@ -119,7 +119,8 @@
     "progression": "Progression par exercice",
     "selectExercise": "Choisir un exercice",
     "selectPlaceholder": "Sélectionner un exercice pour voir sa progression",
-    "noDataForExercise": "Aucune donnée pour cet exercice"
+    "noDataForExercise": "Aucune donnée pour cet exercice",
+    "activityCalendar": "Activité"
   },
   "sessions": {
     "title": "Séance",
