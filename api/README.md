@@ -132,9 +132,8 @@ DELETE /sessions/:sessionId/sets/:id
 
 ```
 GET /stats/exercise/:exerciseId    Progression poids max par date
-GET /stats/volume                  ?weeks=12  Volume total par semaine
-GET /stats/frequency               ?weeks=12  Nb séances par semaine
 GET /stats/prs                     Records personnels par exercice
+GET /stats/activity-dates          Affichage des séances
 ```
 
 ## Base de données
