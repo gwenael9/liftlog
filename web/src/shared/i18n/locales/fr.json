@@ -125,7 +125,15 @@
     "selectExercise": "Choisir un exercice",
     "selectPlaceholder": "Sélectionner un exercice pour voir sa progression",
     "noDataForExercise": "Aucune donnée pour cet exercice",
-    "activityCalendar": "Activité"
+    "activityCalendar": "Activité",
+    "period": {
+      "1w": "1 sem.",
+      "1m": "1 mois",
+      "3m": "3 mois",
+      "6m": "6 mois",
+      "1y": "1 an",
+      "all": "Tout"
+    }
   },
   "sessions": {
     "title": "Séance",

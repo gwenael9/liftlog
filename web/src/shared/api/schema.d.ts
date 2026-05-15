@@ -1110,7 +1110,9 @@ export interface operations {
     };
     StatsController_getExerciseProgression: {
         parameters: {
-            query?: never;
+            query?: {
+                from?: string;
+            };
             header?: never;
             path: {
                 exerciseId: string;

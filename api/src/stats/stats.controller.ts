@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Param,
+  Query,
   UseGuards,
   ParseUUIDPipe,
 } from "@nestjs/common";
@@ -29,11 +30,13 @@ export class StatsController {
 
   @Get("exercise/:exerciseId")
   @ApiOkResponse({ type: [ExerciseProgressionPointDto] })
+  @ApiQuery({ name: "from", required: false, type: String, example: "2026-01-01" })
   getExerciseProgression(
     @Param("exerciseId", ParseUUIDPipe) exerciseId: string,
+    @Query("from") from: string | undefined,
     @CurrentUser() user: CurrentUserData,
   ) {
-    return this.statsService.getExerciseProgression(exerciseId, user.id);
+    return this.statsService.getExerciseProgression(exerciseId, user.id, from);
   }
 
   @Get("activity-dates")

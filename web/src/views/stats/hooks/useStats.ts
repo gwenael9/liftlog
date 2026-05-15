@@ -23,12 +23,13 @@ export function useActivityDates() {
   });
 }
 
-export function useExerciseProgression(exerciseId: string | null) {
+export function useExerciseProgression(exerciseId: string | null, from?: string) {
   return useQuery({
-    queryKey: ["stats", "exercise", exerciseId],
+    queryKey: ["stats", "exercise", exerciseId, from],
     queryFn: async () => {
       const { data, error } = await statsApi.getExerciseProgression(
         exerciseId!,
+        from,
       );
       if (error) throw error;
       return data!;
