@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Clock, Dumbbell } from 'lucide-react'
+import { Clock, Dumbbell, Globe, Lock } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { Skeleton } from '@/components/ui/skeleton'
 import PageLayout from '@/components/layout/PageLayout'
 import { useTemplates, useCreateTemplate } from '@/hooks/useTemplates'
@@ -21,6 +22,7 @@ export function TemplatesPage() {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [duration, setDuration] = useState('')
+  const [isPublic, setIsPublic] = useState(false)
 
   function handleCreate(e: React.FormEvent) {
     e.preventDefault()
@@ -29,6 +31,7 @@ export function TemplatesPage() {
         name,
         description: description || undefined,
         estimated_duration: duration ? Number(duration) : undefined,
+        is_public: isPublic,
         exercises: [],
       },
       {
@@ -41,6 +44,7 @@ export function TemplatesPage() {
           setName('')
           setDescription('')
           setDuration('')
+          setIsPublic(false)
         },
       }
     )
@@ -77,6 +81,15 @@ export function TemplatesPage() {
           value={duration}
           onChange={e => setDuration(e.target.value)}
         />
+      </div>
+      <div className="flex items-center justify-between">
+        <div className="space-y-0.5">
+          <Label htmlFor="is_public">{t('templates.visibility.label')}</Label>
+          <p className="text-xs text-muted-foreground">
+            {isPublic ? t('templates.visibility.publicHint') : t('templates.visibility.privateHint')}
+          </p>
+        </div>
+        <Switch id="is_public" checked={isPublic} onCheckedChange={setIsPublic} />
       </div>
       <Button type="submit" className="w-full" disabled={createTemplate.isPending || !name}>
         {t('templates.createTemplate')}
@@ -124,7 +137,15 @@ export function TemplatesPage() {
             onClick={() => navigate(`/templates/${template.id}`)}
           >
             <CardHeader>
-              <CardTitle>{template.name}</CardTitle>
+              <div className="flex items-start justify-between gap-2">
+                <CardTitle>{template.name}</CardTitle>
+                <span className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
+                  {template.is_public
+                    ? <><Globe className="size-3" />{t('templates.visibility.public')}</>
+                    : <><Lock className="size-3" />{t('templates.visibility.private')}</>
+                  }
+                </span>
+              </div>
               {template.description && (
                 <CardDescription>{template.description}</CardDescription>
               )}

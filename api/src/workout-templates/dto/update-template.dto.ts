@@ -2,6 +2,7 @@ import {
   IsString,
   IsOptional,
   IsInt,
+  IsBoolean,
   IsArray,
   ValidateNested,
   Min,
@@ -28,6 +29,11 @@ export class UpdateTemplateDto {
   @IsInt()
   @Min(1)
   estimated_duration?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  is_public?: boolean;
 
   @ApiPropertyOptional({ type: [TemplateExerciseItemDto] })
   @IsOptional()

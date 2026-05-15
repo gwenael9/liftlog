@@ -5,12 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   useTemplate,
   useUpdateTemplate,
   useDeleteTemplate,
 } from "@/hooks/useTemplates";
 import { useExercises } from "@/hooks/useSessions";
+import { useCurrentUser } from "@/hooks/useAuth";
 import { AddExerciseDialog } from "@/components/AddExerciseDialog";
 import { ConfirmDeleteDialog } from "@/components/ConfirmDeleteDialog";
 import { DetailHeader } from "@/components/layout/DetailHeader";
@@ -67,7 +69,9 @@ export function TemplateDetailPage() {
     );
   }
 
-  return <TemplateEditForm id={id!} template={template} exercises={exercises} />;
+  return (
+    <TemplateEditForm id={id!} template={template} exercises={exercises} />
+  );
 }
 
 interface TemplateEditFormProps {
@@ -81,6 +85,12 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
   const navigate = useNavigate();
   const updateTemplate = useUpdateTemplate(id);
   const deleteTemplate = useDeleteTemplate();
+  const { data: currentUser } = useCurrentUser();
+
+  const isOwner = currentUser?.id === template.user_id;
+  const isAdmin = currentUser?.role === "admin";
+  const canEdit = isOwner || isAdmin;
+  const canDelete = isOwner || isAdmin;
 
   const [name, setName] = useState(template.name);
   const [description, setDescription] = useState(template.description ?? "");
@@ -89,6 +99,7 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
       ? String(template.estimated_duration)
       : "",
   );
+  const [isPublic, setIsPublic] = useState(template.is_public);
   const [rows, setRows] = useState<ExerciseRow[]>(() =>
     toExerciseRows(template),
   );
@@ -135,6 +146,7 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
         name,
         description: description || undefined,
         estimated_duration: duration ? Number(duration) : undefined,
+        is_public: isPublic,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         exercises: rows.map(({ _key: _, ...item }) => item),
       },
@@ -170,7 +182,7 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
             </span>
           ) : undefined
         }
-        onDelete={() => setDeleteOpen(true)}
+        onDelete={canDelete ? () => setDeleteOpen(true) : undefined}
       />
 
       <Card>
@@ -184,6 +196,7 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
             <Label>{t("templates.form.name")}</Label>
             <Input
               value={name}
+              readOnly={!canEdit}
               onChange={(e) => {
                 setName(e.target.value);
                 setDirty(true);
@@ -195,6 +208,7 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
             <Label>{t("templates.form.description")}</Label>
             <Input
               value={description}
+              readOnly={!canEdit}
               onChange={(e) => {
                 setDescription(e.target.value);
                 setDirty(true);
@@ -208,11 +222,30 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
               type="number"
               min={1}
               value={duration}
+              readOnly={!canEdit}
               onChange={(e) => {
                 setDuration(e.target.value);
                 setDirty(true);
               }}
               placeholder="60"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>{t("templates.visibility.label")}</Label>
+              <p className="text-xs text-muted-foreground">
+                {isPublic
+                  ? t("templates.visibility.publicHint")
+                  : t("templates.visibility.privateHint")}
+              </p>
+            </div>
+            <Switch
+              checked={isPublic}
+              disabled={!canEdit}
+              onCheckedChange={(v: boolean) => {
+                setIsPublic(v);
+                setDirty(true);
+              }}
             />
           </div>
         </CardContent>
@@ -252,26 +285,30 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
                   <span>{row.rest_seconds}s repos</span>
                 )}
               </div>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => handleRemoveExercise(row._key)}
-              >
-                <Trash2 className="size-3" />
-              </Button>
+              {canEdit && (
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => handleRemoveExercise(row._key)}
+                >
+                  <Trash2 className="size-3" />
+                </Button>
+              )}
             </div>
           ))}
         </CardContent>
       </Card>
 
-      <Button
-        variant="outline"
-        className="w-full"
-        onClick={() => setAddOpen(true)}
-      >
-        <Plus className="size-4" />
-        {t("templates.addExercise")}
-      </Button>
+      {canEdit && (
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => setAddOpen(true)}
+        >
+          <Plus className="size-4" />
+          {t("templates.addExercise")}
+        </Button>
+      )}
 
       <AddExerciseDialog
         mode="template"
@@ -281,13 +318,17 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
         onSubmit={handleAddExercise}
       />
 
-      <Button
-        className="w-full"
-        onClick={handleSave}
-        disabled={updateTemplate.isPending || !dirty}
-      >
-        {updateTemplate.isPending ? t("templates.saving") : t("templates.save")}
-      </Button>
+      {canEdit && (
+        <Button
+          className="w-full"
+          onClick={handleSave}
+          disabled={updateTemplate.isPending || !dirty}
+        >
+          {updateTemplate.isPending
+            ? t("templates.saving")
+            : t("templates.save")}
+        </Button>
+      )}
 
       <ConfirmDeleteDialog
         open={deleteOpen}

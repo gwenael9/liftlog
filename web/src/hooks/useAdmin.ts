@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { usersApi } from '@/api/users'
 import { apiClient } from '@/api/client'
+import { templatesApi } from '@/api/templates'
 import type { components } from '@/api/schema'
 
 type CreateExerciseDto = components['schemas']['CreateExerciseDto']
@@ -48,5 +49,27 @@ export function useAdminDeleteUser() {
   return useMutation({
     mutationFn: (id: string) => usersApi.remove(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'users'] }),
+  })
+}
+
+export function useAdminTemplates() {
+  return useQuery({
+    queryKey: ['admin', 'templates'],
+    queryFn: async () => {
+      const { data, error } = await templatesApi.getAll()
+      if (error) throw error
+      return data ?? []
+    },
+  })
+}
+
+export function useAdminDeleteTemplate() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => templatesApi.remove(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'templates'] })
+      qc.invalidateQueries({ queryKey: ['templates'] })
+    },
   })
 }

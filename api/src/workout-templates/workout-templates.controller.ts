@@ -35,7 +35,7 @@ export class WorkoutTemplatesController {
   @Get()
   @ApiOkResponse({ type: [TemplateResponseDto] })
   findAll(@CurrentUser() user: CurrentUserData) {
-    return this.templatesService.findAll(user.id);
+    return this.templatesService.findAll(user.id, user.role === 'admin');
   }
 
   @Get(':id')
@@ -44,7 +44,7 @@ export class WorkoutTemplatesController {
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: CurrentUserData,
   ) {
-    return this.templatesService.findOne(id, user.id);
+    return this.templatesService.findOne(id, user.id, user.role === 'admin');
   }
 
   @Post()
@@ -71,6 +71,6 @@ export class WorkoutTemplatesController {
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: CurrentUserData,
   ) {
-    return this.templatesService.remove(id, user.id);
+    return this.templatesService.remove(id, user.id, user.role === 'admin');
   }
 }

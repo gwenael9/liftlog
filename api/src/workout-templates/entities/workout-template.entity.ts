@@ -37,6 +37,9 @@ export class WorkoutTemplate {
   })
   template_exercises: TemplateExercise[];
 
+  @Column({ type: 'boolean', default: false, name: 'is_public' })
+  is_public: boolean;
+
   @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   created_at: Date;
 }

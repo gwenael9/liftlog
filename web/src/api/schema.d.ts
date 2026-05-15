@@ -389,16 +389,25 @@ export interface components {
             rest_seconds?: number | null;
             target_duration_sec?: number | null;
         };
+        TemplateCreatorDto: {
+            /** Format: uuid */
+            id: string;
+            display_name?: string | null;
+            email: string;
+        };
         TemplateResponseDto: {
             /** Format: uuid */
             id: string;
             /** Format: uuid */
             user_id: string;
+            user?: components["schemas"]["TemplateCreatorDto"];
             /** @example Push Day */
             name: string;
             description?: string | null;
             /** @description Estimated duration in minutes */
             estimated_duration?: number | null;
+            /** @default false */
+            is_public: boolean;
             template_exercises: components["schemas"]["TemplateExerciseResponseDto"][];
             /** Format: date-time */
             created_at: string;
@@ -418,6 +427,8 @@ export interface components {
             description?: string;
             /** @description Estimated duration in minutes */
             estimated_duration?: number;
+            /** @default false */
+            is_public: boolean;
             exercises?: components["schemas"]["TemplateExerciseItemDto"][];
         };
         UpdateTemplateDto: {
@@ -425,6 +436,7 @@ export interface components {
             name?: string;
             description?: string;
             estimated_duration?: number;
+            is_public?: boolean;
             exercises?: components["schemas"]["TemplateExerciseItemDto"][];
         };
         SetResponseDto: {
