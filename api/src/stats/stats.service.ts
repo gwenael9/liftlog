@@ -28,19 +28,26 @@ export class StatsService {
   async getExerciseProgression(
     exerciseId: string,
     userId: string,
+    from?: string,
   ): Promise<ExerciseProgressionPoint[]> {
-    const rows = await this.setsRepository
+    const qb = this.setsRepository
       .createQueryBuilder("ss")
       .innerJoin("ss.session", "s")
       .where("s.user_id = :userId", { userId })
       .andWhere("ss.exercise_id = :exerciseId", { exerciseId })
-      .andWhere("ss.weight_kg IS NOT NULL")
+      .andWhere("ss.weight_kg IS NOT NULL");
+
+    if (from) {
+      qb.andWhere("s.scheduled_date >= :from", { from });
+    }
+
+    const rows = await qb
       .select([
-        "DATE(ss.performed_at) AS date",
+        "DATE(s.scheduled_date) AS date",
         "MAX(ss.weight_kg) AS max_weight_kg",
       ])
-      .groupBy("DATE(ss.performed_at)")
-      .orderBy("DATE(ss.performed_at)", "ASC")
+      .groupBy("DATE(s.scheduled_date)")
+      .orderBy("DATE(s.scheduled_date)", "ASC")
       .getRawMany<{ date: string; max_weight_kg: string }>();
 
     return rows.map((r) => ({

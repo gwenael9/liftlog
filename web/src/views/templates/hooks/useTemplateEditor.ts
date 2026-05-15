@@ -1,0 +1,162 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUpdateTemplate, useDeleteTemplate } from "@/shared/hooks/useTemplates";
+import { useExercises } from "@/shared/hooks/useSessions";
+import { useCurrentUser } from "@/shared/hooks/useAuth";
+import { type ExerciseRow } from "@/views/templates/components/ExerciseList";
+import type { TemplateInfoState } from "@/views/templates/components/InfoDialog";
+import type {
+  TemplateResponseDto,
+  TemplateExerciseItemDto,
+} from "@/shared/api/templates";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+
+// Compteur module-level : survit aux re-renders et re-mounts, garantit des clés
+// React uniques même si le même exercice est ajouté deux fois.
+let keyCounter = 0;
+const nextKey = () => String(++keyCounter);
+
+function rowFromItem(item: TemplateExerciseItemDto): ExerciseRow {
+  return { ...item, _key: nextKey() };
+}
+
+function toExerciseRows(template: TemplateResponseDto): ExerciseRow[] {
+  return (template.template_exercises ?? []).map((ex) =>
+    rowFromItem({
+      exercise_id: ex.exercise_id,
+      order_index: ex.order_index,
+      target_sets: ex.target_sets ?? undefined,
+      target_reps: ex.target_reps ?? undefined,
+      rest_seconds: ex.rest_seconds ?? undefined,
+      target_duration_sec: ex.target_duration_sec ?? undefined,
+    }),
+  );
+}
+
+// `template` est optionnel car le hook est appelé inconditionnellement avant les
+// guards loading/notFound dans TemplateDetailPage (Rules of Hooks). L'état est
+// initialisé avec des valeurs par défaut ; le composant fait un early return
+// avant de rendre quoi que ce soit avec ces valeurs.
+export function useTemplateEditor(
+  id: string,
+  template: TemplateResponseDto | undefined,
+  exercises: ReturnType<typeof useExercises>["data"],
+) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const updateTemplate = useUpdateTemplate(id);
+  const deleteTemplate = useDeleteTemplate();
+  const { data: currentUser } = useCurrentUser();
+
+  const canEdit =
+    currentUser?.id === template?.user_id || currentUser?.role === "admin";
+
+  const [info, setInfo] = useState<TemplateInfoState>({
+    name: template?.name ?? "",
+    description: template?.description ?? "",
+    duration:
+      template?.estimated_duration != null
+        ? String(template.estimated_duration)
+        : "",
+    isPublic: template?.is_public ?? false,
+  });
+  const [rows, setRows] = useState<ExerciseRow[]>(() =>
+    template ? toExerciseRows(template) : [],
+  );
+  // Flag booléen plutôt qu'une comparaison profonde rows/info vs. originaux.
+  const [dirty, setDirty] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  function handleInfoChange(patch: Partial<TemplateInfoState>) {
+    setInfo((prev) => ({ ...prev, ...patch }));
+    setDirty(true);
+  }
+
+  function handleAddExercise(
+    exerciseId: string,
+    data: {
+      targetSets?: number;
+      targetReps?: number;
+      restSeconds?: number;
+      targetDurationSec?: number;
+    },
+  ) {
+    setRows((r) => [
+      ...r,
+      {
+        _key: nextKey(),
+        exercise_id: exerciseId,
+        order_index: r.length + 1,
+        target_sets: data.targetSets,
+        target_reps: data.targetReps,
+        rest_seconds: data.restSeconds,
+        target_duration_sec: data.targetDurationSec,
+      },
+    ]);
+    setDirty(true);
+  }
+
+  function handleRemoveExercise(key: string) {
+    setRows((r) =>
+      r
+        .filter((row) => row._key !== key)
+        .map((row, i) => ({ ...row, order_index: i + 1 })),
+    );
+    setDirty(true);
+  }
+
+  function handleSave() {
+    updateTemplate.mutate(
+      {
+        name: info.name,
+        description: info.description || undefined,
+        estimated_duration: info.duration ? Number(info.duration) : undefined,
+        is_public: info.isPublic,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        exercises: rows.map(({ _key: _, ...item }) => item),
+      },
+      {
+        onSuccess: () => {
+          toast.success(t("templates.saved"));
+          navigate("/templates");
+        },
+      },
+    );
+  }
+
+  function handleDelete() {
+    deleteTemplate.mutate(id, {
+      onSuccess: () => navigate("/templates"),
+    });
+  }
+
+  // exercises peut encore charger — fallback sur l'ID brut pour éviter des lignes vides.
+  function exerciseName(exerciseId: string) {
+    const slug = exercises?.find((ex) => ex.id === exerciseId)?.slug;
+    return slug ? t(`exercises.${slug}`) : exerciseId;
+  }
+
+  return {
+    canEdit,
+    info,
+    rows,
+    dirty,
+    addOpen,
+    setAddOpen,
+    infoOpen,
+    setInfoOpen,
+    deleteOpen,
+    setDeleteOpen,
+    handleInfoChange,
+    handleAddExercise,
+    handleRemoveExercise,
+    handleSave,
+    handleDelete,
+    exerciseName,
+    isSaving: updateTemplate.isPending,
+    isDeleting: deleteTemplate.isPending,
+  };
+}

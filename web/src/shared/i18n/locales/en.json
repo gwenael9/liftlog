@@ -1,0 +1,235 @@
+{
+  "exercises": {
+    "bench_press": "Bench Press",
+    "incline_dumbbell_press": "Incline Dumbbell Press",
+    "cable_fly": "Cable Fly",
+    "pull_up": "Pull Up",
+    "barbell_row": "Barbell Row",
+    "lat_pulldown": "Lat Pulldown",
+    "seated_cable_row": "Seated Cable Row",
+    "overhead_press": "Overhead Press",
+    "lateral_raise": "Lateral Raise",
+    "face_pull": "Face Pull",
+    "barbell_curl": "Barbell Curl",
+    "hammer_curl": "Hammer Curl",
+    "tricep_pushdown": "Tricep Pushdown",
+    "skull_crusher": "Skull Crusher",
+    "dips": "Dips",
+    "squat": "Squat",
+    "romanian_deadlift": "Romanian Deadlift",
+    "leg_press": "Leg Press",
+    "leg_curl": "Leg Curl",
+    "calf_raise": "Calf Raise",
+    "plank": "Plank",
+    "crunch": "Crunch",
+    "hanging_leg_raise": "Hanging Leg Raise",
+    "running": "Running",
+    "cycling": "Cycling",
+    "jump_rope": "Jump Rope"
+  },
+  "muscleGroups": {
+    "chest": "Chest",
+    "back": "Back",
+    "shoulders": "Shoulders",
+    "biceps": "Biceps",
+    "triceps": "Triceps",
+    "legs": "Legs",
+    "glutes": "Glutes",
+    "core": "Core",
+    "cardio": "Cardio",
+    "full_body": "Full Body"
+  },
+  "trackingTypes": {
+    "strength": "Strength",
+    "duration": "Duration"
+  },
+  "nav": {
+    "sessions": "Sessions",
+    "templates": "Templates",
+    "stats": "Stats",
+    "admin": "Admin",
+    "logout": "Logout"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "create": "Create",
+    "delete": "Delete",
+    "deleteWarning": "This action cannot be undone.",
+    "edit": "Edit",
+    "loading": "Loading…",
+    "noData": "No data",
+    "all": "All",
+    "optional": "Optional",
+    "add": "Add",
+    "exerciseCount_one": "{{count}} exercise",
+    "exerciseCount_other": "{{count}} exercises",
+    "new_female": "New {{title}}",
+    "new_male": "New {{title}}",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "admin": {
+    "title": "Administration",
+    "tabs": {
+      "exercises": "Exercises ({{count}})",
+      "users": "Users ({{count}})",
+      "templates": "Templates ({{count}})"
+    },
+    "allMuscles": "All muscles",
+    "newExercise": "New exercise",
+    "noExercises": "No exercises",
+    "noUsers": "No users",
+    "noTemplates": "No templates",
+    "deleteExerciseConfirm": "Delete this exercise?",
+    "deleteUserConfirm": "Delete this user?",
+    "deleteTemplateConfirm": "Delete this template?",
+    "scope": {
+      "global": "Global",
+      "personal": "Personal"
+    },
+    "table": {
+      "name": "Name",
+      "muscle": "Muscle",
+      "type": "Type",
+      "scope": "Scope",
+      "email": "Email",
+      "role": "Role",
+      "createdAt": "Joined",
+      "creator": "Creator",
+      "visibility": "Visibility",
+      "actions": "Actions",
+      "action": "Action",
+      "create": "Creation"
+    },
+    "dialog": {
+      "editTitle": "Edit exercise",
+      "createTitle": "New exercise"
+    },
+    "form": {
+      "slug": "Slug",
+      "muscleGroup": "Muscle group",
+      "type": "Type",
+      "notes": "Notes (optional)"
+    }
+  },
+  "stats": {
+    "title": "Statistics",
+    "volumeChart": "Volume / week (kg)",
+    "personalRecords": "Personal Records",
+    "noRecords": "No records yet",
+    "table": {
+      "exercise": "Exercise",
+      "max": "Max (kg)",
+      "date": "Date"
+    },
+    "progression": "Exercise progression",
+    "selectExercise": "Select an exercise",
+    "selectPlaceholder": "Select an exercise to see its progression",
+    "noDataForExercise": "No data for this exercise",
+    "activityCalendar": "Activity",
+    "period": {
+      "1w": "1 wk",
+      "1m": "1 mo",
+      "3m": "3 mo",
+      "6m": "6 mo",
+      "1y": "1 yr",
+      "all": "All"
+    }
+  },
+  "sessions": {
+    "title": "Session",
+    "newSession": "New session",
+    "templateOptional": "Template (optional)",
+    "noTemplate": "No template",
+    "creating": "Creating...",
+    "create": "Create session",
+    "noExercises": "No exercises — add one below",
+    "addExercise": "Add exercise",
+    "deleteConfirm": "Delete this session?",
+    "notFound": "Session not found",
+    "notes": "Notes",
+    "notesPlaceholder": "Add notes about this session...",
+    "created": "Session created",
+    "saved": "Session saved"
+  },
+  "templates": {
+    "title": "Template",
+    "newTemplate": "New template",
+    "createTemplate": "Create template",
+    "form": {
+      "name": "Name",
+      "description": "Description",
+      "duration": "Estimated duration (min)"
+    },
+    "section": {
+      "info": "Details",
+      "exercises": "Exercises"
+    },
+    "noExercises": "No exercises — add one below",
+    "addExercise": "Add exercise",
+    "saving": "Saving...",
+    "save": "Save",
+    "deleteConfirm": "Delete this template?",
+    "notFound": "Template not found",
+    "loading": "Loading...",
+    "created": "Template created",
+    "saved": "Template saved",
+    "visibility": {
+      "label": "Visibility",
+      "public": "Public",
+      "private": "Private",
+      "publicHint": "Visible to all users",
+      "privateHint": "Visible only to you"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "noAccount": "No account yet?",
+      "createAccount": "Create account",
+      "error": "Invalid email or password."
+    },
+    "register": {
+      "title": "Create account",
+      "username": "Username (optional)",
+      "confirmPassword": "Confirm password",
+      "submit": "Create account",
+      "submitting": "Creating…",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign in",
+      "error": "Error creating account."
+    },
+    "fields": {
+      "email": "Email",
+      "password": "Password"
+    },
+    "validation": {
+      "invalidEmail": "Invalid email",
+      "minPassword": "Minimum 8 characters",
+      "passwordMismatch": "Passwords do not match"
+    }
+  },
+  "exerciseForm": {
+    "title": "Add exercise",
+    "selectExercise": "Select an exercise",
+    "exercise": "Exercise",
+    "duration": "Duration (s)",
+    "reps": "Reps",
+    "weight": "kg",
+    "warmup": "Warm.",
+    "pr": "PR",
+    "addSet": "Set",
+    "sets": "Sets",
+    "targetDuration": "Target duration (s)",
+    "targetReps": "Reps",
+    "rest": "Rest (s)",
+    "add": "Add",
+    "repsLong": "Repetitions",
+    "weightLong": "Weight (kg)",
+    "addSetLong": "Add set",
+    "save": "Save"
+  }
+}
