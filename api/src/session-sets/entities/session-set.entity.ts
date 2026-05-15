@@ -46,11 +46,7 @@ export class SessionSet {
   @Column({ type: 'int', nullable: true, name: 'duration_sec' })
   duration_sec: number | null;
 
-  @Column({ type: 'boolean', default: false, name: 'is_warmup' })
-  is_warmup: boolean;
-
-  @Column({ type: 'boolean', default: false, name: 'is_pr' })
-  is_pr: boolean;
+  is_pr: boolean = false;
 
   @Column({ type: 'timestamptz', nullable: true, name: 'performed_at' })
   performed_at: Date | null;

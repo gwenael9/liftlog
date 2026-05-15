@@ -1,7 +1,6 @@
 import {
   IsInt,
   IsOptional,
-  IsBoolean,
   IsNumber,
   Min,
   IsDateString,
@@ -32,11 +31,6 @@ export class UpdateSetDto {
   @IsInt()
   @Min(0)
   duration_sec?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  is_warmup?: boolean;
 
   @ApiPropertyOptional({ format: 'date-time' })
   @IsOptional()

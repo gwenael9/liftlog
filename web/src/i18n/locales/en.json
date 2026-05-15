@@ -71,14 +71,17 @@
     "title": "Administration",
     "tabs": {
       "exercises": "Exercises ({{count}})",
-      "users": "Users ({{count}})"
+      "users": "Users ({{count}})",
+      "templates": "Templates ({{count}})"
     },
     "allMuscles": "All muscles",
     "newExercise": "New exercise",
     "noExercises": "No exercises",
     "noUsers": "No users",
+    "noTemplates": "No templates",
     "deleteExerciseConfirm": "Delete this exercise?",
     "deleteUserConfirm": "Delete this user?",
+    "deleteTemplateConfirm": "Delete this template?",
     "scope": {
       "global": "Global",
       "personal": "Personal"
@@ -90,7 +93,12 @@
       "scope": "Scope",
       "email": "Email",
       "role": "Role",
-      "createdAt": "Joined"
+      "createdAt": "Joined",
+      "creator": "Creator",
+      "visibility": "Visibility",
+      "actions": "Actions",
+      "action": "Action",
+      "create": "Creation"
     },
     "dialog": {
       "editTitle": "Edit exercise",
@@ -156,7 +164,14 @@
     "notFound": "Template not found",
     "loading": "Loading...",
     "created": "Template created",
-    "saved": "Template saved"
+    "saved": "Template saved",
+    "visibility": {
+      "label": "Visibility",
+      "public": "Public",
+      "private": "Private",
+      "publicHint": "Visible to all users",
+      "privateHint": "Visible only to you"
+    }
   },
   "auth": {
     "login": {

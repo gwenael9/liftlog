@@ -1,8 +1,22 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { authApi, type LoginDto, type RegisterDto } from '@/api/auth'
 import { usersApi } from '@/api/users'
 import { useAuthStore } from '@/store/auth.store'
+
+export function useCurrentUser() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  return useQuery({
+    queryKey: ['currentUser'],
+    queryFn: async () => {
+      const { data, error } = await usersApi.getMe()
+      if (error) throw error
+      return data!
+    },
+    enabled: isAuthenticated,
+    staleTime: 5 * 60 * 1000,
+  })
+}
 
 async function fetchAndStoreRole(setRole: (role: string) => void) {
   const { data } = await usersApi.getMe()

@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectContent,
@@ -61,16 +60,15 @@ export function AddExerciseForm({ exercises, isPending, onSubmit }: Props) {
           </div>
 
           <div className="space-y-2">
-            <div className="grid grid-cols-[2rem_1fr_1fr_auto_auto] gap-2 items-center">
+            <div className="grid grid-cols-[2rem_1fr_1fr_auto] gap-2 items-center">
               <span />
               <span className="text-xs text-muted-foreground">{t('exerciseForm.repsLong')}</span>
               <span className="text-xs text-muted-foreground">{t('exerciseForm.weightLong')}</span>
-              <span className="text-xs text-muted-foreground">{t('exerciseForm.warmup')}</span>
               <span />
             </div>
 
             {rows.map((row, i) => (
-              <div key={i} className="grid grid-cols-[2rem_1fr_1fr_auto_auto] gap-2 items-center">
+              <div key={i} className="grid grid-cols-[2rem_1fr_1fr_auto] gap-2 items-center">
                 <span className="text-xs text-muted-foreground text-right">S{i + 1}</span>
                 <Input
                   type="number"
@@ -86,11 +84,6 @@ export function AddExerciseForm({ exercises, isPending, onSubmit }: Props) {
                   placeholder="80"
                   value={row.weight_kg}
                   onChange={e => setRows(r => r.map((x, idx) => idx === i ? { ...x, weight_kg: e.target.value } : x))}
-                />
-                <Checkbox
-                  className="mx-auto"
-                  checked={row.is_warmup}
-                  onCheckedChange={checked => setRows(r => r.map((x, idx) => idx === i ? { ...x, is_warmup: !!checked } : x))}
                 />
                 <Button
                   type="button"

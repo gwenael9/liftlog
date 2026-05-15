@@ -59,7 +59,6 @@ export function SessionsPage() {
             setsToCreate.push({
               exercise_id: ex.exercise_id,
               set_index: i,
-              is_warmup: false,
               exercise_order: exIdx,
             })
           }

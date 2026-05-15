@@ -19,15 +19,21 @@ export class WorkoutTemplatesService {
     private readonly templateExercisesRepository: Repository<TemplateExercise>,
   ) {}
 
-  async findAll(userId: string): Promise<WorkoutTemplate[]> {
+  async findAll(userId: string, isAdmin = false): Promise<WorkoutTemplate[]> {
+    if (isAdmin) {
+      return this.templatesRepository.find({
+        order: { created_at: 'DESC' },
+        relations: ['template_exercises', 'template_exercises.exercise', 'user'],
+      });
+    }
     return this.templatesRepository.find({
-      where: { user_id: userId },
+      where: [{ user_id: userId }, { is_public: true }],
       order: { created_at: 'DESC' },
       relations: ['template_exercises', 'template_exercises.exercise'],
     });
   }
 
-  async findOne(id: string, userId: string): Promise<WorkoutTemplate> {
+  async findOne(id: string, userId: string, isAdmin = false): Promise<WorkoutTemplate> {
     const template = await this.templatesRepository.findOne({
       where: { id },
       relations: ['template_exercises', 'template_exercises.exercise'],
@@ -35,7 +41,7 @@ export class WorkoutTemplatesService {
     if (!template) {
       throw new NotFoundException('Template not found');
     }
-    if (template.user_id !== userId) {
+    if (!template.is_public && template.user_id !== userId && !isAdmin) {
       throw new ForbiddenException('Access denied');
     }
     template.template_exercises.sort((a, b) => a.order_index - b.order_index);
@@ -48,6 +54,7 @@ export class WorkoutTemplatesService {
       name: dto.name,
       description: dto.description ?? null,
       estimated_duration: dto.estimated_duration ?? null,
+      is_public: dto.is_public ?? false,
     });
     const saved = await this.templatesRepository.save(template);
 
@@ -81,6 +88,7 @@ export class WorkoutTemplatesService {
     if (dto.name !== undefined) template.name = dto.name;
     if (dto.description !== undefined) template.description = dto.description;
     if (dto.estimated_duration !== undefined) template.estimated_duration = dto.estimated_duration;
+    if (dto.is_public !== undefined) template.is_public = dto.is_public;
 
     await this.templatesRepository.save(template);
 
@@ -105,12 +113,12 @@ export class WorkoutTemplatesService {
     return this.findOne(id, userId);
   }
 
-  async remove(id: string, userId: string): Promise<void> {
+  async remove(id: string, userId: string, isAdmin = false): Promise<void> {
     const template = await this.templatesRepository.findOne({ where: { id } });
     if (!template) {
       throw new NotFoundException('Template not found');
     }
-    if (template.user_id !== userId) {
+    if (template.user_id !== userId && !isAdmin) {
       throw new ForbiddenException('Access denied');
     }
     await this.templatesRepository.remove(template);

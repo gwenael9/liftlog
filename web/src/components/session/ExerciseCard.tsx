@@ -2,7 +2,6 @@ import { Trash2, Plus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
 import type { ExerciseGroup, SetEditValue, AddRow } from '@/types/session'
 import { useTranslation } from 'react-i18next'
 
@@ -32,8 +31,8 @@ export function ExerciseCard({
   const isDuration = group.trackingType === 'duration'
 
   const colClass = isDuration
-    ? 'grid-cols-[1.5rem_1fr_auto_auto]'
-    : 'grid-cols-[1.5rem_1fr_1fr_auto_auto]'
+    ? 'grid-cols-[1.5rem_1fr_auto]'
+    : 'grid-cols-[1.5rem_1fr_1fr_auto]'
 
   return (
     <Card>
@@ -51,12 +50,11 @@ export function ExerciseCard({
           {isDuration
             ? <span className="text-xs text-muted-foreground">{t('exerciseForm.duration')}</span>
             : <><span className="text-xs text-muted-foreground">{t('exerciseForm.reps')}</span><span className="text-xs text-muted-foreground">{t('exerciseForm.weight')}</span></>}
-          <span className="text-xs text-muted-foreground">{t('exerciseForm.warmup')}</span>
           <span />
         </div>
 
         {group.sets.map(set => {
-          const vals = editValues[set.id] ?? { reps: '', weight_kg: '', duration_sec: '', is_warmup: false }
+          const vals = editValues[set.id] ?? { reps: '', weight_kg: '', duration_sec: '' }
           return (
             <div key={set.id} className={`grid ${colClass} gap-2 items-center`}>
               <span className="text-xs text-muted-foreground text-right">S{set.set_index}</span>
@@ -80,11 +78,6 @@ export function ExerciseCard({
                   />
                 </>
               )}
-              <Checkbox
-                className="mx-auto"
-                checked={vals.is_warmup}
-                onCheckedChange={checked => onPatchEdit(set.id, { is_warmup: !!checked })}
-              />
               <div className="flex items-center gap-1">
                 {set.is_pr && <span className="text-xs text-yellow-500 font-semibold">{t('exerciseForm.pr')}</span>}
                 <Button variant="ghost" size="icon-sm" onClick={() => onDeleteSet(set.id)}>
@@ -120,11 +113,6 @@ export function ExerciseCard({
                 />
               </>
             )}
-            <Checkbox
-              className="mx-auto"
-              checked={row.is_warmup}
-              onCheckedChange={checked => onPatchPending(i, { is_warmup: !!checked })}
-            />
             <Button variant="ghost" size="icon-sm" onClick={() => onRemovePending(i)}>
               <Trash2 className="size-3" />
             </Button>

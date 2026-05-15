@@ -71,14 +71,17 @@
     "title": "Administration",
     "tabs": {
       "exercises": "Exercices ({{count}})",
-      "users": "Utilisateurs ({{count}})"
+      "users": "Utilisateurs ({{count}})",
+      "templates": "Templates ({{count}})"
     },
     "allMuscles": "Tous les muscles",
     "newExercise": "Nouvel exercice",
     "noExercises": "Aucun exercice",
     "noUsers": "Aucun utilisateur",
+    "noTemplates": "Aucun template",
     "deleteExerciseConfirm": "Supprimer cet exercice ?",
     "deleteUserConfirm": "Supprimer cet utilisateur ?",
+    "deleteTemplateConfirm": "Supprimer ce template ?",
     "scope": {
       "global": "Global",
       "personal": "Perso"
@@ -90,7 +93,12 @@
       "scope": "Portée",
       "email": "Email",
       "role": "Rôle",
-      "createdAt": "Inscription"
+      "createdAt": "Inscription",
+      "creator": "Créateur",
+      "visibility": "Visibilité",
+      "actions": "Actions",
+      "action": "Action",
+      "create": "Création"
     },
     "dialog": {
       "editTitle": "Modifier l'exercice",
@@ -156,7 +164,14 @@
     "notFound": "Template introuvable",
     "loading": "Chargement...",
     "created": "Template créé",
-    "saved": "Template sauvegardé"
+    "saved": "Template sauvegardé",
+    "visibility": {
+      "label": "Visibilité",
+      "public": "Public",
+      "private": "Privé",
+      "publicHint": "Visible par tous les utilisateurs",
+      "privateHint": "Visible uniquement par vous"
+    }
   },
   "auth": {
     "login": {

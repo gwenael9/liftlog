@@ -260,38 +260,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/stats/volume": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["StatsController_getVolume"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/stats/frequency": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["StatsController_getFrequency"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/stats/activity-dates": {
         parameters: {
             query?: never;
@@ -421,16 +389,25 @@ export interface components {
             rest_seconds?: number | null;
             target_duration_sec?: number | null;
         };
+        TemplateCreatorDto: {
+            /** Format: uuid */
+            id: string;
+            display_name?: string | null;
+            email: string;
+        };
         TemplateResponseDto: {
             /** Format: uuid */
             id: string;
             /** Format: uuid */
             user_id: string;
+            user?: components["schemas"]["TemplateCreatorDto"];
             /** @example Push Day */
             name: string;
             description?: string | null;
             /** @description Estimated duration in minutes */
             estimated_duration?: number | null;
+            /** @default false */
+            is_public: boolean;
             template_exercises: components["schemas"]["TemplateExerciseResponseDto"][];
             /** Format: date-time */
             created_at: string;
@@ -450,6 +427,8 @@ export interface components {
             description?: string;
             /** @description Estimated duration in minutes */
             estimated_duration?: number;
+            /** @default false */
+            is_public: boolean;
             exercises?: components["schemas"]["TemplateExerciseItemDto"][];
         };
         UpdateTemplateDto: {
@@ -457,6 +436,7 @@ export interface components {
             name?: string;
             description?: string;
             estimated_duration?: number;
+            is_public?: boolean;
             exercises?: components["schemas"]["TemplateExerciseItemDto"][];
         };
         SetResponseDto: {
@@ -472,7 +452,6 @@ export interface components {
             reps?: number | null;
             weight_kg?: number | null;
             duration_sec?: number | null;
-            is_warmup: boolean;
             is_pr: boolean;
             /** Format: date-time */
             performed_at?: string | null;
@@ -511,7 +490,6 @@ export interface components {
             reps?: number;
             weight_kg?: number;
             duration_sec?: number;
-            is_warmup?: boolean;
             /** Format: date-time */
             performed_at?: string;
             /** Format: uuid */
@@ -526,8 +504,6 @@ export interface components {
             reps?: number;
             weight_kg?: number;
             duration_sec?: number;
-            /** @default false */
-            is_warmup: boolean;
             /** Format: date-time */
             performed_at?: string;
         };
@@ -540,7 +516,6 @@ export interface components {
             reps?: number;
             weight_kg?: number;
             duration_sec?: number;
-            is_warmup?: boolean;
             /** Format: date-time */
             performed_at?: string;
         };
@@ -548,16 +523,6 @@ export interface components {
             /** @example 2026-05-08 */
             date: string;
             max_weight_kg: number;
-        };
-        VolumePerWeekDto: {
-            /** Format: date-time */
-            week_start: string;
-            total_volume_kg: number;
-        };
-        FrequencyPerWeekDto: {
-            /** Format: date-time */
-            week_start: string;
-            session_count: number;
         };
         PersonalRecordDto: {
             /** Format: uuid */
@@ -1160,48 +1125,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExerciseProgressionPointDto"][];
-                };
-            };
-        };
-    };
-    StatsController_getVolume: {
-        parameters: {
-            query?: {
-                weeks?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["VolumePerWeekDto"][];
-                };
-            };
-        };
-    };
-    StatsController_getFrequency: {
-        parameters: {
-            query?: {
-                weeks?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FrequencyPerWeekDto"][];
                 };
             };
         };
