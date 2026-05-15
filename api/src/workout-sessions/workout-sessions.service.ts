@@ -52,6 +52,43 @@ export class WorkoutSessionsService {
           ? a.exercise_order - b.exercise_order
           : a.set_index - b.set_index,
       );
+
+      const prRows = await this.sessionsRepository.query<{
+        exercise_id: string;
+        max_weight: string;
+        pr_session_id: string;
+        pr_set_index: string;
+      }[]>(
+        `SELECT DISTINCT ON (ss.exercise_id)
+           ss.exercise_id,
+           ss.weight_kg AS max_weight,
+           ss.session_id AS pr_session_id,
+           ss.set_index AS pr_set_index
+         FROM session_sets ss
+         JOIN workout_sessions s ON ss.session_id = s.id
+         WHERE s.user_id = $1
+           AND ss.is_warmup = false
+           AND ss.weight_kg IS NOT NULL
+         ORDER BY ss.exercise_id,
+                  ss.weight_kg DESC,
+                  s.scheduled_date ASC,
+                  ss.set_index ASC`,
+        [userId],
+      );
+      const prByExercise = new Map(
+        prRows.map(r => [
+          r.exercise_id,
+          { pr_session_id: r.pr_session_id, pr_set_index: parseInt(r.pr_set_index, 10) },
+        ]),
+      );
+
+      for (const set of session.session_sets) {
+        const pr = prByExercise.get(set.exercise_id);
+        set.is_pr =
+          pr != null &&
+          set.session_id === pr.pr_session_id &&
+          set.set_index === pr.pr_set_index;
+      }
     }
     return session;
   }

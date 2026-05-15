@@ -70,40 +70,36 @@ export class StatsService {
   }
 
   async getPersonalRecords(userId: string): Promise<PersonalRecord[]> {
-    const rows = await this.setsRepository
-      .createQueryBuilder("ss")
-      .innerJoin("ss.session", "s")
-      .innerJoin("ss.exercise", "e")
-      .where("s.user_id = :userId", { userId })
-      .andWhere("ss.is_pr = true")
-      .andWhere("ss.is_warmup = false")
-      .select([
-        "ss.exercise_id AS exercise_id",
-        "e.slug AS exercise_slug",
-        "MAX(ss.weight_kg) AS max_weight_kg",
-        "COALESCE(MAX(ss.performed_at), MAX(s.scheduled_date::timestamp)) AS performed_at",
-      ])
-      .groupBy("ss.exercise_id, e.slug")
-      .orderBy("e.slug", "ASC")
-      .getRawMany<{
-        exercise_id: string;
-        exercise_slug: string;
-        max_weight_kg: string;
-        performed_at: Date | null;
-      }>();
-
-    return rows.map(
-      (r: {
-        exercise_id: string;
-        exercise_slug: string;
-        max_weight_kg: string;
-        performed_at: Date | null;
-      }) => ({
-        exercise_id: r.exercise_id,
-        exercise_slug: r.exercise_slug,
-        max_weight_kg: parseFloat(r.max_weight_kg),
-        performed_at: r.performed_at,
-      }),
+    const rows = await this.setsRepository.query<{
+      exercise_id: string;
+      exercise_slug: string;
+      max_weight_kg: string;
+      performed_at: Date | null;
+    }[]>(
+      `SELECT sub.exercise_id, sub.exercise_slug, sub.max_weight_kg, sub.performed_at
+       FROM (
+         SELECT DISTINCT ON (ss.exercise_id)
+           ss.exercise_id,
+           e.slug AS exercise_slug,
+           ss.weight_kg AS max_weight_kg,
+           s.scheduled_date::timestamp AS performed_at
+         FROM session_sets ss
+         JOIN workout_sessions s ON ss.session_id = s.id
+         JOIN exercises e ON ss.exercise_id = e.id
+         WHERE s.user_id = $1
+           AND ss.is_warmup = false
+           AND ss.weight_kg IS NOT NULL
+         ORDER BY ss.exercise_id, ss.weight_kg DESC, s.scheduled_date ASC
+       ) sub
+       ORDER BY sub.exercise_slug ASC`,
+      [userId],
     );
+
+    return rows.map(r => ({
+      exercise_id: r.exercise_id,
+      exercise_slug: r.exercise_slug,
+      max_weight_kg: parseFloat(r.max_weight_kg),
+      performed_at: r.performed_at,
+    }));
   }
 }
