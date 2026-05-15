@@ -1,11 +1,8 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { GripVertical, Plus, Trash2 } from "lucide-react";
+import { GripVertical, Info, Plus, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import {
   useTemplate,
   useUpdateTemplate,
@@ -16,6 +13,9 @@ import { useCurrentUser } from "@/hooks/useAuth";
 import { AddExerciseDialog } from "@/components/AddExerciseDialog";
 import { ConfirmDeleteDialog } from "@/components/ConfirmDeleteDialog";
 import { DetailHeader } from "@/components/layout/DetailHeader";
+import InfoDialog, {
+  type TemplateInfoState,
+} from "@/components/template/InfoDialog";
 import type {
   TemplateResponseDto,
   TemplateExerciseItemDto,
@@ -92,19 +92,21 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
   const canEdit = isOwner || isAdmin;
   const canDelete = isOwner || isAdmin;
 
-  const [name, setName] = useState(template.name);
-  const [description, setDescription] = useState(template.description ?? "");
-  const [duration, setDuration] = useState(
-    template.estimated_duration != null
-      ? String(template.estimated_duration)
-      : "",
-  );
-  const [isPublic, setIsPublic] = useState(template.is_public);
+  const [info, setInfo] = useState<TemplateInfoState>({
+    name: template.name,
+    description: template.description ?? "",
+    duration:
+      template.estimated_duration != null
+        ? String(template.estimated_duration)
+        : "",
+    isPublic: template.is_public,
+  });
   const [rows, setRows] = useState<ExerciseRow[]>(() =>
     toExerciseRows(template),
   );
   const [dirty, setDirty] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   function handleAddExercise(
@@ -143,10 +145,10 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
   function handleSave() {
     updateTemplate.mutate(
       {
-        name,
-        description: description || undefined,
-        estimated_duration: duration ? Number(duration) : undefined,
-        is_public: isPublic,
+        name: info.name,
+        description: info.description || undefined,
+        estimated_duration: info.duration ? Number(info.duration) : undefined,
+        is_public: info.isPublic,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         exercises: rows.map(({ _key: _, ...item }) => item),
       },
@@ -185,71 +187,41 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
         onDelete={canDelete ? () => setDeleteOpen(true) : undefined}
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">
+      <div className="flex justify-end">
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setInfoOpen(true)}>
+            <Info className="size-4" />
             {t("templates.section.info")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="space-y-1">
-            <Label>{t("templates.form.name")}</Label>
-            <Input
-              value={name}
-              readOnly={!canEdit}
-              onChange={(e) => {
-                setName(e.target.value);
-                setDirty(true);
-              }}
-              placeholder="Push Day"
-            />
-          </div>
-          <div className="space-y-1">
-            <Label>{t("templates.form.description")}</Label>
-            <Input
-              value={description}
-              readOnly={!canEdit}
-              onChange={(e) => {
-                setDescription(e.target.value);
-                setDirty(true);
-              }}
-              placeholder={t("common.optional")}
-            />
-          </div>
-          <div className="space-y-1">
-            <Label>{t("templates.form.duration")}</Label>
-            <Input
-              type="number"
-              min={1}
-              value={duration}
-              readOnly={!canEdit}
-              onChange={(e) => {
-                setDuration(e.target.value);
-                setDirty(true);
-              }}
-              placeholder="60"
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>{t("templates.visibility.label")}</Label>
-              <p className="text-xs text-muted-foreground">
-                {isPublic
-                  ? t("templates.visibility.publicHint")
-                  : t("templates.visibility.privateHint")}
-              </p>
-            </div>
-            <Switch
-              checked={isPublic}
-              disabled={!canEdit}
-              onCheckedChange={(v: boolean) => {
-                setIsPublic(v);
-                setDirty(true);
-              }}
-            />
-          </div>
-        </CardContent>
-      </Card>
+          </Button>
+          {canEdit && (
+            <>
+              <Button variant="outline" onClick={() => setAddOpen(true)}>
+                <Plus className="size-4" />
+                {t("templates.addExercise")}
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={updateTemplate.isPending || !dirty}
+              >
+                {updateTemplate.isPending
+                  ? t("templates.saving")
+                  : t("common.save")}
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+
+      <InfoDialog
+        open={infoOpen}
+        onOpenChange={setInfoOpen}
+        canEdit={canEdit}
+        info={info}
+        onChange={(patch) => {
+          setInfo((prev) => ({ ...prev, ...patch }));
+          setDirty(true);
+        }}
+      />
 
       <Card>
         <CardHeader>
@@ -299,17 +271,6 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
         </CardContent>
       </Card>
 
-      {canEdit && (
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={() => setAddOpen(true)}
-        >
-          <Plus className="size-4" />
-          {t("templates.addExercise")}
-        </Button>
-      )}
-
       <AddExerciseDialog
         mode="template"
         exercises={exercises}
@@ -317,18 +278,6 @@ function TemplateEditForm({ id, template, exercises }: TemplateEditFormProps) {
         onOpenChange={setAddOpen}
         onSubmit={handleAddExercise}
       />
-
-      {canEdit && (
-        <Button
-          className="w-full"
-          onClick={handleSave}
-          disabled={updateTemplate.isPending || !dirty}
-        >
-          {updateTemplate.isPending
-            ? t("templates.saving")
-            : t("templates.save")}
-        </Button>
-      )}
 
       <ConfirmDeleteDialog
         open={deleteOpen}
