@@ -37,15 +37,19 @@ export default function PageLayout<T>({
   const items = data.items ?? [];
 
   return (
-    <div className="max-w-2xl mx-auto p-4 space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{title}s</h2>
-        <Button size="sm" onClick={() => dialog.onOpenChange(true)}>
-          <Plus className="size-4" />
-          {t(`common.new_${female ? "female" : "male"}`, {
-            title: title.toLowerCase(),
-          })}
-        </Button>
+    <div className="max-w-2xl mx-auto">
+      {/* Collé en haut du scroll container (<main>) pendant le scroll */}
+      <div className="sticky top-0 z-10 bg-background px-4 pt-4 pb-2 space-y-4 mb-2">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">{title}s</h2>
+          <Button size="sm" onClick={() => dialog.onOpenChange(true)}>
+            <Plus className="size-4" />
+            {t(`common.new_${female ? "female" : "male"}`, {
+              title: title.toLowerCase(),
+            })}
+          </Button>
+        </div>
+        {subContent}
       </div>
 
       <Dialog open={dialog.open} onOpenChange={dialog.onOpenChange}>
@@ -61,17 +65,15 @@ export default function PageLayout<T>({
         </DialogContent>
       </Dialog>
 
-      {subContent}
+      <div className="px-4 pb-4 space-y-2">
+        {data.isLoading && !skeleton && <Loader />}
 
-      {data.isLoading && !skeleton && <Loader />}
+        {!data.isLoading && items.length === 0 && (
+          <p className="text-center text-muted-foreground py-8">
+            {t("common.noData")}
+          </p>
+        )}
 
-      {!data.isLoading && items.length === 0 && (
-        <p className="text-center text-muted-foreground py-8">
-          {t("common.noData")}
-        </p>
-      )}
-
-      <div className="space-y-2">
         {data.isLoading && skeleton}
         {!data.isLoading && children}
       </div>

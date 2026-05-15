@@ -27,7 +27,7 @@ export function AppLayout() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       <header className="border-b bg-card sticky top-0 z-40">
         <div className="px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-5">
@@ -87,7 +87,7 @@ export function AppLayout() {
         </div>
       </header>
 
-      <main className="flex-1 pb-16 md:pb-0">
+      <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
         <Outlet />
       </main>
 

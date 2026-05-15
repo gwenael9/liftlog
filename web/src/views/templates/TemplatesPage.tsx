@@ -1,31 +1,37 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Clock, Dumbbell, Globe, Lock } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/components/ui/card'
-import { Button } from '@/shared/components/ui/button'
-import { Input } from '@/shared/components/ui/input'
-import { Label } from '@/shared/components/ui/label'
-import { Switch } from '@/shared/components/ui/switch'
-import { Skeleton } from '@/shared/components/ui/skeleton'
-import PageLayout from '@/shared/components/layout/PageLayout'
-import { useTemplates, useCreateTemplate } from '@/shared/hooks/useTemplates'
-import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Clock, Dumbbell, Globe, Lock } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/shared/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
+import { Switch } from "@/shared/components/ui/switch";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import PageLayout from "@/shared/components/layout/PageLayout";
+import { useTemplates, useCreateTemplate } from "@/shared/hooks/useTemplates";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 export function TemplatesPage() {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  const { data: templates, isLoading } = useTemplates()
-  const createTemplate = useCreateTemplate()
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { data: templates, isLoading } = useTemplates();
+  const createTemplate = useCreateTemplate();
 
-  const [open, setOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [duration, setDuration] = useState('')
-  const [isPublic, setIsPublic] = useState(false)
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [duration, setDuration] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
 
   function handleCreate(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
     createTemplate.mutate(
       {
         name,
@@ -36,68 +42,78 @@ export function TemplatesPage() {
       },
       {
         onSuccess: (template) => {
-          toast.success(t('templates.created'))
-          navigate(`/templates/${template.id}`)
-          setOpen(false)
-          setName('')
-          setDescription('')
-          setDuration('')
-          setIsPublic(false)
+          toast.success(t("templates.created"));
+          navigate(`/templates/${template.id}`);
+          setOpen(false);
+          setName("");
+          setDescription("");
+          setDuration("");
+          setIsPublic(false);
         },
-      }
-    )
+      },
+    );
   }
 
   const dialogContent = (
     <form onSubmit={handleCreate} className="space-y-4">
       <div className="space-y-1">
-        <Label htmlFor="name">{t('templates.form.name')}</Label>
+        <Label htmlFor="name">{t("templates.form.name")}</Label>
         <Input
           id="name"
           placeholder="Push Day"
           value={name}
-          onChange={e => setName(e.target.value)}
+          onChange={(e) => setName(e.target.value)}
           required
         />
       </div>
       <div className="space-y-1">
-        <Label htmlFor="description">{t('templates.form.description')}</Label>
+        <Label htmlFor="description">{t("templates.form.description")}</Label>
         <Input
           id="description"
-          placeholder={t('common.optional')}
+          placeholder={t("common.optional")}
           value={description}
-          onChange={e => setDescription(e.target.value)}
+          onChange={(e) => setDescription(e.target.value)}
         />
       </div>
       <div className="space-y-1">
-        <Label htmlFor="duration">{t('templates.form.duration')}</Label>
+        <Label htmlFor="duration">{t("templates.form.duration")}</Label>
         <Input
           id="duration"
           type="number"
           min={1}
           placeholder="60"
           value={duration}
-          onChange={e => setDuration(e.target.value)}
+          onChange={(e) => setDuration(e.target.value)}
         />
       </div>
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
-          <Label htmlFor="is_public">{t('templates.visibility.label')}</Label>
+          <Label htmlFor="is_public">{t("templates.visibility.label")}</Label>
           <p className="text-xs text-muted-foreground">
-            {isPublic ? t('templates.visibility.publicHint') : t('templates.visibility.privateHint')}
+            {isPublic
+              ? t("templates.visibility.publicHint")
+              : t("templates.visibility.privateHint")}
           </p>
         </div>
-        <Switch id="is_public" checked={isPublic} onCheckedChange={setIsPublic} />
+        <Switch
+          id="is_public"
+          checked={isPublic}
+          onCheckedChange={setIsPublic}
+        />
       </div>
-      <Button type="submit" className="w-full" disabled={createTemplate.isPending || !name}>
-        {t('templates.createTemplate')}
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={createTemplate.isPending || !name}
+      >
+        {t("templates.createTemplate")}
       </Button>
     </form>
-  )
+  );
 
   const templateSkeleton = (
     <>
-      {[0, 1, 2].map(i => (
+      {[0, 1, 2].map((i) => (
         <Card key={i}>
           <CardHeader>
             <Skeleton className="h-5 w-3/4" />
@@ -112,22 +128,22 @@ export function TemplatesPage() {
         </Card>
       ))}
     </>
-  )
+  );
 
   return (
     <PageLayout
-      title={t('templates.title')}
+      title={t("templates.title")}
       data={{ isLoading, items: templates ?? [] }}
       skeleton={templateSkeleton}
       dialog={{
         open,
         onOpenChange: setOpen,
-        title: t('templates.newTemplate'),
+        title: t("templates.newTemplate"),
         content: dialogContent,
       }}
     >
-      {templates?.map(template => {
-        const exercises = template.template_exercises ?? []
+      {templates?.map((template) => {
+        const exercises = template.template_exercises ?? [];
         return (
           <Card
             key={template.id}
@@ -138,10 +154,17 @@ export function TemplatesPage() {
               <div className="flex items-start justify-between gap-2">
                 <CardTitle>{template.name}</CardTitle>
                 <span className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
-                  {template.is_public
-                    ? <><Globe className="size-3" />{t('templates.visibility.public')}</>
-                    : <><Lock className="size-3" />{t('templates.visibility.private')}</>
-                  }
+                  {template.is_public ? (
+                    <>
+                      <Globe className="size-3" />
+                      {t("templates.visibility.public")}
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="size-3" />
+                      {t("templates.visibility.private")}
+                    </>
+                  )}
                 </span>
               </div>
               {template.description && (
@@ -154,7 +177,7 @@ export function TemplatesPage() {
                   {exercises.length > 0 && (
                     <span className="flex items-center gap-1">
                       <Dumbbell className="size-3" />
-                      {t('common.exerciseCount', { count: exercises.length })}
+                      {t("common.exerciseCount", { count: exercises.length })}
                     </span>
                   )}
                   {template.estimated_duration && (
@@ -167,8 +190,8 @@ export function TemplatesPage() {
               </CardContent>
             )}
           </Card>
-        )
+        );
       })}
     </PageLayout>
-  )
+  );
 }
