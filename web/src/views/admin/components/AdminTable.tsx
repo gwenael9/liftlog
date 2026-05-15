@@ -7,9 +7,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
-import { Pagination } from "./pagination/AdminPagination";
+import Pagination from "@/shared/components/Pagination";
 import { ConfirmDeleteDialog } from "@/shared/components/ConfirmDeleteDialog";
-import usePagination from "./pagination/usePagination";
+import usePagination from "@/shared/hooks/usePagination";
 
 interface Column {
   label: string;

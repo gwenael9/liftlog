@@ -1,5 +1,20 @@
 import { formatDateFull } from "@/shared/utils";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/components/ui/table";
+import Pagination from "@/shared/components/Pagination";
+import usePagination from "@/shared/hooks/usePagination";
 import { usePersonalRecords } from "@/views/stats/hooks/useStats";
 import { useTranslation } from "react-i18next";
 import Empty from "@/shared/components/Empty";
@@ -8,6 +23,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 export default function RecordStats() {
   const { t } = useTranslation();
   const { data: prs, isLoading } = usePersonalRecords();
+  const pager = usePagination(prs ?? []);
 
   return (
     <Card>
@@ -30,38 +46,39 @@ export default function RecordStats() {
         ) : !prs?.length ? (
           <Empty message={t("stats.noRecords")} />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left pb-2 font-medium text-muted-foreground">
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="pl-0 text-xs">
                     {t("stats.table.exercise")}
-                  </th>
-                  <th className="text-right pb-2 font-medium text-muted-foreground">
+                  </TableHead>
+                  <TableHead className="text-right text-xs">
                     {t("stats.table.max")}
-                  </th>
-                  <th className="text-right pb-2 font-medium text-muted-foreground">
+                  </TableHead>
+                  <TableHead className="pr-0 text-right text-xs">
                     {t("stats.table.date")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {prs.map((pr) => (
-                  <tr key={pr.exercise_id} className="border-b last:border-0">
-                    <td className="py-2">
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pager.slice.map((pr) => (
+                  <TableRow key={pr.exercise_id}>
+                    <TableCell className="pl-0 py-2 text-sm">
                       {t(`exercises.${pr.exercise_slug}`)}
-                    </td>
-                    <td className="py-2 text-right font-medium">
+                    </TableCell>
+                    <TableCell className="py-2 text-right text-sm font-medium">
                       {pr.max_weight_kg} kg
-                    </td>
-                    <td className="py-2 text-right text-muted-foreground">
+                    </TableCell>
+                    <TableCell className="pr-0 py-2 text-right text-sm text-muted-foreground">
                       {pr.performed_at ? formatDateFull(pr.performed_at) : "—"}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </TableBody>
+            </Table>
+            <Pagination pager={pager} className="mt-2" />
+          </>
         )}
       </CardContent>
     </Card>

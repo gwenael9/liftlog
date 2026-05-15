@@ -65,7 +65,9 @@
     "exerciseCount_one": "{{count}} exercice",
     "exerciseCount_other": "{{count}} exercices",
     "new_female": "Nouvelle {{title}}",
-    "new_male": "Nouveau {{title}}"
+    "new_male": "Nouveau {{title}}",
+    "previous": "Précédent",
+    "next": "Suivant"
   },
   "admin": {
     "title": "Administration",
