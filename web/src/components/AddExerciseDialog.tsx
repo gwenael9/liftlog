@@ -4,7 +4,6 @@ import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectContent,
@@ -95,8 +94,8 @@ export function AddExerciseDialog(props: Props) {
             const trackingType = exercises?.find(ex => ex.id === exerciseId)?.tracking_type ?? 'strength'
             const isDuration = trackingType === 'duration'
             const colClass = isDuration
-              ? 'grid-cols-[2rem_1fr_auto_auto]'
-              : 'grid-cols-[2rem_1fr_1fr_auto_auto]'
+              ? 'grid-cols-[2rem_1fr_auto]'
+              : 'grid-cols-[2rem_1fr_1fr_auto]'
             return (
               <div className="space-y-2">
                 <div className={`grid ${colClass} gap-2 items-center`}>
@@ -104,7 +103,6 @@ export function AddExerciseDialog(props: Props) {
                   {isDuration
                     ? <span className="text-xs text-muted-foreground">{t('exerciseForm.duration')}</span>
                     : <><span className="text-xs text-muted-foreground">{t('exerciseForm.reps')}</span><span className="text-xs text-muted-foreground">{t('exerciseForm.weight')}</span></>}
-                  <span className="text-xs text-muted-foreground">{t('exerciseForm.warmup')}</span>
                   <span />
                 </div>
                 {rows.map((row, i) => (
@@ -127,11 +125,6 @@ export function AddExerciseDialog(props: Props) {
                         />
                       </>
                     )}
-                    <Checkbox
-                      className="mx-auto"
-                      checked={row.is_warmup}
-                      onCheckedChange={checked => setRows(r => r.map((x, idx) => idx === i ? { ...x, is_warmup: !!checked } : x))}
-                    />
                     <Button
                       type="button" variant="ghost" size="icon-sm"
                       disabled={rows.length === 1}

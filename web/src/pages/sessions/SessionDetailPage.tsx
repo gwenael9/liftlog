@@ -91,7 +91,6 @@ export function SessionDetailPage() {
       duration_sec:
         patch.duration_sec ??
         (set.duration_sec != null ? String(set.duration_sec) : ""),
-      is_warmup: patch.is_warmup ?? set.is_warmup,
     };
   }
 
@@ -115,8 +114,7 @@ export function SessionDetailPage() {
             (set.weight_kg != null ? String(set.weight_kg) : "")) ||
         (patch.duration_sec !== undefined &&
           patch.duration_sec !==
-            (set.duration_sec != null ? String(set.duration_sec) : "")) ||
-        (patch.is_warmup !== undefined && patch.is_warmup !== set.is_warmup)
+            (set.duration_sec != null ? String(set.duration_sec) : ""))
       );
     });
   }
@@ -185,7 +183,6 @@ export function SessionDetailPage() {
           duration_sec: vals.duration_sec
             ? Number(vals.duration_sec)
             : undefined,
-          is_warmup: vals.is_warmup,
         });
       }
       const pending = pendingRows[g.exerciseId] ?? [];
@@ -198,7 +195,6 @@ export function SessionDetailPage() {
           reps: row.reps ? Number(row.reps) : undefined,
           weight_kg: row.weight_kg ? Number(row.weight_kg) : undefined,
           duration_sec: row.duration_sec ? Number(row.duration_sec) : undefined,
-          is_warmup: row.is_warmup,
           performed_at: new Date().toISOString(),
         });
       }
@@ -235,7 +231,6 @@ export function SessionDetailPage() {
         reps: row.reps ? Number(row.reps) : undefined,
         weight_kg: row.weight_kg ? Number(row.weight_kg) : undefined,
         duration_sec: row.duration_sec ? Number(row.duration_sec) : undefined,
-        is_warmup: row.is_warmup,
         performed_at: new Date().toISOString(),
       })),
     };

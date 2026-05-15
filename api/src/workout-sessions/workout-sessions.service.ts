@@ -67,7 +67,6 @@ export class WorkoutSessionsService {
          FROM session_sets ss
          JOIN workout_sessions s ON ss.session_id = s.id
          WHERE s.user_id = $1
-           AND ss.is_warmup = false
            AND ss.weight_kg IS NOT NULL
          ORDER BY ss.exercise_id,
                   ss.weight_kg DESC,

@@ -440,7 +440,6 @@ export interface components {
             reps?: number | null;
             weight_kg?: number | null;
             duration_sec?: number | null;
-            is_warmup: boolean;
             is_pr: boolean;
             /** Format: date-time */
             performed_at?: string | null;
@@ -479,7 +478,6 @@ export interface components {
             reps?: number;
             weight_kg?: number;
             duration_sec?: number;
-            is_warmup?: boolean;
             /** Format: date-time */
             performed_at?: string;
             /** Format: uuid */
@@ -494,8 +492,6 @@ export interface components {
             reps?: number;
             weight_kg?: number;
             duration_sec?: number;
-            /** @default false */
-            is_warmup: boolean;
             /** Format: date-time */
             performed_at?: string;
         };
@@ -508,7 +504,6 @@ export interface components {
             reps?: number;
             weight_kg?: number;
             duration_sec?: number;
-            is_warmup?: boolean;
             /** Format: date-time */
             performed_at?: string;
         };

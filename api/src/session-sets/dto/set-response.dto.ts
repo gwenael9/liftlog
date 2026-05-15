@@ -30,9 +30,6 @@ export class SetResponseDto {
   duration_sec: number | null;
 
   @ApiProperty()
-  is_warmup: boolean;
-
-  @ApiProperty()
   is_pr: boolean;
 
   @ApiPropertyOptional({ format: 'date-time', nullable: true })

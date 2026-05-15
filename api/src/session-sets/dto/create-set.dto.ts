@@ -2,7 +2,6 @@ import {
   IsUUID,
   IsInt,
   IsOptional,
-  IsBoolean,
   IsNumber,
   Min,
   IsDateString,
@@ -42,11 +41,6 @@ export class CreateSetDto {
   @IsInt()
   @Min(0)
   duration_sec?: number;
-
-  @ApiPropertyOptional({ default: false })
-  @IsOptional()
-  @IsBoolean()
-  is_warmup?: boolean;
 
   @ApiPropertyOptional({ format: 'date-time' })
   @IsOptional()

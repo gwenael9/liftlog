@@ -35,7 +35,6 @@ export class StatsService {
       .where("s.user_id = :userId", { userId })
       .andWhere("ss.exercise_id = :exerciseId", { exerciseId })
       .andWhere("ss.weight_kg IS NOT NULL")
-      .andWhere("ss.is_warmup = false")
       .select([
         "DATE(ss.performed_at) AS date",
         "MAX(ss.weight_kg) AS max_weight_kg",
@@ -87,7 +86,6 @@ export class StatsService {
          JOIN workout_sessions s ON ss.session_id = s.id
          JOIN exercises e ON ss.exercise_id = e.id
          WHERE s.user_id = $1
-           AND ss.is_warmup = false
            AND ss.weight_kg IS NOT NULL
          ORDER BY ss.exercise_id, ss.weight_kg DESC, s.scheduled_date ASC
        ) sub
