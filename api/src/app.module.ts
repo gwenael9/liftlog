@@ -7,6 +7,8 @@ import { WorkoutTemplatesModule } from "./workout-templates/workout-templates.mo
 import { WorkoutSessionsModule } from "./workout-sessions/workout-sessions.module";
 import { SessionSetsModule } from "./session-sets/session-sets.module";
 import { StatsModule } from "./stats/stats.module";
+import { FavoritesModule } from "./favorites/favorites.module";
+import { Favorite } from "./favorites/entities/favorite.entity";
 import { User } from "./users/entities/user.entity";
 import { Exercise } from "./exercises/entities/exercise.entity";
 import { WorkoutTemplate } from "./workout-templates/entities/workout-template.entity";
@@ -30,6 +32,7 @@ import { SessionSet } from "./session-sets/entities/session-set.entity";
         TemplateExercise,
         WorkoutSession,
         SessionSet,
+        Favorite,
       ],
       synchronize: process.env.NODE_ENV !== "production",
       migrationsRun: process.env.NODE_ENV === "production",
@@ -43,6 +46,7 @@ import { SessionSet } from "./session-sets/entities/session-set.entity";
     WorkoutSessionsModule,
     SessionSetsModule,
     StatsModule,
+    FavoritesModule,
   ],
 })
 export class AppModule {}
