@@ -13,12 +13,7 @@ export function LanguageToggle() {
   }
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={toggle}
-      className="font-mono text-xs px-2"
-    >
+    <Button variant="outline" size="icon" onClick={toggle}>
       {current.toUpperCase()}
     </Button>
   );
