@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import {
   Card,
   CardAction,
@@ -19,8 +19,13 @@ import {
   SelectTrigger,
 } from "@/shared/components/ui/select";
 import PageLayout from "@/shared/components/layout/PageLayout";
-import { useSessions, useCreateSession } from "@/shared/hooks/useSessions";
+import {
+  useSessions,
+  useCreateSession,
+  useDeleteSession,
+} from "@/shared/hooks/useSessions";
 import { useTemplates } from "@/shared/hooks/useTemplates";
+import { ConfirmDeleteDialog } from "@/shared/components/ConfirmDeleteDialog";
 import { sessionsApi, type CreateSetDto } from "@/shared/api/sessions";
 import {
   formatMonth,
@@ -39,11 +44,13 @@ export function SessionsPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const monthStr = toMonthString(currentMonth);
   const { data: sessions, isLoading } = useSessions(monthStr);
   const { data: templates } = useTemplates();
   const createSession = useCreateSession(monthStr);
+  const deleteSession = useDeleteSession();
 
   async function handleCreate() {
     setIsCreating(true);
@@ -87,6 +94,13 @@ export function SessionsPage() {
     } finally {
       setIsCreating(false);
     }
+  }
+
+  async function handleDelete() {
+    if (!deleteId) return;
+    await deleteSession.mutateAsync(deleteId);
+    toast.success(t("sessions.deleted"));
+    setDeleteId(null);
   }
 
   const sorted = sessions
@@ -186,53 +200,76 @@ export function SessionsPage() {
   );
 
   return (
-    <PageLayout
-      title={t("sessions.title")}
-      female
-      data={{ isLoading, items: sorted }}
-      skeleton={sessionSkeleton}
-      dialog={{
-        open,
-        onOpenChange: setOpen,
-        title: t("sessions.newSession"),
-        content: dialogContent,
-      }}
-      subContent={monthNav}
-    >
-      {sorted?.map((session) => {
-        const sets = session.session_sets ?? [];
-        const exerciseCount = new Set(sets.map((s) => s.exercise_id)).size;
-        const templateName = session.template_id
-          ? templates?.find((t) => t.id === session.template_id)?.name
-          : null;
-        return (
-          <Card
-            key={session.id}
-            className="cursor-pointer hover:ring-2 hover:ring-primary/40 transition-all"
-            onClick={() => navigate(`/sessions/${session.id}`)}
-          >
-            <CardHeader>
-              <CardTitle className="capitalize text-base">
-                {formatSessionDate(session.scheduled_date)}
-              </CardTitle>
-              {templateName && (
-                <CardAction>
-                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                    {templateName}
-                  </span>
+    <>
+      <PageLayout
+        title={t("sessions.title")}
+        female
+        data={{ isLoading, items: sorted }}
+        skeleton={sessionSkeleton}
+        dialog={{
+          open,
+          onOpenChange: setOpen,
+          title: t("sessions.newSession"),
+          content: dialogContent,
+        }}
+        subContent={monthNav}
+      >
+        {sorted?.map((session) => {
+          const sets = session.session_sets ?? [];
+          const exerciseCount = new Set(sets.map((s) => s.exercise_id)).size;
+          const templateName = session.template_id
+            ? templates?.find((t) => t.id === session.template_id)?.name
+            : null;
+          return (
+            <Card
+              key={session.id}
+              className="group cursor-pointer hover:ring-2 hover:ring-primary/40 transition-all"
+              onClick={() => navigate(`/sessions/${session.id}`)}
+            >
+              <CardHeader>
+                <CardTitle className="capitalize text-base">
+                  {formatSessionDate(session.scheduled_date)}
+                </CardTitle>
+                <CardAction className="flex items-center gap-2">
+                  {templateName && (
+                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                      {templateName}
+                    </span>
+                  )}
                 </CardAction>
-              )}
-            </CardHeader>
-            {exerciseCount > 0 && (
-              <CardContent>
-                <p className="text-xs text-muted-foreground">
-                  {t("common.exerciseCount", { count: exerciseCount })}
-                </p>
+              </CardHeader>
+              <CardContent className="flex items-center">
+                {exerciseCount > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {t("common.exerciseCount", { count: exerciseCount })}
+                  </p>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDeleteId(session.id);
+                  }}
+                >
+                  <Trash2 className="text-destructive size-4" />
+                </Button>
               </CardContent>
-            )}
-          </Card>
-        );
-      })}
-    </PageLayout>
+            </Card>
+          );
+        })}
+      </PageLayout>
+
+      <ConfirmDeleteDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title={t("sessions.deleteConfirm")}
+        onConfirm={handleDelete}
+        isPending={deleteSession.isPending}
+      />
+    </>
   );
 }

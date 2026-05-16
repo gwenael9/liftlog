@@ -134,6 +134,19 @@ export function useTemplateEditor(
     setDirty(true);
   }
 
+  function handleReorderExercise(activeKey: string, overKey: string) {
+    setRows((r) => {
+      const from = r.findIndex((row) => row._key === activeKey);
+      const to = r.findIndex((row) => row._key === overKey);
+      if (from === -1 || to === -1) return r;
+      const next = [...r];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next.map((row, i) => ({ ...row, order_index: i + 1 }));
+    });
+    setDirty(true);
+  }
+
   function handleSave() {
     updateTemplate.mutate(
       {
@@ -179,6 +192,7 @@ export function useTemplateEditor(
     handleInfoChange,
     handleAddExercise,
     handleRemoveExercise,
+    handleReorderExercise,
     handleSave,
     handleDelete,
     exerciseName,

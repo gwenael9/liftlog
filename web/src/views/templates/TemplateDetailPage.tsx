@@ -41,6 +41,7 @@ export function TemplateDetailPage() {
     handleInfoChange,
     handleAddExercise,
     handleRemoveExercise,
+    handleReorderExercise,
     handleSave,
     handleDelete,
     exerciseName,
@@ -84,6 +85,7 @@ export function TemplateDetailPage() {
         getExerciseName={exerciseName}
         onAdd={() => setAddOpen(true)}
         onRemove={handleRemoveExercise}
+        onReorder={handleReorderExercise}
       />
 
       <AddExerciseDialog
