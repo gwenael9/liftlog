@@ -128,6 +128,16 @@ PUT    /sessions/:sessionId/sets/:id
 DELETE /sessions/:sessionId/sets/:id
 ```
 
+### Favorites (JWT requis)
+
+```
+POST   /favorites                          { entity_type, entity_id }  →  ajoute un favori
+DELETE /favorites/:entity_type/:entity_id                              →  supprime un favori
+GET    /favorites/:entity_type                                         →  liste les entity_ids favoris
+```
+
+`entity_type` : valeurs supportées : `template`
+
 ### Stats (JWT requis)
 
 ```

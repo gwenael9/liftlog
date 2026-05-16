@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Clock, Dumbbell, Globe, Lock } from "lucide-react";
+import { Clock, Dumbbell, Globe, Lock, Star } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -15,6 +15,7 @@ import { Switch } from "@/shared/components/ui/switch";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { useTemplates, useCreateTemplate } from "@/shared/hooks/useTemplates";
+import { useFavorites, useToggleFavorite } from "@/shared/hooks/useFavorites";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -23,6 +24,8 @@ export function TemplatesPage() {
   const navigate = useNavigate();
   const { data: templates, isLoading } = useTemplates();
   const createTemplate = useCreateTemplate();
+  const { data: favoriteIds = [] as string[] } = useFavorites("template");
+  const toggleFavorite = useToggleFavorite("template");
 
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -130,10 +133,16 @@ export function TemplatesPage() {
     </>
   );
 
+  const sorted = [...(templates ?? [])].sort((a, b) => {
+    const aFav = favoriteIds.includes(a.id) ? 0 : 1;
+    const bFav = favoriteIds.includes(b.id) ? 0 : 1;
+    return aFav - bFav;
+  });
+
   return (
     <PageLayout
       title={t("templates.title")}
-      data={{ isLoading, items: templates ?? [] }}
+      data={{ isLoading, items: sorted }}
       skeleton={templateSkeleton}
       dialog={{
         open,
@@ -142,18 +151,40 @@ export function TemplatesPage() {
         content: dialogContent,
       }}
     >
-      {templates?.map((template) => {
+      {sorted.map((template) => {
         const exercises = template.template_exercises ?? [];
+        const isFavorite = favoriteIds.includes(template.id);
         return (
           <Card
             key={template.id}
-            className="cursor-pointer hover:ring-2 hover:ring-primary/40 transition-all"
+            className="group cursor-pointer hover:ring-2 hover:ring-primary/40 transition-all"
             onClick={() => navigate(`/templates/${template.id}`)}
           >
             <CardHeader>
-              <div className="flex items-start justify-between gap-2">
-                <CardTitle>{template.name}</CardTitle>
-                <span className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle>
+                  {template.name}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite.mutate({
+                        entityId: template.id,
+                        isFavorite,
+                      });
+                    }}
+                  >
+                    <Star
+                      className={
+                        isFavorite
+                          ? "size-4 fill-yellow-400 text-yellow-400"
+                          : "size-4 text-muted-foreground"
+                      }
+                    />
+                  </Button>
+                </CardTitle>
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
                   {template.is_public ? (
                     <>
                       <Globe className="size-3" />

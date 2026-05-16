@@ -580,15 +580,7 @@ export interface components {
             /** Format: date-time */
             performed_at?: string | null;
         };
-        CreateFavoriteDto: {
-            /**
-             * @example template
-             * @enum {string}
-             */
-            entity_type: "template";
-            /** Format: uuid */
-            entity_id: string;
-        };
+        CreateFavoriteDto: Record<string, never>;
     };
     responses: never;
     parameters: never;
@@ -1244,7 +1236,7 @@ export interface operations {
             };
         };
         responses: {
-            204: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1287,9 +1279,7 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": string[];
-                };
+                content?: never;
             };
         };
     };
