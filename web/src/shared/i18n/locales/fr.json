@@ -186,21 +186,21 @@
   "auth": {
     "login": {
       "title": "Connexion",
+      "description": "Connectez-vous pour suivre vos séances et progresser !",
       "submit": "Se connecter",
       "submitting": "Connexion…",
       "noAccount": "Pas encore de compte ?",
-      "createAccount": "Créer un compte",
-      "error": "Email ou mot de passe incorrect."
+      "createAccount": "Créer un compte"
     },
     "register": {
       "title": "Créer un compte",
+      "description": "Créez un compte pour suivre vos séances et progresser !",
       "username": "Pseudo (optionnel)",
       "confirmPassword": "Confirmer le mot de passe",
       "submit": "Créer un compte",
       "submitting": "Création…",
       "hasAccount": "Déjà un compte ?",
-      "loginLink": "Se connecter",
-      "error": "Erreur lors de la création du compte."
+      "loginLink": "Se connecter"
     },
     "fields": {
       "email": "Email",
@@ -210,6 +210,11 @@
       "invalidEmail": "Email invalide",
       "minPassword": "Minimum 8 caractères",
       "passwordMismatch": "Les mots de passe ne correspondent pas"
+    },
+    "errors": {
+      "INVALID_CREDENTIALS": "Email ou mot de passe incorrect.",
+      "EMAIL_ALREADY_IN_USE": "Cet email est déjà utilisé.",
+      "fallback": "Une erreur est survenue. Veuillez réessayer."
     }
   },
   "exerciseForm": {

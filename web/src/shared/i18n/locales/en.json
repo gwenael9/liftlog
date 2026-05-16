@@ -186,21 +186,21 @@
   "auth": {
     "login": {
       "title": "Login",
+      "description": "Sign in to track your sessions and progress!",
       "submit": "Sign in",
       "submitting": "Signing in…",
       "noAccount": "No account yet?",
-      "createAccount": "Create account",
-      "error": "Invalid email or password."
+      "createAccount": "Create account"
     },
     "register": {
       "title": "Create account",
+      "description": "Create an account to track your sessions and progress!",
       "username": "Username (optional)",
       "confirmPassword": "Confirm password",
       "submit": "Create account",
       "submitting": "Creating…",
       "hasAccount": "Already have an account?",
-      "loginLink": "Sign in",
-      "error": "Error creating account."
+      "loginLink": "Sign in"
     },
     "fields": {
       "email": "Email",
@@ -210,6 +210,11 @@
       "invalidEmail": "Invalid email",
       "minPassword": "Minimum 8 characters",
       "passwordMismatch": "Passwords do not match"
+    },
+    "errors": {
+      "INVALID_CREDENTIALS": "Invalid email or password.",
+      "EMAIL_ALREADY_IN_USE": "This email is already in use.",
+      "fallback": "An error occurred. Please try again."
     }
   },
   "exerciseForm": {

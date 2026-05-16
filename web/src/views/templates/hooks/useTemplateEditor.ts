@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUpdateTemplate, useDeleteTemplate } from "@/shared/hooks/useTemplates";
+import {
+  useUpdateTemplate,
+  useDeleteTemplate,
+} from "@/shared/hooks/useTemplates";
 import { useExercises } from "@/shared/hooks/useSessions";
 import { useCurrentUser } from "@/shared/hooks/useAuth";
 import { type ExerciseRow } from "@/views/templates/components/ExerciseList";
@@ -66,6 +69,29 @@ export function useTemplateEditor(
   );
   // Flag booléen plutôt qu'une comparaison profonde rows/info vs. originaux.
   const [dirty, setDirty] = useState(false);
+
+  // Sync rows/info quand template arrive après le mount (cache froid → premier fetch async).
+  // Ignoré si l'utilisateur a déjà des modifications locales.
+  useEffect(() => {
+    if (!template || dirty) return;
+    const rowsToSet = toExerciseRows(template);
+    const infoToSet = {
+      name: template.name ?? "",
+      description: template.description ?? "",
+      duration:
+        template.estimated_duration != null
+          ? String(template.estimated_duration)
+          : "",
+      isPublic: template.is_public ?? false,
+    };
+
+    queueMicrotask(() => {
+      if (dirty || !template) return;
+      setRows(rowsToSet);
+      setInfo(infoToSet);
+    });
+  }, [dirty, template, template?.id]);
+
   const [addOpen, setAddOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);

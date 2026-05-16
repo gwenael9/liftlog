@@ -38,7 +38,6 @@ export default function PageLayout<T>({
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Collé en haut du scroll container (<main>) pendant le scroll */}
       <div className="sticky top-0 z-10 bg-background px-4 pt-4 pb-2 space-y-4 mb-2">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">{title}s</h2>

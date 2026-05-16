@@ -1,7 +1,7 @@
 import {
   Injectable,
-  ConflictException,
-  UnauthorizedException,
+  HttpException,
+  HttpStatus,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import type { StringValue } from "ms";
@@ -25,7 +25,7 @@ export class AuthService {
   async register(dto: RegisterDto): Promise<TokenPair> {
     const existing = await this.usersService.findByEmail(dto.email);
     if (existing) {
-      throw new ConflictException("Email already in use");
+      throw new HttpException({ code: "EMAIL_ALREADY_IN_USE" }, HttpStatus.CONFLICT);
     }
 
     const password_hash = await bcrypt.hash(dto.password, 12);
@@ -43,7 +43,7 @@ export class AuthService {
   async login(dto: LoginDto): Promise<TokenPair> {
     const user = await this.usersService.findByEmail(dto.email);
     if (!user) {
-      throw new UnauthorizedException("Invalid credentials");
+      throw new HttpException({ code: "INVALID_CREDENTIALS" }, HttpStatus.UNAUTHORIZED);
     }
 
     const passwordValid = await bcrypt.compare(
@@ -51,7 +51,7 @@ export class AuthService {
       user.password_hash,
     );
     if (!passwordValid) {
-      throw new UnauthorizedException("Invalid credentials");
+      throw new HttpException({ code: "INVALID_CREDENTIALS" }, HttpStatus.UNAUTHORIZED);
     }
 
     const tokens = await this.generateTokens(user.id, user.email);
@@ -62,7 +62,7 @@ export class AuthService {
   async refresh(userId: string, rawRefreshToken: string): Promise<TokenPair> {
     const user = await this.usersService.findById(userId);
     if (!user || !user.refresh_token_hash) {
-      throw new UnauthorizedException("Access denied");
+      throw new HttpException({ code: "ACCESS_DENIED" }, HttpStatus.UNAUTHORIZED);
     }
 
     const tokenValid = await bcrypt.compare(
@@ -70,7 +70,7 @@ export class AuthService {
       user.refresh_token_hash,
     );
     if (!tokenValid) {
-      throw new UnauthorizedException("Invalid refresh token");
+      throw new HttpException({ code: "INVALID_REFRESH_TOKEN" }, HttpStatus.UNAUTHORIZED);
     }
 
     const tokens = await this.generateTokens(user.id, user.email);
