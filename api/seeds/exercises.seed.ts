@@ -39,6 +39,7 @@ const exercises: { slug: string; muscle_group: MuscleGroup; tracking_type: Track
   { slug: "barbell_row", muscle_group: MuscleGroup.BACK, tracking_type: TrackingType.STRENGTH },
   { slug: "lat_pulldown", muscle_group: MuscleGroup.BACK, tracking_type: TrackingType.STRENGTH },
   { slug: "seated_cable_row", muscle_group: MuscleGroup.BACK, tracking_type: TrackingType.STRENGTH },
+  { slug: "unilateral_row", muscle_group: MuscleGroup.BACK, tracking_type: TrackingType.STRENGTH },
   // Shoulders
   { slug: "overhead_press", muscle_group: MuscleGroup.SHOULDERS, tracking_type: TrackingType.STRENGTH },
   { slug: "lateral_raise", muscle_group: MuscleGroup.SHOULDERS, tracking_type: TrackingType.STRENGTH },
@@ -56,6 +57,7 @@ const exercises: { slug: string; muscle_group: MuscleGroup; tracking_type: Track
   { slug: "leg_press", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
   { slug: "leg_curl", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
   { slug: "calf_raise", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
+  { slug: "bulgarian_split_squat", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
   // Core
   { slug: "plank", muscle_group: MuscleGroup.CORE, tracking_type: TrackingType.DURATION },
   { slug: "crunch", muscle_group: MuscleGroup.CORE, tracking_type: TrackingType.STRENGTH },

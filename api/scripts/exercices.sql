@@ -25,4 +25,6 @@ VALUES
   ('hanging_leg_raise', 'core', 'strength', true, NULL, now()),
   ('running', 'cardio', 'duration', true, NULL, now()),
   ('cycling', 'cardio', 'duration', true, NULL, now()),
-  ('jump_rope', 'cardio', 'duration', true, NULL, now());
+  ('jump_rope', 'cardio', 'duration', true, NULL, now()),
+  ('bulgarian_split_squat', 'legs', 'strength', true, NULL, now()),
+  ('unilateral_row', 'back', 'strength', true, NULL, now());

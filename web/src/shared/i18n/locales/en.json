@@ -25,7 +25,9 @@
     "hanging_leg_raise": "Hanging Leg Raise",
     "running": "Running",
     "cycling": "Cycling",
-    "jump_rope": "Jump Rope"
+    "jump_rope": "Jump Rope",
+    "bulgarian_split_squat": "Bulgarian Split Squat",
+    "unilateral_row": "Unilateral Row"
   },
   "muscleGroups": {
     "chest": "Chest",
