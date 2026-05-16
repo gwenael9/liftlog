@@ -25,7 +25,9 @@
     "hanging_leg_raise": "Relevé de jambes suspendu",
     "running": "Course à pied",
     "cycling": "Vélo",
-    "jump_rope": "Corde à sauter"
+    "jump_rope": "Corde à sauter",
+    "bulgarian_split_squat": "Fente bulgare",
+    "unilateral_row": "Rowing haltère unilatéral"
   },
   "muscleGroups": {
     "chest": "Pectoraux",
