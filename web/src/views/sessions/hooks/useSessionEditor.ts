@@ -183,7 +183,9 @@ export function useSessionEditor(id: string) {
           duration_sec: vals.duration_sec ? Number(vals.duration_sec) : undefined,
         });
       }
-      const pending = pendingRows[g.exerciseId] ?? [];
+      const pending = (pendingRows[g.exerciseId] ?? []).filter(
+        (r) => r.reps || r.weight_kg || r.duration_sec,
+      );
       for (let i = 0; i < pending.length; i++) {
         const row = pending[i];
         body.creates?.push({
@@ -219,9 +221,10 @@ export function useSessionEditor(id: string) {
     const existingGroup = setsByExercise.find((g) => g.exerciseId === exerciseId);
     const exerciseOrder = existingGroup?.exerciseOrder ?? setsByExercise.length;
     const existingCount = existingGroup?.sets.length ?? 0;
+    const filledRows = rows.filter((r) => r.reps || r.weight_kg || r.duration_sec);
     const body: BulkUpdateSetsDto = {
       updates: [],
-      creates: rows.map((row, i) => ({
+      creates: filledRows.map((row, i) => ({
         exercise_id: exerciseId,
         exercise_order: exerciseOrder,
         set_index: existingCount + i + 1,
