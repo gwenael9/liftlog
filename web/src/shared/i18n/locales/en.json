@@ -27,7 +27,9 @@
     "cycling": "Cycling",
     "jump_rope": "Jump Rope",
     "bulgarian_split_squat": "Bulgarian Split Squat",
-    "unilateral_row": "Unilateral Row"
+    "unilateral_row": "Unilateral Row",
+    "shrug_barbell": "Barbell Shrug",
+    "chin_pull": "Chin Pull"
   },
   "muscleGroups": {
     "chest": "Chest",
