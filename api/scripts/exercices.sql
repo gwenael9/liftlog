@@ -27,4 +27,6 @@ VALUES
   ('cycling', 'cardio', 'duration', true, NULL, now()),
   ('jump_rope', 'cardio', 'duration', true, NULL, now()),
   ('bulgarian_split_squat', 'legs', 'strength', true, NULL, now()),
-  ('unilateral_row', 'back', 'strength', true, NULL, now());
+  ('unilateral_row', 'back', 'strength', true, NULL, now()),
+  ('shrug_barbell', 'shoulders', 'strength', true, NULL, now()),
+  ('chin_pull', 'back', 'strength', true, NULL, now());

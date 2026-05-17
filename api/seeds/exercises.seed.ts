@@ -29,43 +29,169 @@ const dataSource = new DataSource({
   synchronize: false,
 });
 
-const exercises: { slug: string; muscle_group: MuscleGroup; tracking_type: TrackingType }[] = [
+const exercises: {
+  slug: string;
+  muscle_group: MuscleGroup;
+  tracking_type: TrackingType;
+}[] = [
   // Chest
-  { slug: "bench_press", muscle_group: MuscleGroup.CHEST, tracking_type: TrackingType.STRENGTH },
-  { slug: "incline_dumbbell_press", muscle_group: MuscleGroup.CHEST, tracking_type: TrackingType.STRENGTH },
-  { slug: "cable_fly", muscle_group: MuscleGroup.CHEST, tracking_type: TrackingType.STRENGTH },
+  {
+    slug: "bench_press",
+    muscle_group: MuscleGroup.CHEST,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "incline_dumbbell_press",
+    muscle_group: MuscleGroup.CHEST,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "cable_fly",
+    muscle_group: MuscleGroup.CHEST,
+    tracking_type: TrackingType.STRENGTH,
+  },
   // Back
-  { slug: "pull_up", muscle_group: MuscleGroup.BACK, tracking_type: TrackingType.STRENGTH },
-  { slug: "barbell_row", muscle_group: MuscleGroup.BACK, tracking_type: TrackingType.STRENGTH },
-  { slug: "lat_pulldown", muscle_group: MuscleGroup.BACK, tracking_type: TrackingType.STRENGTH },
-  { slug: "seated_cable_row", muscle_group: MuscleGroup.BACK, tracking_type: TrackingType.STRENGTH },
-  { slug: "unilateral_row", muscle_group: MuscleGroup.BACK, tracking_type: TrackingType.STRENGTH },
+  {
+    slug: "pull_up",
+    muscle_group: MuscleGroup.BACK,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "barbell_row",
+    muscle_group: MuscleGroup.BACK,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "lat_pulldown",
+    muscle_group: MuscleGroup.BACK,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "seated_cable_row",
+    muscle_group: MuscleGroup.BACK,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "unilateral_row",
+    muscle_group: MuscleGroup.BACK,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "chin_pull",
+    muscle_group: MuscleGroup.BACK,
+    tracking_type: TrackingType.STRENGTH,
+  },
   // Shoulders
-  { slug: "overhead_press", muscle_group: MuscleGroup.SHOULDERS, tracking_type: TrackingType.STRENGTH },
-  { slug: "lateral_raise", muscle_group: MuscleGroup.SHOULDERS, tracking_type: TrackingType.STRENGTH },
-  { slug: "face_pull", muscle_group: MuscleGroup.SHOULDERS, tracking_type: TrackingType.STRENGTH },
+  {
+    slug: "overhead_press",
+    muscle_group: MuscleGroup.SHOULDERS,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "lateral_raise",
+    muscle_group: MuscleGroup.SHOULDERS,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "face_pull",
+    muscle_group: MuscleGroup.SHOULDERS,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "shrug_barbell",
+    muscle_group: MuscleGroup.SHOULDERS,
+    tracking_type: TrackingType.STRENGTH,
+  },
   // Biceps
-  { slug: "barbell_curl", muscle_group: MuscleGroup.BICEPS, tracking_type: TrackingType.STRENGTH },
-  { slug: "hammer_curl", muscle_group: MuscleGroup.BICEPS, tracking_type: TrackingType.STRENGTH },
+  {
+    slug: "barbell_curl",
+    muscle_group: MuscleGroup.BICEPS,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "hammer_curl",
+    muscle_group: MuscleGroup.BICEPS,
+    tracking_type: TrackingType.STRENGTH,
+  },
   // Triceps
-  { slug: "tricep_pushdown", muscle_group: MuscleGroup.TRICEPS, tracking_type: TrackingType.STRENGTH },
-  { slug: "skull_crusher", muscle_group: MuscleGroup.TRICEPS, tracking_type: TrackingType.STRENGTH },
-  { slug: "dips", muscle_group: MuscleGroup.TRICEPS, tracking_type: TrackingType.STRENGTH },
+  {
+    slug: "tricep_pushdown",
+    muscle_group: MuscleGroup.TRICEPS,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "skull_crusher",
+    muscle_group: MuscleGroup.TRICEPS,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "dips",
+    muscle_group: MuscleGroup.TRICEPS,
+    tracking_type: TrackingType.STRENGTH,
+  },
   // Legs
-  { slug: "squat", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
-  { slug: "romanian_deadlift", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
-  { slug: "leg_press", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
-  { slug: "leg_curl", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
-  { slug: "calf_raise", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
-  { slug: "bulgarian_split_squat", muscle_group: MuscleGroup.LEGS, tracking_type: TrackingType.STRENGTH },
+  {
+    slug: "squat",
+    muscle_group: MuscleGroup.LEGS,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "romanian_deadlift",
+    muscle_group: MuscleGroup.LEGS,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "leg_press",
+    muscle_group: MuscleGroup.LEGS,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "leg_curl",
+    muscle_group: MuscleGroup.LEGS,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "calf_raise",
+    muscle_group: MuscleGroup.LEGS,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "bulgarian_split_squat",
+    muscle_group: MuscleGroup.LEGS,
+    tracking_type: TrackingType.STRENGTH,
+  },
   // Core
-  { slug: "plank", muscle_group: MuscleGroup.CORE, tracking_type: TrackingType.DURATION },
-  { slug: "crunch", muscle_group: MuscleGroup.CORE, tracking_type: TrackingType.STRENGTH },
-  { slug: "hanging_leg_raise", muscle_group: MuscleGroup.CORE, tracking_type: TrackingType.STRENGTH },
+  {
+    slug: "plank",
+    muscle_group: MuscleGroup.CORE,
+    tracking_type: TrackingType.DURATION,
+  },
+  {
+    slug: "crunch",
+    muscle_group: MuscleGroup.CORE,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "hanging_leg_raise",
+    muscle_group: MuscleGroup.CORE,
+    tracking_type: TrackingType.STRENGTH,
+  },
   // Cardio
-  { slug: "running", muscle_group: MuscleGroup.CARDIO, tracking_type: TrackingType.DURATION },
-  { slug: "cycling", muscle_group: MuscleGroup.CARDIO, tracking_type: TrackingType.DURATION },
-  { slug: "jump_rope", muscle_group: MuscleGroup.CARDIO, tracking_type: TrackingType.DURATION },
+  {
+    slug: "running",
+    muscle_group: MuscleGroup.CARDIO,
+    tracking_type: TrackingType.DURATION,
+  },
+  {
+    slug: "cycling",
+    muscle_group: MuscleGroup.CARDIO,
+    tracking_type: TrackingType.DURATION,
+  },
+  {
+    slug: "jump_rope",
+    muscle_group: MuscleGroup.CARDIO,
+    tracking_type: TrackingType.DURATION,
+  },
 ];
 
 async function seed() {

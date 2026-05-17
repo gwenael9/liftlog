@@ -27,7 +27,9 @@
     "cycling": "Vélo",
     "jump_rope": "Corde à sauter",
     "bulgarian_split_squat": "Fente bulgare",
-    "unilateral_row": "Rowing haltère unilatéral"
+    "unilateral_row": "Rowing haltère unilatéral",
+    "shrug_barbell": "Shrug barre",
+    "chin_pull": "Tirage menton"
   },
   "muscleGroups": {
     "chest": "Pectoraux",
