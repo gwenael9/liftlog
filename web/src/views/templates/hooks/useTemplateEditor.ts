@@ -67,13 +67,13 @@ export function useTemplateEditor(
   const [rows, setRows] = useState<ExerciseRow[]>(() =>
     template ? toExerciseRows(template) : [],
   );
-  // Flag booléen plutôt qu'une comparaison profonde rows/info vs. originaux.
-  const [dirty, setDirty] = useState(false);
+  // Flag booléen pour les modifs d'exercices uniquement (info est computed via infoChanged).
+  const [rowsDirty, setRowsDirty] = useState(false);
 
   // Sync rows/info quand template arrive après le mount (cache froid → premier fetch async).
   // Ignoré si l'utilisateur a déjà des modifications locales.
   useEffect(() => {
-    if (!template || dirty) return;
+    if (!template || rowsDirty) return;
     const rowsToSet = toExerciseRows(template);
     const infoToSet = {
       name: template.name ?? "",
@@ -86,19 +86,33 @@ export function useTemplateEditor(
     };
 
     queueMicrotask(() => {
-      if (dirty || !template) return;
+      if (rowsDirty || !template) return;
       setRows(rowsToSet);
       setInfo(infoToSet);
     });
-  }, [dirty, template, template?.id]);
+  }, [rowsDirty, template, template?.id]);
 
   const [addOpen, setAddOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
+  function handleInfoOpenChange(open: boolean) {
+    if (!open) {
+      setInfo({
+        name: template?.name ?? "",
+        description: template?.description ?? "",
+        duration:
+          template?.estimated_duration != null
+            ? String(template.estimated_duration)
+            : "",
+        isPublic: template?.is_public ?? false,
+      });
+    }
+    setInfoOpen(open);
+  }
+
   function handleInfoChange(patch: Partial<TemplateInfoState>) {
     setInfo((prev) => ({ ...prev, ...patch }));
-    setDirty(true);
   }
 
   function handleAddExercise(
@@ -122,7 +136,7 @@ export function useTemplateEditor(
         target_duration_sec: data.targetDurationSec,
       },
     ]);
-    setDirty(true);
+    setRowsDirty(true);
   }
 
   function handleRemoveExercise(key: string) {
@@ -131,7 +145,7 @@ export function useTemplateEditor(
         .filter((row) => row._key !== key)
         .map((row, i) => ({ ...row, order_index: i + 1 })),
     );
-    setDirty(true);
+    setRowsDirty(true);
   }
 
   function handleReorderExercise(activeKey: string, overKey: string) {
@@ -144,26 +158,54 @@ export function useTemplateEditor(
       next.splice(to, 0, moved);
       return next.map((row, i) => ({ ...row, order_index: i + 1 }));
     });
-    setDirty(true);
+    setRowsDirty(true);
   }
 
+  // Valeurs originales du template (serveur) pour détecter les modifs info.
+  const originalInfo = {
+    name: template?.name ?? "",
+    description: template?.description ?? "",
+    duration:
+      template?.estimated_duration != null
+        ? String(template.estimated_duration)
+        : "",
+    isPublic: template?.is_public ?? false,
+  };
+
+  const infoChanged =
+    info.name !== originalInfo.name ||
+    info.description !== originalInfo.description ||
+    info.duration !== originalInfo.duration ||
+    info.isPublic !== originalInfo.isPublic;
+
+  const dirty = infoChanged || rowsDirty;
+
+  const mutationPayload = () => ({
+    name: info.name,
+    description: info.description || undefined,
+    estimated_duration: info.duration ? Number(info.duration) : undefined,
+    is_public: info.isPublic,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    exercises: rows.map(({ _key: _, ...item }) => item),
+  });
+
   function handleSave() {
-    updateTemplate.mutate(
-      {
-        name: info.name,
-        description: info.description || undefined,
-        estimated_duration: info.duration ? Number(info.duration) : undefined,
-        is_public: info.isPublic,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        exercises: rows.map(({ _key: _, ...item }) => item),
+    updateTemplate.mutate(mutationPayload(), {
+      onSuccess: () => {
+        toast.success(t("templates.saved"));
+        navigate("/templates");
       },
-      {
-        onSuccess: () => {
-          toast.success(t("templates.saved"));
-          navigate("/templates");
-        },
+    });
+  }
+
+  function handleSaveInfo() {
+    updateTemplate.mutate(mutationPayload(), {
+      onSuccess: () => {
+        toast.success(t("templates.saved"));
+        setInfoOpen(false);
+        setRowsDirty(false);
       },
-    );
+    });
   }
 
   function handleDelete() {
@@ -183,10 +225,12 @@ export function useTemplateEditor(
     info,
     rows,
     dirty,
+    infoChanged,
     addOpen,
     setAddOpen,
     infoOpen,
     setInfoOpen,
+    handleInfoOpenChange,
     deleteOpen,
     setDeleteOpen,
     handleInfoChange,
@@ -194,6 +238,7 @@ export function useTemplateEditor(
     handleRemoveExercise,
     handleReorderExercise,
     handleSave,
+    handleSaveInfo,
     handleDelete,
     exerciseName,
     isSaving: updateTemplate.isPending,

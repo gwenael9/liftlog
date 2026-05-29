@@ -3,6 +3,7 @@ import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
 import { Label } from "@/shared/components/ui/label";
 import { Input } from "@/shared/components/ui/input";
 import { Switch } from "@/shared/components/ui/switch";
+import { Button } from "@/shared/components/ui/button";
 
 export interface TemplateInfoState {
   name: string;
@@ -17,6 +18,9 @@ interface InfoDialogProps {
   canEdit: boolean;
   info: TemplateInfoState;
   onChange: (patch: Partial<TemplateInfoState>) => void;
+  onConfirm?: () => void;
+  isConfirming?: boolean;
+  infoChanged?: boolean;
 }
 
 export default function InfoDialog({
@@ -25,6 +29,9 @@ export default function InfoDialog({
   canEdit,
   info,
   onChange,
+  onConfirm,
+  isConfirming,
+  infoChanged,
 }: InfoDialogProps) {
   const { t } = useTranslation();
   return (
@@ -75,6 +82,23 @@ export default function InfoDialog({
               onCheckedChange={(v: boolean) => onChange({ isPublic: v })}
             />
           </div>
+          {canEdit && onConfirm && (
+            <div className="flex justify-end gap-2">
+              <Button
+                onClick={() => onOpenChange(false)}
+                disabled={!infoChanged || isConfirming}
+                variant="outline"
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button
+                onClick={onConfirm}
+                disabled={!infoChanged || isConfirming}
+              >
+                {t("common.confirm")}
+              </Button>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

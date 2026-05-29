@@ -32,6 +32,7 @@ export function TemplateDetailPage() {
     info,
     rows,
     dirty,
+    infoChanged,
     addOpen,
     setAddOpen,
     infoOpen,
@@ -39,10 +40,12 @@ export function TemplateDetailPage() {
     deleteOpen,
     setDeleteOpen,
     handleInfoChange,
+    handleInfoOpenChange,
     handleAddExercise,
     handleRemoveExercise,
     handleReorderExercise,
     handleSave,
+    handleSaveInfo,
     handleDelete,
     exerciseName,
     isSaving,
@@ -73,10 +76,13 @@ export function TemplateDetailPage() {
 
       <InfoDialog
         open={infoOpen}
-        onOpenChange={setInfoOpen}
+        onOpenChange={handleInfoOpenChange}
         canEdit={canEdit}
         info={info}
         onChange={handleInfoChange}
+        onConfirm={handleSaveInfo}
+        isConfirming={isSaving}
+        infoChanged={infoChanged}
       />
 
       <TemplateExerciseList
