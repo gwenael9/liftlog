@@ -384,15 +384,25 @@ export interface components {
             unit_system: "kg" | "lbs";
             /** @enum {string} */
             role: "user" | "admin";
+            preferences?: Record<string, never> | null;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
             updated_at: string;
         };
+        UpdateUserPreferencesDto: {
+            /** @example fr */
+            language?: string;
+            /** @example dark */
+            theme?: string;
+            /** @example #3b82f6 */
+            couleur_primary?: string;
+        };
         UpdateUserDto: {
             display_name?: string;
             /** @enum {string} */
             unit_system?: "kg" | "lbs";
+            preferences?: components["schemas"]["UpdateUserPreferencesDto"];
         };
         ExerciseResponseDto: {
             /** Format: uuid */
