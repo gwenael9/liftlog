@@ -71,7 +71,8 @@
     "new_female": "New {{title}}",
     "new_male": "New {{title}}",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "search": "Search…"
   },
   "admin": {
     "title": "Administration",
@@ -122,6 +123,7 @@
     "volumeChart": "Volume / week (kg)",
     "personalRecords": "Personal Records",
     "noRecords": "No records yet",
+    "searchPlaceholder": "Search exercise…",
     "table": {
       "exercise": "Exercise",
       "max": "Max (kg)",
@@ -148,7 +150,7 @@
     "noTemplate": "No template",
     "creating": "Creating...",
     "create": "Create session",
-    "noExercises": "No exercises — add one below",
+    "noExercises": "No exercises — add one above",
     "addExercise": "Add exercise",
     "deleteConfirm": "Delete this session?",
     "notFound": "Session not found",

@@ -247,7 +247,7 @@ export function SessionsPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="ml-auto md:opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={(e) => {
                     e.stopPropagation();
                     setDeleteId(session.id);

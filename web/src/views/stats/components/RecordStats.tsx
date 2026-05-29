@@ -19,11 +19,26 @@ import { usePersonalRecords } from "@/views/stats/hooks/useStats";
 import { useTranslation } from "react-i18next";
 import Empty from "@/shared/components/Empty";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import SearchInput from "@/shared/components/SearchInput";
+import { normalizeSearch } from "@/shared/utils";
+import { useState, useEffect } from "react";
 
 export default function RecordStats() {
   const { t } = useTranslation();
   const { data: prs, isLoading } = usePersonalRecords();
-  const pager = usePagination(prs ?? []);
+  const [search, setSearch] = useState("");
+
+  const filtered = (prs ?? []).filter((pr) =>
+    normalizeSearch(t(`exercises.${pr.exercise_slug}`)).includes(
+      normalizeSearch(search),
+    ),
+  );
+
+  const pager = usePagination(filtered);
+
+  useEffect(() => {
+    pager.setPage(0);
+  }, [pager, search]);
 
   return (
     <Card>
@@ -33,6 +48,12 @@ export default function RecordStats() {
         </CardTitle>
       </CardHeader>
       <CardContent>
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder={t("stats.searchPlaceholder")}
+          className="mb-3"
+        />
         {isLoading ? (
           <div className="space-y-2">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -44,6 +65,8 @@ export default function RecordStats() {
             ))}
           </div>
         ) : !prs?.length ? (
+          <Empty message={t("stats.noRecords")} />
+        ) : !filtered.length ? (
           <Empty message={t("stats.noRecords")} />
         ) : (
           <>
