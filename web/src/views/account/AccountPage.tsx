@@ -102,7 +102,7 @@ export function AccountPage() {
               <Skeleton className="h-5 w-32" />
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
               <div className="space-y-1">
                 <Label className="text-muted-foreground text-xs">
                   {t("account.email")}
@@ -120,7 +120,7 @@ export function AccountPage() {
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       maxLength={100}
-                      className="max-w-xs"
+                      className="w-full sm:max-w-xs"
                       autoFocus
                     />
                     <Button

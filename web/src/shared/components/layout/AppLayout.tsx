@@ -67,7 +67,7 @@ export function AppLayout() {
                 />
                 <DropdownMenuContent align="end" className="min-w-52">
                   <div className="flex flex-col items-center pt-2">
-                    <Avatar size="16" />
+                    <Avatar size={64} />
                     {user?.display_name && (
                       <div className="px-2 py-1.5 text-sm font-medium">
                         {user.display_name}
