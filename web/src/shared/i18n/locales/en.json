@@ -72,7 +72,8 @@
     "new_male": "New {{title}}",
     "previous": "Previous",
     "next": "Next",
-    "search": "Search…"
+    "search": "Search…",
+    "confirm": "Confirm"
   },
   "admin": {
     "title": "Administration",

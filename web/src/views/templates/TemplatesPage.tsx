@@ -24,7 +24,7 @@ export function TemplatesPage() {
   const navigate = useNavigate();
   const { data: templates, isLoading } = useTemplates();
   const createTemplate = useCreateTemplate();
-  const { data: favoriteIds = [] as string[] } = useFavorites("template");
+  const { data: favoriteIds = [] as string[], isLoading: isFavoritesLoading } = useFavorites("template");
   const toggleFavorite = useToggleFavorite("template");
 
   const [open, setOpen] = useState(false);
@@ -142,7 +142,7 @@ export function TemplatesPage() {
   return (
     <PageLayout
       title={t("templates.title")}
-      data={{ isLoading, items: sorted }}
+      data={{ isLoading: isLoading || isFavoritesLoading, items: sorted }}
       skeleton={templateSkeleton}
       dialog={{
         open,
