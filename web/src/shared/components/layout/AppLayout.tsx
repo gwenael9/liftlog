@@ -69,8 +69,8 @@ export function AppLayout() {
                   <div className="flex flex-col items-center pt-2">
                     <Avatar size={64} />
                     {user?.display_name && (
-                      <div className="px-2 py-1.5 text-sm font-medium">
-                        {user.display_name}
+                      <div className="w-full px-2 py-1.5 text-sm font-medium text-center overflow-hidden">
+                        <span className="truncate block">{user.display_name}</span>
                       </div>
                     )}
                   </div>

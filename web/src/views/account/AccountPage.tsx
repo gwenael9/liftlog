@@ -27,6 +27,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { toast } from "sonner";
 import { SUPPORTED_LANGUAGES } from "@/shared/i18n";
 import { Edit } from "lucide-react";
+import Avatar from "@/shared/components/Avatar";
 
 export function AccountPage() {
   const { t } = useTranslation();
@@ -98,7 +99,10 @@ export function AccountPage() {
       <h2 className="text-2xl font-bold">{t("account.title")}</h2>
       <Card>
         <CardHeader>
-          <CardTitle>{t("account.infoTitle")}</CardTitle>
+          <div className="flex items-center gap-2">
+            <Avatar />
+            <CardTitle>{t("account.infoTitle")}</CardTitle>
+          </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -109,13 +113,24 @@ export function AccountPage() {
               <Skeleton className="h-5 w-32" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+            <div className="grid grid-cols-2 gap-x-8 gap-y-4">
               <div className="space-y-1">
                 <Label className="text-muted-foreground text-xs">
                   {t("account.email")}
                 </Label>
-                <p className="text-sm font-medium">{user?.email}</p>
+                <p className="text-sm font-medium truncate">{user?.email}</p>
               </div>
+
+              {user?.role === "admin" ? (
+                <div className="space-y-1">
+                  <Label className="text-muted-foreground text-xs">
+                    {t("account.role")}
+                  </Label>
+                  <p className="text-sm font-medium capitalize">{user?.role}</p>
+                </div>
+              ) : (
+                <div className="space-y-1"></div>
+              )}
 
               <div className="space-y-1">
                 <Label className="text-muted-foreground text-xs">
@@ -143,7 +158,7 @@ export function AccountPage() {
                   </div>
                 ) : (
                   <div className="flex gap-2 items-center">
-                    <p className="text-sm font-medium">
+                    <p className="text-sm font-medium truncate">
                       {user?.display_name ?? (
                         <span className="text-muted-foreground italic">
                           {t("account.noDisplayName")}
@@ -178,15 +193,6 @@ export function AccountPage() {
                     : "—"}
                 </p>
               </div>
-
-              {user?.role !== "user" && (
-                <div className="space-y-1">
-                  <Label className="text-muted-foreground text-xs">
-                    {t("account.role")}
-                  </Label>
-                  <p className="text-sm font-medium capitalize">{user?.role}</p>
-                </div>
-              )}
             </div>
           )}
         </CardContent>
