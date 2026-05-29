@@ -13,6 +13,7 @@ import NotFound from "../NotFound";
 import { useTranslation } from "react-i18next";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { Label } from "@/shared/components/ui/label";
+import { useSwipe } from "@/shared/hooks/useSwipe";
 
 export function SessionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -51,6 +52,11 @@ export function SessionDetailPage() {
     isDeleting,
   } = editor;
 
+  const swipeHandlers = useSwipe({
+    onSwipeLeft: () => setActiveIndex(Math.min(total - 1, clampedIndex + 1)),
+    onSwipeRight: () => setActiveIndex(Math.max(0, clampedIndex - 1)),
+  });
+
   if (isLoading) return <SessionDetailSkeleton />;
   if (!session) return <NotFound />;
 
@@ -88,18 +94,20 @@ export function SessionDetailPage() {
       ) : (
         <div className="space-y-3">
           {group && (
-            <ExerciseCard
-              group={group}
-              editValues={groupEditValues}
-              pendingRows={pendingRows[group.exerciseId] ?? []}
-              onPatchEdit={patchEdit}
-              onAddPending={() => addPendingRow(group.exerciseId)}
-              onPatchPending={(i, patch) =>
-                patchPendingRow(group.exerciseId, i, patch)
-              }
-              onRemovePending={(i) => removePendingRow(group.exerciseId, i)}
-              onDeleteSet={handleDeleteSet}
-            />
+            <div {...swipeHandlers}>
+              <ExerciseCard
+                group={group}
+                editValues={groupEditValues}
+                pendingRows={pendingRows[group.exerciseId] ?? []}
+                onPatchEdit={patchEdit}
+                onAddPending={() => addPendingRow(group.exerciseId)}
+                onPatchPending={(i, patch) =>
+                  patchPendingRow(group.exerciseId, i, patch)
+                }
+                onRemovePending={(i) => removePendingRow(group.exerciseId, i)}
+                onDeleteSet={handleDeleteSet}
+              />
+            </div>
           )}
           <CarouselNav
             total={total}
