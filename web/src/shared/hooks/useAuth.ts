@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { authApi, type LoginDto, type RegisterDto } from "@/shared/api/auth";
-import { usersApi } from "@/shared/api/users";
+import { usersApi, type UpdateUserDto } from "@/shared/api/users";
 import { useAuthStore } from "@/shared/store/auth.store";
 
 export function useCurrentUser() {
@@ -69,4 +69,31 @@ export function useLogout() {
     logout();
     navigate("/auth");
   };
+}
+
+export function useUpdateMe() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (dto: UpdateUserDto) => {
+      const { data, error } = await usersApi.updateMe(dto);
+      if (error) throw error;
+      return data!;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["currentUser"] }),
+  });
+}
+
+export function useDeleteMe() {
+  const logout = useAuthStore((s) => s.logout);
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: async () => {
+      const { error } = await usersApi.deleteMe();
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      logout();
+      navigate("/auth");
+    },
+  });
 }

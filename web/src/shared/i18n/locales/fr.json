@@ -52,7 +52,26 @@
     "templates": "Templates",
     "stats": "Stats",
     "admin": "Admin",
-    "logout": "Déconnexion"
+    "account": "Compte",
+    "logout": "Déconnexion",
+    "theme": "Thème",
+    "language": "Langue"
+  },
+  "account": {
+    "title": "Mon compte",
+    "infoTitle": "Profil",
+    "email": "Adresse email",
+    "displayName": "Nom affiché",
+    "noDisplayName": "Non défini",
+    "role": "Rôle",
+    "memberSince": "Membre depuis",
+    "nameSaved": "Nom mis à jour",
+    "saveError": "Échec de la sauvegarde",
+    "dangerZone": "Zone dangereuse",
+    "deleteDescription": "Supprime définitivement votre compte, toutes vos séances et vos templates. Cette action est irréversible.",
+    "deleteAccount": "Supprimer mon compte",
+    "deleteConfirm": "Supprimer votre compte ?",
+    "deleteError": "Échec de la suppression du compte"
   },
   "common": {
     "save": "Enregistrer",

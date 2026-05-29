@@ -52,7 +52,26 @@
     "templates": "Templates",
     "stats": "Stats",
     "admin": "Admin",
-    "logout": "Logout"
+    "account": "Account",
+    "logout": "Logout",
+    "theme": "Theme",
+    "language": "Language"
+  },
+  "account": {
+    "title": "My Account",
+    "infoTitle": "Profile",
+    "email": "Email address",
+    "displayName": "Display name",
+    "noDisplayName": "Not set",
+    "role": "Role",
+    "memberSince": "Member since",
+    "nameSaved": "Name updated",
+    "saveError": "Failed to save changes",
+    "dangerZone": "Danger zone",
+    "deleteDescription": "Permanently delete your account, all sessions and templates. This action cannot be undone.",
+    "deleteAccount": "Delete my account",
+    "deleteConfirm": "Delete your account?",
+    "deleteError": "Failed to delete account"
   },
   "common": {
     "save": "Save",

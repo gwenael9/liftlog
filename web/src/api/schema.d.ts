@@ -78,7 +78,7 @@ export interface paths {
         get: operations["UsersController_getMe"];
         put: operations["UsersController_updateMe"];
         post?: never;
-        delete?: never;
+        delete: operations["UsersController_removeMe"];
         options?: never;
         head?: never;
         patch?: never;
@@ -580,7 +580,15 @@ export interface components {
             /** Format: date-time */
             performed_at?: string | null;
         };
-        CreateFavoriteDto: Record<string, never>;
+        CreateFavoriteDto: {
+            /**
+             * @example template
+             * @enum {string}
+             */
+            entity_type: "template";
+            /** Format: uuid */
+            entity_id: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -713,6 +721,23 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["UserResponseDto"];
                 };
+            };
+        };
+    };
+    UsersController_removeMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -1236,7 +1261,7 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1279,7 +1304,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": string[];
+                };
             };
         };
     };

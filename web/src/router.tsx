@@ -6,6 +6,7 @@ import { TemplatesPage } from "@/views/templates/TemplatesPage";
 import { TemplateDetailPage } from "@/views/templates/TemplateDetailPage";
 import { AdminPage } from "@/views/admin/AdminPage";
 import { StatsPage } from "@/views/stats/StatsPage";
+import { AccountPage } from "@/views/account/AccountPage";
 import { ProtectedRoute } from "@/shared/components/auth/ProtectedRoute";
 import { AdminRoute } from "@/shared/components/auth/AdminRoute";
 import { AppLayout } from "@/shared/components/layout/AppLayout";
@@ -25,6 +26,7 @@ export const router = createBrowserRouter([
           { path: "/templates", element: <TemplatesPage /> },
           { path: "/templates/:id", element: <TemplateDetailPage /> },
           { path: "/stats", element: <StatsPage /> },
+          { path: "/account", element: <AccountPage /> },
           {
             element: <AdminRoute />,
             children: [{ path: "/admin", element: <AdminPage /> }],
