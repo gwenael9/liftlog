@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { UnitSystem, UserRole } from '../entities/user.entity';
+import { Sex, UnitSystem, UserRole } from '../entities/user.entity';
 
 export class UserResponseDto {
   @ApiProperty({ format: 'uuid' })
@@ -10,6 +10,9 @@ export class UserResponseDto {
 
   @ApiPropertyOptional({ nullable: true })
   display_name: string | null;
+
+  @ApiProperty({ enum: Sex })
+  sex: Sex;
 
   @ApiProperty({ enum: UnitSystem })
   unit_system: UnitSystem;

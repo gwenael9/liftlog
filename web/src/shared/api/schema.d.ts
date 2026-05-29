@@ -351,6 +351,10 @@ export interface components {
             password: string;
             /** @example John */
             display_name?: string;
+            /** @enum {string} */
+            sex?: "male" | "female";
+            /** @enum {string} */
+            unit_system?: "kg" | "lbs";
         };
         TokenPairDto: {
             access_token: string;
@@ -368,6 +372,8 @@ export interface components {
             /** @example user@example.com */
             email: string;
             display_name?: string | null;
+            /** @enum {string} */
+            sex: "male" | "female";
             /** @enum {string} */
             unit_system: "kg" | "lbs";
             /** @enum {string} */

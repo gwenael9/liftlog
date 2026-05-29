@@ -8,6 +8,12 @@ import {
   Form,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/shared/components/ui/select";
 import { useLogin, useRegister } from "@/shared/hooks/useAuth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
@@ -25,6 +31,8 @@ type FormValues = {
   email: string;
   password: string;
   confirmPassword?: string;
+  sex?: "male" | "female";
+  unit_system?: "kg" | "lbs";
 };
 
 export function AuthForm({ mode, onSwitch }: AuthFormProps) {
@@ -40,6 +48,8 @@ export function AuthForm({ mode, onSwitch }: AuthFormProps) {
       email: z.email(t("auth.validation.invalidEmail")),
       password: z.string().min(8, t("auth.validation.minPassword")),
       confirmPassword: z.string().optional(),
+      sex: z.enum(["male", "female"]).optional(),
+      unit_system: z.enum(["kg", "lbs"]).optional(),
     });
     if (!isRegister) return base;
     return base.refine((d) => d.password === d.confirmPassword, {
@@ -55,6 +65,8 @@ export function AuthForm({ mode, onSwitch }: AuthFormProps) {
       email: "",
       password: "",
       confirmPassword: "",
+      sex: "male",
+      unit_system: "kg",
     },
   });
 
@@ -155,6 +167,64 @@ export function AuthForm({ mode, onSwitch }: AuthFormProps) {
                 </FormItem>
               )}
             />
+          )}
+          {isRegister && (
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="sex"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("auth.register.sex")}</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          {field.value === "male"
+                            ? t("auth.register.sexMale")
+                            : t("auth.register.sexFemale")}
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="male">
+                          {t("auth.register.sexMale")}
+                        </SelectItem>
+                        <SelectItem value="female">
+                          {t("auth.register.sexFemale")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="unit_system"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("auth.register.unitSystem")}</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          {field.value === "kg"
+                            ? t("auth.register.unitKg")
+                            : t("auth.register.unitLbs")}
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="kg">
+                          {t("auth.register.unitKg")}
+                        </SelectItem>
+                        <SelectItem value="lbs">
+                          {t("auth.register.unitLbs")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           )}
           {mutation.error && (
             <p className="text-destructive text-sm">
