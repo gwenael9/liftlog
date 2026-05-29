@@ -11,7 +11,7 @@ import { PageContainer } from "@/shared/components/layout/PageContainer";
 import InfoDialog from "@/views/templates/components/InfoDialog";
 import { TemplateExerciseList } from "@/views/templates/components/ExerciseList";
 import { useTranslation } from "react-i18next";
-import Loader from "@/shared/components/Loader";
+import { TemplateDetailSkeleton } from "./TemplateDetailSkeleton";
 import NotFound from "../NotFound";
 
 export function TemplateDetailPage() {
@@ -24,7 +24,7 @@ export function TemplateDetailPage() {
 
   const editor = useTemplateEditor(id!, template, exercises);
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <TemplateDetailSkeleton />;
   if (!template) return <NotFound />;
 
   const {

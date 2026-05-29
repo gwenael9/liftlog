@@ -8,7 +8,7 @@ import { PageContainer } from "@/shared/components/layout/PageContainer";
 import { ExerciseCard, CarouselNav } from "@/views/sessions/components";
 import { AddExerciseDialog } from "@/shared/components/AddExerciseDialog";
 import { ConfirmDeleteDialog } from "@/shared/components/ConfirmDeleteDialog";
-import Loader from "@/shared/components/Loader";
+import { SessionDetailSkeleton } from "./SessionDetailSkeleton";
 import NotFound from "../NotFound";
 import { useTranslation } from "react-i18next";
 import { Textarea } from "@/shared/components/ui/textarea";
@@ -51,7 +51,7 @@ export function SessionDetailPage() {
     isDeleting,
   } = editor;
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <SessionDetailSkeleton />;
   if (!session) return <NotFound />;
 
   return (
