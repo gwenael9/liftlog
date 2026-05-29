@@ -22,7 +22,7 @@ export default function SearchInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder ?? t("common.search")}
-        className="pl-8 h-8 text-sm w-full bg-red-200"
+        className="pl-8 h-8 text-sm"
       />
     </div>
   );
