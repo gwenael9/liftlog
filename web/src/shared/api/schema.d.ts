@@ -78,7 +78,7 @@ export interface paths {
         get: operations["UsersController_getMe"];
         put: operations["UsersController_updateMe"];
         post?: never;
-        delete?: never;
+        delete: operations["UsersController_removeMe"];
         options?: never;
         head?: never;
         patch?: never;
@@ -351,10 +351,16 @@ export interface components {
             password: string;
             /** @example John */
             display_name?: string;
-            /** @enum {string} */
-            sex?: "male" | "female";
-            /** @enum {string} */
-            unit_system?: "kg" | "lbs";
+            /**
+             * @default male
+             * @enum {string}
+             */
+            sex: "male" | "female";
+            /**
+             * @default kg
+             * @enum {string}
+             */
+            unit_system: "kg" | "lbs";
         };
         TokenPairDto: {
             access_token: string;
@@ -727,6 +733,23 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["UserResponseDto"];
                 };
+            };
+        };
+    };
+    UsersController_removeMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

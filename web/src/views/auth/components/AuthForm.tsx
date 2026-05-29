@@ -81,7 +81,11 @@ export function AuthForm({ mode, onSwitch }: AuthFormProps) {
     if (isRegister) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { confirmPassword, ...data } = values;
-      register.mutate(data);
+      register.mutate({
+        ...data,
+        sex: data.sex ?? "male",
+        unit_system: data.unit_system ?? "kg",
+      });
     } else {
       login.mutate({ email: values.email, password: values.password });
     }
