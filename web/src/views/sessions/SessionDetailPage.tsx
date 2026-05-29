@@ -14,6 +14,8 @@ import { useTranslation } from "react-i18next";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { Label } from "@/shared/components/ui/label";
 import { useSwipe } from "@/shared/hooks/useSwipe";
+import { useRef, useState, useEffect } from "react";
+import { cn } from "@/shared/lib/utils";
 
 export function SessionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -52,7 +54,17 @@ export function SessionDetailPage() {
     isDeleting,
   } = editor;
 
-  const swipeHandlers = useSwipe({
+  const [slideDir, setSlideDir] = useState<'left' | 'right' | null>(null);
+  const prevIndexRef = useRef(clampedIndex);
+
+  useEffect(() => {
+    if (prevIndexRef.current !== clampedIndex) {
+      setSlideDir(clampedIndex > prevIndexRef.current ? 'left' : 'right');
+      prevIndexRef.current = clampedIndex;
+    }
+  }, [clampedIndex]);
+
+  const { deltaX, isDragging, ...swipeHandlers } = useSwipe({
     onSwipeLeft: () => setActiveIndex(Math.min(total - 1, clampedIndex + 1)),
     onSwipeRight: () => setActiveIndex(Math.max(0, clampedIndex - 1)),
   });
@@ -94,19 +106,32 @@ export function SessionDetailPage() {
       ) : (
         <div className="space-y-3">
           {group && (
-            <div {...swipeHandlers}>
-              <ExerciseCard
-                group={group}
-                editValues={groupEditValues}
-                pendingRows={pendingRows[group.exerciseId] ?? []}
-                onPatchEdit={patchEdit}
-                onAddPending={() => addPendingRow(group.exerciseId)}
-                onPatchPending={(i, patch) =>
-                  patchPendingRow(group.exerciseId, i, patch)
-                }
-                onRemovePending={(i) => removePendingRow(group.exerciseId, i)}
-                onDeleteSet={handleDeleteSet}
-              />
+            <div className="overflow-hidden px-px -mx-px" {...swipeHandlers}>
+              <div
+                key={group.exerciseId}
+                style={{
+                  transform: `translateX(${deltaX}px)`,
+                  transition: isDragging ? 'none' : 'transform 0.25s ease-out',
+                }}
+                className={cn(
+                  slideDir === 'left' && 'animate-slide-in-from-right',
+                  slideDir === 'right' && 'animate-slide-in-from-left',
+                )}
+                onAnimationEnd={() => setSlideDir(null)}
+              >
+                <ExerciseCard
+                  group={group}
+                  editValues={groupEditValues}
+                  pendingRows={pendingRows[group.exerciseId] ?? []}
+                  onPatchEdit={patchEdit}
+                  onAddPending={() => addPendingRow(group.exerciseId)}
+                  onPatchPending={(i, patch) =>
+                    patchPendingRow(group.exerciseId, i, patch)
+                  }
+                  onRemovePending={(i) => removePendingRow(group.exerciseId, i)}
+                  onDeleteSet={handleDeleteSet}
+                />
+              </div>
             </div>
           )}
           <CarouselNav
