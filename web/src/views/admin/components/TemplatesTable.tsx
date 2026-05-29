@@ -5,6 +5,9 @@ import { useTranslation } from "react-i18next";
 import { useAdminDeleteTemplate } from "@/views/admin/hooks/useAdmin";
 import type { TemplateResponseDto } from "@/shared/api/templates";
 import AdminTable from "./AdminTable";
+import SearchInput from "@/shared/components/SearchInput";
+import { normalizeSearch } from "@/shared/utils";
+import { useState } from "react";
 
 export default function TemplatesTable({
   data,
@@ -13,10 +16,20 @@ export default function TemplatesTable({
 }) {
   const { t } = useTranslation();
   const deleteTemplate = useAdminDeleteTemplate();
+  const [search, setSearch] = useState("");
+
+  const filteredData = data.filter((tpl) => {
+    const q = normalizeSearch(search);
+    return (
+      normalizeSearch(tpl.name).includes(q) ||
+      normalizeSearch(tpl.user?.display_name ?? "").includes(q) ||
+      normalizeSearch(tpl.user?.email ?? "").includes(q)
+    );
+  });
 
   return (
     <AdminTable
-      data={data}
+      data={filteredData}
       columns={[
         { label: t("admin.table.name") },
         { label: t("admin.table.creator") },
@@ -27,6 +40,7 @@ export default function TemplatesTable({
       emptyMessage={t("admin.noTemplates")}
       deleteTitle={t("admin.deleteTemplateConfirm")}
       deleteMutation={deleteTemplate}
+      toolbar={<SearchInput value={search} onChange={setSearch} />}
       renderRow={(tpl, onDelete) => (
         <>
           <TableCell className="font-medium">{tpl.name}</TableCell>

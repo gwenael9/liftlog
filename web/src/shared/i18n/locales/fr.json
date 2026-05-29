@@ -71,7 +71,8 @@
     "new_female": "Nouvelle {{title}}",
     "new_male": "Nouveau {{title}}",
     "previous": "Précédent",
-    "next": "Suivant"
+    "next": "Suivant",
+    "search": "Rechercher…"
   },
   "admin": {
     "title": "Administration",
@@ -122,6 +123,7 @@
     "volumeChart": "Volume / semaine (kg)",
     "personalRecords": "Records personnels",
     "noRecords": "Aucun record enregistré",
+    "searchPlaceholder": "Rechercher un exercice…",
     "table": {
       "exercise": "Exercice",
       "max": "Max (kg)",
@@ -148,7 +150,7 @@
     "noTemplate": "Aucun template",
     "creating": "Création...",
     "create": "Créer la séance",
-    "noExercises": "Aucun exercice — ajoutez-en ci-dessous",
+    "noExercises": "Aucun exercice — ajoutez-en ci-dessus",
     "addExercise": "Ajouter un exercice",
     "deleteConfirm": "Supprimer cette séance ?",
     "notFound": "Séance introuvable",

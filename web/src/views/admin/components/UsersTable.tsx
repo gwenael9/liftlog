@@ -5,14 +5,26 @@ import { Button } from "@/shared/components/ui/button";
 import { useAdminDeleteUser } from "@/views/admin/hooks/useAdmin";
 import type { UserResponseDto } from "@/shared/api/users";
 import AdminTable from "./AdminTable";
+import SearchInput from "@/shared/components/SearchInput";
+import { normalizeSearch } from "@/shared/utils";
+import { useState } from "react";
 
 export default function UsersTable({ data }: { data: UserResponseDto[] }) {
   const { t } = useTranslation();
   const deleteUser = useAdminDeleteUser();
+  const [search, setSearch] = useState("");
+
+  const filteredData = data.filter((u) => {
+    const q = normalizeSearch(search);
+    return (
+      normalizeSearch(u.display_name ?? "").includes(q) ||
+      normalizeSearch(u.email).includes(q)
+    );
+  });
 
   return (
     <AdminTable
-      data={data}
+      data={filteredData}
       columns={[
         { label: t("admin.table.name") },
         { label: t("admin.table.email") },
@@ -23,6 +35,7 @@ export default function UsersTable({ data }: { data: UserResponseDto[] }) {
       emptyMessage={t("admin.noUsers")}
       deleteTitle={t("admin.deleteUserConfirm")}
       deleteMutation={deleteUser}
+      toolbar={<SearchInput value={search} onChange={setSearch} />}
       renderRow={(u, onDelete) => (
         <>
           <TableCell className="font-medium">

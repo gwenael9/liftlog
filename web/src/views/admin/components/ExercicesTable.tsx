@@ -1,6 +1,11 @@
 import { Check, Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/shared/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/shared/components/ui/select";
 import { TableCell } from "@/shared/components/ui/table";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
@@ -14,6 +19,8 @@ import {
   useAdminDeleteExercise,
 } from "@/views/admin/hooks/useAdmin";
 import AdminTable from "./AdminTable";
+import SearchInput from "@/shared/components/SearchInput";
+import { normalizeSearch } from "@/shared/utils";
 
 const MUSCLE_GROUPS = [
   "chest",
@@ -61,16 +68,20 @@ export default function ExercicesTable({
 }) {
   const { t } = useTranslation();
   const [muscleFilter, setMuscleFilter] = useState("all");
+  const [search, setSearch] = useState("");
   const [dialog, setDialog] = useState<DialogState>(closedDialog());
 
   const createExercise = useAdminCreateExercise();
   const updateExercise = useAdminUpdateExercise();
   const deleteExercise = useAdminDeleteExercise();
 
-  const filteredData =
-    muscleFilter === "all"
-      ? data
-      : data.filter((ex) => ex.muscle_group === muscleFilter);
+  const filteredData = data
+    .filter((ex) => muscleFilter === "all" || ex.muscle_group === muscleFilter)
+    .filter((ex) =>
+      normalizeSearch(t(`exercises.${ex.slug}`)).includes(
+        normalizeSearch(search),
+      ),
+    );
 
   function openCreate() {
     setDialog({ open: true, editingId: null, initialForm: emptyForm() });
@@ -121,7 +132,7 @@ export default function ExercicesTable({
         deleteMutation={deleteExercise}
         toolbar={
           <>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full">
               <Select
                 value={muscleFilter}
                 onValueChange={(v) => setMuscleFilter(v ?? "all")}
@@ -146,6 +157,7 @@ export default function ExercicesTable({
                   ))}
                 </SelectContent>
               </Select>
+              <SearchInput value={search} onChange={setSearch} />
             </div>
             <Button size="sm" onClick={openCreate}>
               <Plus className="size-4" />
