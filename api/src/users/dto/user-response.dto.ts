@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Sex, UnitSystem, UserRole } from '../entities/user.entity';
+import { Sex, UnitSystem, UserPreferences, UserRole } from '../entities/user.entity';
 
 export class UserResponseDto {
   @ApiProperty({ format: 'uuid' })
@@ -19,6 +19,9 @@ export class UserResponseDto {
 
   @ApiProperty({ enum: UserRole })
   role: UserRole;
+
+  @ApiPropertyOptional({ nullable: true })
+  preferences: UserPreferences | null;
 
   @ApiProperty({ format: 'date-time' })
   created_at: Date;

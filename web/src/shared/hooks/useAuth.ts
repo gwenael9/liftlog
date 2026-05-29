@@ -5,10 +5,12 @@ import { authApi, type LoginDto, type RegisterDto } from "@/shared/api/auth";
 import { usersApi, type UpdateUserDto } from "@/shared/api/users";
 import { useAuthStore } from "@/shared/store/auth.store";
 import { useUserStore } from "@/shared/store/user.store";
+import { usePreferencesStore, type StoredPreferences } from "@/shared/store/preferences.store";
 
 export function useCurrentUser() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const setUser = useUserStore((s) => s.setUser);
+  const hydrate = usePreferencesStore((s) => s.hydrate);
 
   const query = useQuery({
     queryKey: ["currentUser"],
@@ -22,8 +24,10 @@ export function useCurrentUser() {
   });
 
   useEffect(() => {
-    if (query.data) setUser(query.data);
-  }, [query.data, setUser]);
+    if (!query.data) return;
+    setUser(query.data);
+    hydrate(query.data.preferences as StoredPreferences | null);
+  }, [query.data, setUser, hydrate]);
 
   return query;
 }

@@ -82,7 +82,8 @@
     "languageEn": "English",
     "unitSystem": "Units",
     "unitKg": "Kilograms (kg)",
-    "unitLbs": "Pounds (lbs)"
+    "unitLbs": "Pounds (lbs)",
+    "couleurPrimary": "Primary color"
   },
   "common": {
     "save": "Save",

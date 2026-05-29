@@ -12,6 +12,12 @@ export enum UnitSystem {
   LBS = 'lbs',
 }
 
+export interface UserPreferences {
+  language?: string;
+  theme?: string;
+  couleur_primary?: string;
+}
+
 export enum UserRole {
   USER = 'user',
   ADMIN = 'admin',
@@ -59,6 +65,9 @@ export class User {
     name: 'sex',
   })
   sex: Sex;
+
+  @Column({ type: 'jsonb', nullable: true, default: {} })
+  preferences: UserPreferences | null;
 
   @Column({ type: 'varchar', nullable: true, name: 'refresh_token_hash' })
   refresh_token_hash: string | null;

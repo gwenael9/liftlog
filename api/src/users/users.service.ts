@@ -35,6 +35,9 @@ export class UsersService {
     if (dto.unit_system !== undefined) {
       user.unit_system = dto.unit_system;
     }
+    if (dto.preferences !== undefined) {
+      user.preferences = { ...user.preferences, ...dto.preferences };
+    }
     return this.usersRepository.save(user);
   }
 

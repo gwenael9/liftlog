@@ -5,6 +5,7 @@ import {
   useUpdateMe,
   useDeleteMe,
 } from "@/shared/hooks/useAuth";
+import { usePreferences } from "@/shared/hooks/usePreferences";
 import { PageContainer } from "@/shared/components/layout/PageContainer";
 import { ConfirmDeleteDialog } from "@/shared/components/ConfirmDeleteDialog";
 import { Button } from "@/shared/components/ui/button";
@@ -24,20 +25,22 @@ import {
 } from "@/shared/components/ui/select";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { toast } from "sonner";
-import { useThemeStore } from "@/shared/store/theme.store";
 import { SUPPORTED_LANGUAGES } from "@/shared/i18n";
 import { Edit } from "lucide-react";
 
 export function AccountPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { data: user, isLoading } = useCurrentUser();
   const updateMe = useUpdateMe();
   const deleteMe = useDeleteMe();
-  const { theme, toggleTheme } = useThemeStore();
+  const prefs = usePreferences();
 
   const [displayName, setDisplayName] = useState<string>("");
   const [editingName, setEditingName] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [localColor, setLocalColor] = useState<string>("");
+
+  const currentPrimaryColor = localColor || prefs.couleur_primary;
 
   function startEdit() {
     setDisplayName(user?.display_name ?? "");
@@ -69,13 +72,17 @@ export function AccountPage() {
   }
 
   function handleThemeChange(value: string | null) {
-    if (value && value !== theme) toggleTheme();
+    if (!value || value === prefs.theme) return;
+    prefs.setTheme(value as "light" | "dark");
   }
 
   function handleLanguageChange(value: string | null) {
     if (!value) return;
-    i18n.changeLanguage(value);
-    localStorage.setItem("lang", value);
+    prefs.setLanguage(value);
+  }
+
+  function handleSaveColor() {
+    prefs.setCouleurPrimary(currentPrimaryColor);
   }
 
   function handleUnitChange(value: string | null) {
@@ -102,7 +109,7 @@ export function AccountPage() {
               <Skeleton className="h-5 w-32" />
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
               <div className="space-y-1">
                 <Label className="text-muted-foreground text-xs">
                   {t("account.email")}
@@ -120,7 +127,7 @@ export function AccountPage() {
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       maxLength={100}
-                      className="max-w-xs"
+                      className="w-full sm:max-w-xs"
                       autoFocus
                     />
                     <Button
@@ -192,9 +199,9 @@ export function AccountPage() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <Label className="text-sm">{t("account.theme")}</Label>
-            <Select value={theme} onValueChange={handleThemeChange}>
+            <Select value={prefs.theme} onValueChange={handleThemeChange}>
               <SelectTrigger className="w-40">
-                {theme === "light"
+                {prefs.theme === "light"
                   ? t("account.themeLight")
                   : t("account.themeDark")}
               </SelectTrigger>
@@ -207,9 +214,9 @@ export function AccountPage() {
 
           <div className="flex items-center justify-between">
             <Label className="text-sm">{t("account.language")}</Label>
-            <Select value={i18n.language} onValueChange={handleLanguageChange}>
+            <Select value={prefs.language} onValueChange={handleLanguageChange}>
               <SelectTrigger className="w-40">
-                {i18n.language === "fr"
+                {prefs.language === "fr"
                   ? t("account.languageFr")
                   : t("account.languageEn")}
               </SelectTrigger>
@@ -245,6 +252,25 @@ export function AccountPage() {
                 </SelectContent>
               </Select>
             )}
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label className="text-sm">{t("account.couleurPrimary")}</Label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={currentPrimaryColor}
+                onChange={(e) => setLocalColor(e.target.value)}
+                className="h-8 w-10 cursor-pointer rounded border border-input bg-transparent p-0.5"
+              />
+              <Button
+                size="sm"
+                onClick={handleSaveColor}
+                disabled={prefs.isPending}
+              >
+                {t("common.save")}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

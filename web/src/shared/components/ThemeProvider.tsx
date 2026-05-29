@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
-import { useThemeStore } from '@/shared/store/theme.store'
+import { usePreferencesStore } from '@/shared/store/preferences.store'
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const theme = useThemeStore((s) => s.theme)
+  const theme = usePreferencesStore((s) => s.theme)
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
