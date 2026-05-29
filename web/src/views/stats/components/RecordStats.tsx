@@ -35,10 +35,11 @@ export default function RecordStats() {
   );
 
   const pager = usePagination(filtered);
+  const { setPage } = pager;
 
   useEffect(() => {
-    pager.setPage(0);
-  }, [pager, search]);
+    setPage(0);
+  }, [search, setPage]);
 
   return (
     <Card>

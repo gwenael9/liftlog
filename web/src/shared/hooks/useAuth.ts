@@ -1,12 +1,16 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { authApi, type LoginDto, type RegisterDto } from "@/shared/api/auth";
-import { usersApi } from "@/shared/api/users";
+import { usersApi, type UpdateUserDto } from "@/shared/api/users";
 import { useAuthStore } from "@/shared/store/auth.store";
+import { useUserStore } from "@/shared/store/user.store";
 
 export function useCurrentUser() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  return useQuery({
+  const setUser = useUserStore((s) => s.setUser);
+
+  const query = useQuery({
     queryKey: ["currentUser"],
     queryFn: async () => {
       const { data, error } = await usersApi.getMe();
@@ -16,6 +20,12 @@ export function useCurrentUser() {
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
   });
+
+  useEffect(() => {
+    if (query.data) setUser(query.data);
+  }, [query.data, setUser]);
+
+  return query;
 }
 
 async function fetchAndStoreRole(setRole: (role: string) => void) {
@@ -63,10 +73,41 @@ export function useRegister() {
 
 export function useLogout() {
   const logout = useAuthStore((s) => s.logout);
+  const clearUser = useUserStore((s) => s.clearUser);
   const navigate = useNavigate();
 
   return () => {
     logout();
+    clearUser();
     navigate("/auth");
   };
+}
+
+export function useUpdateMe() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (dto: UpdateUserDto) => {
+      const { data, error } = await usersApi.updateMe(dto);
+      if (error) throw error;
+      return data!;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["currentUser"] }),
+  });
+}
+
+export function useDeleteMe() {
+  const logout = useAuthStore((s) => s.logout);
+  const clearUser = useUserStore((s) => s.clearUser);
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: async () => {
+      const { error } = await usersApi.deleteMe();
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      logout();
+      clearUser();
+      navigate("/auth");
+    },
+  });
 }

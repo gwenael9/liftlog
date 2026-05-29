@@ -51,6 +51,13 @@ export class UsersController {
     return this.usersService.update(user.id, dto);
   }
 
+  @Delete('me')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse()
+  removeMe(@CurrentUser() user: CurrentUserData) {
+    return this.usersService.remove(user.id);
+  }
+
   @Delete(':id')
   @UseGuards(RolesGuard)
   @Roles('admin')

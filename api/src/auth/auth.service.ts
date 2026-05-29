@@ -33,6 +33,8 @@ export class AuthService {
       email: dto.email,
       password_hash,
       display_name: dto.display_name ?? null,
+      sex: dto.sex,
+      unit_system: dto.unit_system,
     });
 
     const tokens = await this.generateTokens(user.id, user.email);

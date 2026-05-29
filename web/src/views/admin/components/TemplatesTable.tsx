@@ -1,4 +1,4 @@
-import { Trash2, Lock, Globe } from "lucide-react";
+import { Trash2, Lock, Globe, Eye } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { TableCell } from "@/shared/components/ui/table";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import AdminTable from "./AdminTable";
 import SearchInput from "@/shared/components/SearchInput";
 import { normalizeSearch } from "@/shared/utils";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function TemplatesTable({
   data,
@@ -17,6 +18,7 @@ export default function TemplatesTable({
   const { t } = useTranslation();
   const deleteTemplate = useAdminDeleteTemplate();
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
 
   const filteredData = data.filter((tpl) => {
     const q = normalizeSearch(search);
@@ -72,9 +74,18 @@ export default function TemplatesTable({
             {new Date(tpl.created_at).toLocaleDateString("fr-FR")}
           </TableCell>
           <TableCell className="text-center">
-            <Button variant="ghost" size="icon-sm" onClick={onDelete}>
-              <Trash2 className="size-3 text-destructive" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => navigate(`/templates/${tpl.id}`)}
+              >
+                <Eye className="size-3" />
+              </Button>
+              <Button variant="ghost" size="icon-sm" onClick={onDelete}>
+                <Trash2 className="size-3 text-destructive" />
+              </Button>
+            </div>
           </TableCell>
         </>
       )}

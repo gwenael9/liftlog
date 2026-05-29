@@ -1,87 +1,113 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   CalendarDays,
   LayoutTemplate,
   BarChart2,
   ShieldCheck,
   LogOut,
+  UserRound,
 } from "lucide-react";
-import { useLogout } from "@/shared/hooks/useAuth";
+import { useLogout, useCurrentUser } from "@/shared/hooks/useAuth";
 import { useAuthStore } from "@/shared/store/auth.store";
+import { useUserStore } from "@/shared/store/user.store";
 import { Button } from "@/shared/components/ui/button";
-import { ThemeToggle } from "@/shared/components/ThemeToggle";
-import { LanguageToggle } from "@/shared/components/LanguageToggle";
 import { cn } from "@/shared/lib/utils";
 import { useTranslation } from "react-i18next";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { LanguageToggle } from "../LanguageToggle";
+import { ThemeToggle } from "../ThemeToggle";
+import Avatar from "../Avatar";
 
 export function AppLayout() {
   const { t } = useTranslation();
   const logout = useLogout();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const role = useAuthStore((s) => s.role);
+  const user = useUserStore((s) => s.user);
+  useCurrentUser();
 
   const navLinks = [
     { to: "/sessions", label: t("nav.sessions"), icon: CalendarDays },
     { to: "/templates", label: t("nav.templates"), icon: LayoutTemplate },
     { to: "/stats", label: t("nav.stats"), icon: BarChart2 },
+    { to: "/account", label: t("nav.account"), icon: UserRound },
+    { to: "/admin", label: t("nav.admin"), icon: ShieldCheck, adminOnly: true },
   ];
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <header className="border-b bg-card sticky top-0 z-40">
         <div className="px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-5">
-            <Link to="/sessions" className="font-bold tracking-tight">
-              LiftLog
-            </Link>
-            <nav className="hidden md:flex items-center gap-5">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className={cn(
-                    "text-sm transition-colors",
-                    pathname.startsWith(link.to)
-                      ? "text-foreground font-medium"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              {role === "admin" && (
-                <Link
-                  to="/admin"
-                  className={cn(
-                    "text-sm transition-colors",
-                    pathname.startsWith("/admin")
-                      ? "text-foreground font-medium"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {t("nav.admin")}
-                </Link>
-              )}
-            </nav>
-          </div>
+          <Link to="/sessions" className="font-bold tracking-tight">
+            LiftLog
+          </Link>
           <div className="flex items-center gap-2">
             <LanguageToggle />
             <ThemeToggle />
+            <div className="hidden md:flex">
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full"
+                    >
+                      <Avatar />
+                    </Button>
+                  }
+                />
+                <DropdownMenuContent align="end" className="min-w-52">
+                  <div className="flex flex-col items-center pt-2">
+                    <Avatar size="16" />
+                    {user?.display_name && (
+                      <div className="px-2 py-1.5 text-sm font-medium">
+                        {user.display_name}
+                      </div>
+                    )}
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    {navLinks.map(
+                      ({ to, label, icon: Icon, adminOnly }) =>
+                        (!adminOnly || role === "admin") && (
+                          <DropdownMenuItem
+                            key={to}
+                            onClick={() => navigate(to)}
+                            className="cursor-pointer"
+                          >
+                            <Icon className="size-4" />
+                            {label}
+                          </DropdownMenuItem>
+                        ),
+                    )}
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={logout}
+                    className="cursor-pointer"
+                  >
+                    <LogOut />
+                    {t("nav.logout")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
             <Button
               variant="destructive"
-              size="sm"
+              className="md:hidden"
               onClick={logout}
-              className="hidden md:flex"
             >
-              {t("nav.logout")}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={logout}
-              className="md:hidden text-destructive hover:text-destructive hover:bg-destructive/10"
-            >
-              <LogOut className="size-4" />
+              <LogOut />
             </Button>
           </div>
         </div>
@@ -93,8 +119,9 @@ export function AppLayout() {
 
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-card">
         <div className="flex items-center justify-around h-16">
-          {navLinks.map(({ to, label, icon: Icon }) => {
+          {navLinks.map(({ to, label, icon: Icon, adminOnly }) => {
             const active = pathname.startsWith(to);
+            if (adminOnly && role !== "admin") return null;
             return (
               <Link
                 key={to}
@@ -109,25 +136,6 @@ export function AppLayout() {
               </Link>
             );
           })}
-          {role === "admin" && (
-            <Link
-              to="/admin"
-              className={cn(
-                "flex flex-col items-center gap-1 px-4 py-2 text-xs transition-colors",
-                pathname.startsWith("/admin")
-                  ? "text-foreground"
-                  : "text-muted-foreground",
-              )}
-            >
-              <ShieldCheck
-                className={cn(
-                  "size-5",
-                  pathname.startsWith("/admin") && "text-primary",
-                )}
-              />
-              <span>{t("nav.admin")}</span>
-            </Link>
-          )}
         </div>
       </nav>
     </div>

@@ -17,6 +17,11 @@ export enum UserRole {
   ADMIN = 'admin',
 }
 
+export enum Sex {
+  MALE = 'male',
+  FEMALE = 'female',
+}
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -46,6 +51,14 @@ export class User {
     name: 'role',
   })
   role: UserRole;
+
+  @Column({
+    type: 'enum',
+    enum: Sex,
+    default: Sex.MALE,
+    name: 'sex',
+  })
+  sex: Sex;
 
   @Column({ type: 'varchar', nullable: true, name: 'refresh_token_hash' })
   refresh_token_hash: string | null;
