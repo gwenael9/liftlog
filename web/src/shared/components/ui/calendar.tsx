@@ -5,7 +5,7 @@ import { cn } from '@/shared/lib/utils'
 
 export type CalendarProps = DayPickerProps
 
-export function Calendar({ className, ...props }: CalendarProps) {
+export function Calendar({ className, components: externalComponents, ...props }: CalendarProps) {
   return (
     <DayPicker
       locale={fr}
@@ -25,7 +25,7 @@ export function Calendar({ className, ...props }: CalendarProps) {
         weekday: 'text-muted-foreground w-9 font-normal text-xs text-center pb-1',
         weeks: '',
         week: 'flex w-full',
-        day: 'flex items-center justify-center p-0 w-9 h-9',
+        day: 'flex items-center justify-center p-0 w-9 h-9 overflow-visible',
         day_button: cn(
           'size-9 p-0 text-sm rounded-lg font-normal',
           'hover:bg-accent hover:text-accent-foreground transition-colors',
@@ -43,6 +43,7 @@ export function Calendar({ className, ...props }: CalendarProps) {
           orientation === 'left'
             ? <ChevronLeft className="size-4" />
             : <ChevronRight className="size-4" />,
+        ...externalComponents,
       }}
       {...props}
     />
