@@ -6,8 +6,6 @@ import { useUserStore } from "../store/user.store";
 export default function Avatar({ size = "8" }: { size?: string }) {
   const user = useUserStore((s) => s.user);
 
-  console.log("user in avatar", user);
-
   const avatarUri = useMemo(
     () =>
       new DiceBearAvatar(loreleiStyle, {
