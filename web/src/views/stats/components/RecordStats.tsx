@@ -52,10 +52,9 @@ export default function RecordStats() {
           value={search}
           onChange={setSearch}
           placeholder={t("stats.searchPlaceholder")}
-          className="mb-3"
         />
         {isLoading ? (
-          <div className="space-y-2">
+          <div className="space-y-2 mt-3">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="flex justify-between">
                 <Skeleton className="h-4 w-1/3" />
