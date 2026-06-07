@@ -189,7 +189,8 @@
     "notes": "Notes",
     "notesPlaceholder": "Ajouter des notes sur cette séance...",
     "created": "Séance créée",
-    "saved": "Séance enregistrée"
+    "saved": "Séance enregistrée",
+    "today": "Aujourd'hui"
   },
   "templates": {
     "title": "Template",

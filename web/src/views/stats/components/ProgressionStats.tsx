@@ -1,5 +1,10 @@
 import { formatDateShort, formatDateFull } from "@/shared/utils";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/shared/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/shared/components/ui/select";
 import {
   ResponsiveContainer,
   CartesianGrid,
@@ -9,13 +14,20 @@ import {
   Line,
   LineChart,
 } from "recharts";
-import { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/shared/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import { useExercises } from "@/shared/hooks/useSessions";
 import { useExerciseProgression } from "@/views/stats/hooks/useStats";
 import Empty from "@/shared/components/Empty";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { Button } from "@/shared/components/ui/button";
+import { usePreferencesStore } from "@/shared/store/preferences.store";
 
 type Period = "1w" | "1m" | "3m" | "6m" | "1y" | "all";
 
@@ -36,6 +48,7 @@ export default function ProgressionStats() {
   const { t } = useTranslation();
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>("");
   const [period, setPeriod] = useState<Period>("3m");
+  const color = usePreferencesStore((s) => s.couleur_primary);
 
   const from = useMemo(() => getFromDate(period), [period]);
 
@@ -74,23 +87,6 @@ export default function ProgressionStats() {
             </SelectContent>
           </Select>
         </div>
-        {selectedExerciseId && (
-          <div className="flex gap-1 mt-1">
-            {PERIODS.map((p) => (
-              <button
-                key={p}
-                onClick={() => setPeriod(p)}
-                className={`px-2 py-0.5 rounded text-xs font-medium transition-colors ${
-                  period === p
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }`}
-              >
-                {t(`stats.period.${p}`)}
-              </button>
-            ))}
-          </div>
-        )}
       </CardHeader>
       <CardContent>
         {!selectedExerciseId ? (
@@ -140,6 +136,24 @@ export default function ProgressionStats() {
           </ResponsiveContainer>
         )}
       </CardContent>
+      <div className="flex justify-center">
+        {selectedExerciseId && (
+          <div className="flex gap-1">
+            {PERIODS.map((p) => (
+              <Button
+                size="xs"
+                variant={period === p ? "default" : "outline"}
+                onClick={() => setPeriod(p)}
+                style={{
+                  backgroundColor: period === p ? color : undefined,
+                }}
+              >
+                {t(`stats.period.${p}`)}
+              </Button>
+            ))}
+          </div>
+        )}
+      </div>
     </Card>
   );
 }

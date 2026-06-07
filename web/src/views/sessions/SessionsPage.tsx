@@ -199,6 +199,16 @@ export function SessionsPage() {
     </>
   );
 
+  const buttonToday = (
+    <Button
+      size="sm"
+      variant="outline"
+      onClick={() => setCurrentMonth(new Date())}
+    >
+      {t("sessions.today")}
+    </Button>
+  );
+
   return (
     <>
       <PageLayout
@@ -213,6 +223,7 @@ export function SessionsPage() {
           content: dialogContent,
         }}
         subContent={monthNav}
+        extraHeaderButton={buttonToday}
       >
         {sorted?.map((session) => {
           const sets = session.session_sets ?? [];
