@@ -1,5 +1,4 @@
-import { Trash2, Plus, Eye } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Trash2, Plus } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -8,7 +7,7 @@ import {
 } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
-import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
+import { ExerciseImageButton } from "@/shared/components/ExerciseImageButton";
 import type {
   ExerciseGroup,
   SetEditValue,
@@ -38,18 +37,8 @@ export function ExerciseCard({
   onDeleteSet,
 }: Props) {
   const { t } = useTranslation();
-  const [imageOpen, setImageOpen] = useState(false);
-  const [imageAvailable, setImageAvailable] = useState(false);
   const totalSets = group.sets.length + pendingRows.length;
   const isDuration = group.trackingType === "duration";
-  const imageSrc = `/exercices/${group.exerciseSlug}.png`;
-
-  useEffect(() => {
-    const img = new Image();
-    img.src = imageSrc;
-    img.onload = () => setImageAvailable(true);
-    img.onerror = () => setImageAvailable(false);
-  }, [imageSrc]);
 
   const colClass = isDuration
     ? "grid-cols-[1.5rem_1fr_auto]"
@@ -66,28 +55,9 @@ export function ExerciseCard({
           <span className="text-sm font-normal text-muted-foreground">
             ×{totalSets}
           </span>
-          {imageAvailable && (
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => setImageOpen(true)}
-              title={t("exercises.viewImage")}
-            >
-              <Eye className="size-4" />
-            </Button>
-          )}
+          <ExerciseImageButton exerciseSlug={group.exerciseSlug} />
         </CardTitle>
       </CardHeader>
-
-      <Dialog open={imageOpen} onOpenChange={setImageOpen}>
-        <DialogContent title={t(`exercises.${group.exerciseSlug}`)}>
-          <img
-            src={imageSrc}
-            alt={t(`exercises.${group.exerciseSlug}`)}
-            className="w-full rounded-md object-contain max-h-96"
-          />
-        </DialogContent>
-      </Dialog>
 
       <CardContent className="space-y-2">
         <div className={`grid ${colClass} gap-2 items-center px-1`}>
