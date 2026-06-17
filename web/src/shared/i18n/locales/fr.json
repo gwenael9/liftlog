@@ -29,7 +29,10 @@
     "bulgarian_split_squat": "Fente bulgare",
     "unilateral_row": "Rowing haltère unilatéral",
     "shrug_barbell": "Shrug barre",
-    "chin_pull": "Tirage menton"
+    "chin_pull": "Tirage menton",
+    "incline_curl": "Curl incliné",
+    "preacher_curl": "Curl pupitre",
+    "viewImage": "Voir l'image"
   },
   "muscleGroups": {
     "chest": "Pectoraux",

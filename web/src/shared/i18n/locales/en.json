@@ -29,7 +29,10 @@
     "bulgarian_split_squat": "Bulgarian Split Squat",
     "unilateral_row": "Unilateral Row",
     "shrug_barbell": "Barbell Shrug",
-    "chin_pull": "Chin Pull"
+    "chin_pull": "Chin Pull",
+    "incline_curl": "Incline Curl",
+    "preacher_curl": "Preacher Curl",
+    "viewImage": "View image"
   },
   "muscleGroups": {
     "chest": "Chest",
