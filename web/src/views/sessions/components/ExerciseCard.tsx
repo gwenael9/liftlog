@@ -1,4 +1,4 @@
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, ChevronUp, ChevronDown } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -19,6 +19,10 @@ interface Props {
   group: ExerciseGroup;
   editValues: Record<string, SetEditValue>;
   pendingRows: AddRow[];
+  canMoveUp: boolean;
+  canMoveDown: boolean;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
   onPatchEdit: (setId: string, patch: Partial<SetEditValue>) => void;
   onAddPending: () => void;
   onPatchPending: (i: number, patch: Partial<AddRow>) => void;
@@ -30,6 +34,10 @@ export function ExerciseCard({
   group,
   editValues,
   pendingRows,
+  canMoveUp,
+  canMoveDown,
+  onMoveUp,
+  onMoveDown,
   onPatchEdit,
   onAddPending,
   onPatchPending,
@@ -48,6 +56,26 @@ export function ExerciseCard({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
+          <div className="flex flex-col">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={onMoveUp}
+              disabled={!canMoveUp}
+              className="h-4 w-4"
+            >
+              <ChevronUp className="size-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={onMoveDown}
+              disabled={!canMoveDown}
+              className="h-4 w-4"
+            >
+              <ChevronDown className="size-3" />
+            </Button>
+          </div>
           <span className="text-sm font-normal text-muted-foreground">
             #{group.exerciseOrder + 1}
           </span>

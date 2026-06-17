@@ -557,6 +557,7 @@ export interface components {
         };
         UpdateSetItemDto: {
             set_index?: number;
+            exercise_order?: number;
             reps?: number;
             weight_kg?: number;
             duration_sec?: number;

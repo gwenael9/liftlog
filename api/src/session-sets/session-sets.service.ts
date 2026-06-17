@@ -93,6 +93,7 @@ export class SessionSetsService {
     for (const item of dto.updates) {
       const set = existingMap.get(item.id)!;
       if (item.set_index !== undefined) set.set_index = item.set_index;
+      if (item.exercise_order !== undefined) set.exercise_order = item.exercise_order;
       if (item.reps !== undefined) set.reps = item.reps;
       if (item.weight_kg !== undefined) set.weight_kg = item.weight_kg;
       if (item.duration_sec !== undefined) set.duration_sec = item.duration_sec;

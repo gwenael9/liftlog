@@ -43,8 +43,17 @@ export function useSessionEditor(id: string) {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // IDs retirés optimistement de l'UI avant confirmation serveur.
+  // IDs retirés de l'UI immédiatement, suppression réelle différée à saveAll.
   const [deletingSetIds, setDeletingSetIds] = useState<Set<string>>(new Set());
+  const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<string>>(new Set());
+
+  // Ordre local des exercices, keyed par exerciseId. Permet de réordonner
+  // sans toucher au serveur avant la sauvegarde.
+  const [orderOverride, setOrderOverride] = useState<Record<string, number>>({});
+
+  // Exercices ajoutés localement, pas encore persistés — affichés dans le
+  // carousel avec leurs pendingRows, envoyés au serveur à la sauvegarde.
+  const [pendingExerciseIds, setPendingExerciseIds] = useState<string[]>([]);
 
   const [addOpen, setAddOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -64,7 +73,7 @@ export function useSessionEditor(id: string) {
       list.push(s);
       map.set(s.exercise_id, list);
     }
-    return Array.from(map.entries())
+    const serverGroups = Array.from(map.entries())
       .filter(([, sets]) => sets.length > 0)
       .map(([exId, sets]) => ({
         exerciseId: exId,
@@ -72,10 +81,28 @@ export function useSessionEditor(id: string) {
         trackingType: (sets[0].exercise.tracking_type ?? "strength") as
           | "strength"
           | "duration",
-        exerciseOrder: sets[0].exercise_order,
+        exerciseOrder: orderOverride[exId] ?? sets[0].exercise_order,
         sets,
-      }));
-  }, [session, deletingSetIds]);
+      }))
+      .sort((a, b) => a.exerciseOrder - b.exerciseOrder);
+
+    // Ajoute les exercices locaux (pas encore sur le serveur)
+    const pendingGroups: ExerciseGroup[] = [];
+    for (const exId of pendingExerciseIds) {
+      if (map.has(exId)) continue; // déjà en session serveur
+      const exInfo = (exercises ?? []).find((e) => e.id === exId);
+      if (!exInfo) continue;
+      pendingGroups.push({
+        exerciseId: exId,
+        exerciseSlug: exInfo.slug,
+        trackingType: (exInfo.tracking_type ?? "strength") as "strength" | "duration",
+        exerciseOrder: serverGroups.length + pendingGroups.length,
+        sets: [],
+      });
+    }
+
+    return [...serverGroups, ...pendingGroups];
+  }, [session, deletingSetIds, orderOverride, pendingExerciseIds, exercises]);
 
   const total = setsByExercise.length;
   // clampedIndex évite un index hors-limites si un exercice est supprimé
@@ -120,7 +147,30 @@ export function useSessionEditor(id: string) {
     });
   }
 
-  const isAnyDirty = notesDirty || setsByExercise.some(isGroupDirty);
+  const orderDirty = Object.keys(orderOverride).length > 0;
+  const isAnyDirty =
+    notesDirty ||
+    orderDirty ||
+    pendingDeleteIds.size > 0 ||
+    pendingExerciseIds.length > 0 ||
+    setsByExercise.some(isGroupDirty);
+
+  function moveExercise(dir: "up" | "down") {
+    const targetIndex = dir === "up" ? clampedIndex - 1 : clampedIndex + 1;
+    if (targetIndex < 0 || targetIndex >= total) return;
+
+    const current = setsByExercise[clampedIndex];
+    const target = setsByExercise[targetIndex];
+    const currentOrder = current.exerciseOrder;
+    const targetOrder = target.exerciseOrder;
+
+    setOrderOverride((prev) => ({
+      ...prev,
+      [current.exerciseId]: targetOrder,
+      [target.exerciseId]: currentOrder,
+    }));
+    setActiveIndex(targetIndex);
+  }
 
   function patchEdit(setId: string, patch: Partial<SetEditValue>) {
     setPatches((prev) => ({ ...prev, [setId]: { ...prev[setId], ...patch } }));
@@ -149,24 +199,15 @@ export function useSessionEditor(id: string) {
     }));
   }
 
-  // Suppression optimiste : retire le set de l'UI immédiatement, restaure
-  // si l'appel serveur échoue.
-  async function handleDeleteSet(setId: string) {
+  // Retire le set de l'UI immédiatement — suppression réelle différée à saveAll.
+  function handleDeleteSet(setId: string) {
     setDeletingSetIds((prev) => new Set([...prev, setId]));
+    setPendingDeleteIds((prev) => new Set([...prev, setId]));
     setPatches((prev) => {
       const n = { ...prev };
       delete n[setId];
       return n;
     });
-    try {
-      await deleteSet.mutateAsync(setId);
-    } catch {
-      setDeletingSetIds((prev) => {
-        const n = new Set(prev);
-        n.delete(setId);
-        return n;
-      });
-    }
   }
 
   // Envoie patches + pendingRows en bulk, notes en parallèle si modifiées.
@@ -178,6 +219,7 @@ export function useSessionEditor(id: string) {
         const vals = resolveEditValue(set);
         body.updates.push({
           id: set.id,
+          exercise_order: orderOverride[g.exerciseId] !== undefined ? g.exerciseOrder : undefined,
           reps: vals.reps ? Number(vals.reps) : undefined,
           weight_kg: vals.weight_kg ? Number(vals.weight_kg) : undefined,
           duration_sec: vals.duration_sec ? Number(vals.duration_sec) : undefined,
@@ -200,44 +242,54 @@ export function useSessionEditor(id: string) {
       }
     }
 
-    const promises: Promise<unknown>[] = [bulkUpdateSets.mutateAsync(body)];
+    const promises: Promise<unknown>[] = [
+      bulkUpdateSets.mutateAsync(body),
+      ...[...pendingDeleteIds].map((id) => deleteSet.mutateAsync(id)),
+    ];
     if (notesDirty) promises.push(updateSession.mutateAsync({ notes }));
     await Promise.all(promises);
 
     setPatches({});
     setPendingRows({});
+    setOrderOverride({});
+    setPendingExerciseIds([]);
+    setDeletingSetIds(new Set());
+    setPendingDeleteIds(new Set());
     setNotesOverride(undefined);
     toast.success(t("sessions.saved"));
-    navigate("/sessions");
   }
 
   function cancelAll() {
     setPatches({});
     setPendingRows({});
+    setOrderOverride({});
+    setPendingExerciseIds([]);
+    setDeletingSetIds(new Set());
+    setPendingDeleteIds(new Set());
     setNotesOverride(undefined);
   }
 
-  async function handleAddExercise(exerciseId: string, rows: AddRow[]) {
+  // Ajoute un exercice localement — aucun appel API, tout est envoyé à saveAll.
+  function handleAddExercise(exerciseId: string, rows: AddRow[]) {
     const existingGroup = setsByExercise.find((g) => g.exerciseId === exerciseId);
-    const exerciseOrder = existingGroup?.exerciseOrder ?? setsByExercise.length;
-    const existingCount = existingGroup?.sets.length ?? 0;
+
+    if (!existingGroup) {
+      setPendingExerciseIds((prev) =>
+        prev.includes(exerciseId) ? prev : [...prev, exerciseId],
+      );
+    }
+
     const filledRows = rows.filter((r) => r.reps || r.weight_kg || r.duration_sec);
-    const body: BulkUpdateSetsDto = {
-      updates: [],
-      creates: filledRows.map((row, i) => ({
-        exercise_id: exerciseId,
-        exercise_order: exerciseOrder,
-        set_index: existingCount + i + 1,
-        reps: row.reps ? Number(row.reps) : undefined,
-        weight_kg: row.weight_kg ? Number(row.weight_kg) : undefined,
-        duration_sec: row.duration_sec ? Number(row.duration_sec) : undefined,
-        performed_at: new Date().toISOString(),
-      })),
-    };
-    await bulkUpdateSets.mutateAsync(body);
-    // Navigue vers le groupe ajouté ; s'il est nouveau, il apparaîtra en dernier.
-    const newIndex = setsByExercise.findIndex((g) => g.exerciseId === exerciseId);
-    setActiveIndex(newIndex !== -1 ? newIndex : setsByExercise.length);
+    if (filledRows.length > 0) {
+      setPendingRows((prev) => ({
+        ...prev,
+        [exerciseId]: [...(prev[exerciseId] ?? []), ...filledRows],
+      }));
+    }
+
+    // Navigue vers le groupe ; s'il est nouveau, il apparaîtra en dernier après re-render.
+    const existingIndex = setsByExercise.findIndex((g) => g.exerciseId === exerciseId);
+    setActiveIndex(existingIndex !== -1 ? existingIndex : setsByExercise.length);
   }
 
   function handleDeleteSession() {
@@ -264,6 +316,7 @@ export function useSessionEditor(id: string) {
     setDeleteOpen,
     activeIndex,
     setActiveIndex,
+    moveExercise,
     patchEdit,
     addPendingRow,
     patchPendingRow,
