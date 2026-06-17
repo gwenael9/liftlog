@@ -5,6 +5,7 @@ import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import { usePreferencesStore } from "@/shared/store/preferences.store";
+import { getContrastColor } from "@/shared/lib/utils";
 
 interface DialogConfig {
   open: boolean;
@@ -50,7 +51,7 @@ export default function PageLayout<T>({
           <div className="flex gap-2">
             {extraHeaderButton}
             <Button
-              style={{ backgroundColor: color }}
+              style={{ backgroundColor: color, color: getContrastColor(color) }}
               size="sm"
               onClick={() => dialog.onOpenChange(true)}
             >

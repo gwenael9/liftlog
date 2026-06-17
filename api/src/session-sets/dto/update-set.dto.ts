@@ -18,6 +18,12 @@ export class UpdateSetDto {
   @IsOptional()
   @IsInt()
   @Min(0)
+  exercise_order?: number;
+
+  @ApiPropertyOptional({ minimum: 0 })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
   reps?: number;
 
   @ApiPropertyOptional({ minimum: 0 })

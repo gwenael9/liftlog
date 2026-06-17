@@ -41,6 +41,7 @@ export function SessionDetailPage() {
     deleteOpen,
     setDeleteOpen,
     setActiveIndex,
+    moveExercise,
     patchEdit,
     addPendingRow,
     patchPendingRow,
@@ -54,12 +55,12 @@ export function SessionDetailPage() {
     isDeleting,
   } = editor;
 
-  const [slideDir, setSlideDir] = useState<'left' | 'right' | null>(null);
+  const [slideDir, setSlideDir] = useState<"left" | "right" | null>(null);
   const prevIndexRef = useRef(clampedIndex);
 
   useEffect(() => {
     if (prevIndexRef.current !== clampedIndex) {
-      setSlideDir(clampedIndex > prevIndexRef.current ? 'left' : 'right');
+      setSlideDir(clampedIndex > prevIndexRef.current ? "left" : "right");
       prevIndexRef.current = clampedIndex;
     }
   }, [clampedIndex]);
@@ -80,14 +81,16 @@ export function SessionDetailPage() {
         onDelete={() => setDeleteOpen(true)}
         subHeader={
           <>
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={cancelAll}
-              disabled={isSaving}
-            >
-              {t("common.cancel")}
-            </Button>
+            {isAnyDirty && (
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={cancelAll}
+                disabled={isSaving}
+              >
+                {t("common.cancel")}
+              </Button>
+            )}
             <Button
               className="flex-1"
               onClick={saveAll}
@@ -111,11 +114,11 @@ export function SessionDetailPage() {
                 key={group.exerciseId}
                 style={{
                   transform: `translateX(${deltaX}px)`,
-                  transition: isDragging ? 'none' : 'transform 0.25s ease-out',
+                  transition: isDragging ? "none" : "transform 0.25s ease-out",
                 }}
                 className={cn(
-                  slideDir === 'left' && 'animate-slide-in-from-right',
-                  slideDir === 'right' && 'animate-slide-in-from-left',
+                  slideDir === "left" && "animate-slide-in-from-right",
+                  slideDir === "right" && "animate-slide-in-from-left",
                 )}
                 onAnimationEnd={() => setSlideDir(null)}
               >
@@ -123,6 +126,10 @@ export function SessionDetailPage() {
                   group={group}
                   editValues={groupEditValues}
                   pendingRows={pendingRows[group.exerciseId] ?? []}
+                  canMoveUp={clampedIndex > 0}
+                  canMoveDown={clampedIndex < total - 1}
+                  onMoveUp={() => moveExercise("up")}
+                  onMoveDown={() => moveExercise("down")}
                   onPatchEdit={patchEdit}
                   onAddPending={() => addPendingRow(group.exerciseId)}
                   onPatchPending={(i, patch) =>
