@@ -220,6 +220,10 @@ export function useTemplateEditor(
     return slug ? t(`exercises.${slug}`) : exerciseId;
   }
 
+  function exerciseSlug(exerciseId: string) {
+    return exercises?.find((ex) => ex.id === exerciseId)?.slug;
+  }
+
   return {
     canEdit,
     info,
@@ -241,6 +245,7 @@ export function useTemplateEditor(
     handleSaveInfo,
     handleDelete,
     exerciseName,
+    exerciseSlug,
     isSaving: updateTemplate.isPending,
     isDeleting: deleteTemplate.isPending,
   };

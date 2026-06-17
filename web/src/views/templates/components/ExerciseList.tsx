@@ -1,6 +1,12 @@
 import { GripVertical, Plus, Trash2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
+import { ExerciseImageButton } from "@/shared/components/ExerciseImageButton";
 import { useTranslation } from "react-i18next";
 import type { TemplateExerciseItemDto } from "@/shared/api/templates";
 import {
@@ -28,11 +34,25 @@ interface SortableRowProps {
   row: ExerciseRow;
   canEdit: boolean;
   getExerciseName: (id: string) => string;
+  getExerciseSlug: (id: string) => string | undefined;
   onRemove: (key: string) => void;
 }
 
-function SortableExerciseRow({ row, canEdit, getExerciseName, onRemove }: SortableRowProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+function SortableExerciseRow({
+  row,
+  canEdit,
+  getExerciseName,
+  getExerciseSlug,
+  onRemove,
+}: SortableRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
     id: row._key,
     disabled: !canEdit,
   });
@@ -49,9 +69,16 @@ function SortableExerciseRow({ row, canEdit, getExerciseName, onRemove }: Sortab
         className={`size-4 shrink-0 ${canEdit ? "text-muted-foreground cursor-grab active:cursor-grabbing" : "text-muted-foreground/30"}`}
         {...(canEdit ? { ...attributes, ...listeners } : {})}
       />
-      <span className="flex-1 text-sm font-medium truncate">
-        {getExerciseName(row.exercise_id)}
-      </span>
+      <div className="flex-1 flex items-center gap-1">
+        <p className="text-sm font-medium truncate">
+          {getExerciseName(row.exercise_id)}
+        </p>
+        {getExerciseSlug(row.exercise_id) && (
+          <ExerciseImageButton
+            exerciseSlug={getExerciseSlug(row.exercise_id)!}
+          />
+        )}
+      </div>
       <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
         {row.target_sets != null && <span>{row.target_sets}×</span>}
         {row.target_duration_sec != null ? (
@@ -59,9 +86,7 @@ function SortableExerciseRow({ row, canEdit, getExerciseName, onRemove }: Sortab
         ) : (
           row.target_reps != null && <span>{row.target_reps} rép</span>
         )}
-        {row.rest_seconds != null && (
-          <span>{row.rest_seconds}s repos</span>
-        )}
+        {row.rest_seconds != null && <span>{row.rest_seconds}s repos</span>}
       </div>
       {canEdit && (
         <Button
@@ -80,6 +105,7 @@ interface TemplateExerciseListProps {
   rows: ExerciseRow[];
   canEdit: boolean;
   getExerciseName: (id: string) => string;
+  getExerciseSlug: (id: string) => string | undefined;
   onAdd: () => void;
   onRemove: (key: string) => void;
   onReorder: (activeKey: string, overKey: string) => void;
@@ -89,6 +115,7 @@ export function TemplateExerciseList({
   rows,
   canEdit,
   getExerciseName,
+  getExerciseSlug,
   onAdd,
   onRemove,
   onReorder,
@@ -97,7 +124,9 @@ export function TemplateExerciseList({
 
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
   function handleDragEnd(event: DragEndEvent) {
@@ -137,13 +166,17 @@ export function TemplateExerciseList({
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
-          <SortableContext items={rows.map((r) => r._key)} strategy={verticalListSortingStrategy}>
+          <SortableContext
+            items={rows.map((r) => r._key)}
+            strategy={verticalListSortingStrategy}
+          >
             {rows.map((row) => (
               <SortableExerciseRow
                 key={row._key}
                 row={row}
                 canEdit={canEdit}
                 getExerciseName={getExerciseName}
+                getExerciseSlug={getExerciseSlug}
                 onRemove={onRemove}
               />
             ))}

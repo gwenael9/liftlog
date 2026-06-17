@@ -48,6 +48,7 @@ export function TemplateDetailPage() {
     handleSaveInfo,
     handleDelete,
     exerciseName,
+    exerciseSlug,
     isSaving,
     isDeleting,
   } = editor;
@@ -89,6 +90,7 @@ export function TemplateDetailPage() {
         rows={rows}
         canEdit={canEdit}
         getExerciseName={exerciseName}
+        getExerciseSlug={exerciseSlug}
         onAdd={() => setAddOpen(true)}
         onRemove={handleRemoveExercise}
         onReorder={handleReorderExercise}

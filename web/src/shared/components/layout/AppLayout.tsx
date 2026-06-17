@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import {
   CalendarDays,
   LayoutTemplate,
@@ -9,32 +9,28 @@ import {
 } from "lucide-react";
 import { useLogout, useCurrentUser } from "@/shared/hooks/useAuth";
 import { useAuthStore } from "@/shared/store/auth.store";
-import { useUserStore } from "@/shared/store/user.store";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { useTranslation } from "react-i18next";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import { LanguageToggle } from "../LanguageToggle";
 import { ThemeToggle } from "../ThemeToggle";
-import Avatar from "../Avatar";
+import ProfileButton from "../ProfileButton";
+
+export interface NavLink {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  adminOnly?: boolean;
+}
 
 export function AppLayout() {
   const { t } = useTranslation();
   const logout = useLogout();
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const role = useAuthStore((s) => s.role);
-  const user = useUserStore((s) => s.user);
   useCurrentUser();
 
-  const navLinks = [
+  const navLinks: NavLink[] = [
     { to: "/sessions", label: t("nav.sessions"), icon: CalendarDays },
     { to: "/templates", label: t("nav.templates"), icon: LayoutTemplate },
     { to: "/stats", label: t("nav.stats"), icon: BarChart2 },
@@ -53,54 +49,7 @@ export function AppLayout() {
             <LanguageToggle />
             <ThemeToggle />
             <div className="hidden md:flex">
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full"
-                    >
-                      <Avatar />
-                    </Button>
-                  }
-                />
-                <DropdownMenuContent align="end" className="min-w-52">
-                  <div className="flex flex-col items-center pt-2">
-                    <Avatar size={64} />
-                    {user?.display_name && (
-                      <div className="w-full px-2 py-1.5 text-sm font-medium text-center overflow-hidden">
-                        <span className="truncate block">{user.display_name}</span>
-                      </div>
-                    )}
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    {navLinks.map(
-                      ({ to, label, icon: Icon, adminOnly }) =>
-                        (!adminOnly || role === "admin") && (
-                          <DropdownMenuItem
-                            key={to}
-                            onClick={() => navigate(to)}
-                            className="cursor-pointer"
-                          >
-                            <Icon className="size-4" />
-                            {label}
-                          </DropdownMenuItem>
-                        ),
-                    )}
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onClick={logout}
-                    className="cursor-pointer"
-                  >
-                    <LogOut />
-                    {t("nav.logout")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <ProfileButton navLinks={navLinks} />
             </div>
             <Button
               variant="destructive"
