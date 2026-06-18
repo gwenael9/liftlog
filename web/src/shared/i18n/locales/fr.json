@@ -192,7 +192,8 @@
     "notes": "Notes",
     "notesPlaceholder": "Ajouter des notes sur cette séance...",
     "created": "Séance créée",
-    "saved": "Séance enregistrée"
+    "saved": "Séance enregistrée",
+    "deleted": "Séance supprimée"
   },
   "templates": {
     "title": "Template",
