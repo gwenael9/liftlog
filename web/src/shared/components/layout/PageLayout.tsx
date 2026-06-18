@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, PackageOpen } from "lucide-react";
 import Loader from "@/shared/components/Loader";
 import { Button } from "@/shared/components/ui/button";
 import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
@@ -82,9 +82,22 @@ export default function PageLayout<T>({
         {data.isLoading && !skeleton && <Loader />}
 
         {!data.isLoading && items.length === 0 && (
-          <p className="text-center text-muted-foreground py-8">
-            {t("common.noData")}
-          </p>
+          <div className="flex flex-col items-center gap-3 py-16">
+            <PackageOpen className="size-12 opacity-40" />
+            <p className="text-sm text-muted-foreground">
+              {t("common.noData")}
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => dialog.onOpenChange(true)}
+            >
+              <Plus className="size-4" />
+              {t(`common.new_${female ? "female" : "male"}`, {
+                title: title.toLowerCase(),
+              })}
+            </Button>
+          </div>
         )}
 
         {data.isLoading && skeleton}
