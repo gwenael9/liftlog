@@ -78,11 +78,13 @@ export function useRegister() {
 export function useLogout() {
   const logout = useAuthStore((s) => s.logout);
   const clearUser = useUserStore((s) => s.clearUser);
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return () => {
     logout();
     clearUser();
+    queryClient.clear();
     navigate("/auth");
   };
 }
