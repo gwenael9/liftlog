@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import {
-  Card,
-  CardAction,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/shared/components/ui/card";
+  ChevronLeft,
+  ChevronRight,
+  ChevronRight as ArrowRight,
+  Trash2,
+  CalendarDays,
+} from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Calendar } from "@/shared/components/ui/calendar";
 import { Label } from "@/shared/components/ui/label";
@@ -29,12 +28,22 @@ import { ConfirmDeleteDialog } from "@/shared/components/ConfirmDeleteDialog";
 import { sessionsApi, type CreateSetDto } from "@/shared/api/sessions";
 import {
   formatMonth,
-  formatSessionDate,
+  formatSessionDateRow,
+  formatWeekRange,
   toDateString,
   toMonthString,
 } from "@/shared/utils";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+
+function getWeekStartStr(dateStr: string): string {
+  const d = new Date(dateStr + "T00:00:00");
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  const monday = new Date(d);
+  monday.setDate(d.getDate() + diff);
+  return toDateString(monday);
+}
 
 export function SessionsPage() {
   const { t } = useTranslation();
@@ -106,6 +115,20 @@ export function SessionsPage() {
   const sorted = sessions
     ?.slice()
     .sort((a, b) => b.scheduled_date.localeCompare(a.scheduled_date));
+
+  const groupedByWeek = useMemo(() => {
+    if (!sorted) return [];
+    const weekMap = new Map<string, typeof sorted>();
+    for (const session of sorted) {
+      const key = getWeekStartStr(session.scheduled_date);
+      if (!weekMap.has(key)) weekMap.set(key, []);
+      weekMap.get(key)!.push(session);
+    }
+    return Array.from(weekMap.entries()).map(([weekStart, sessions]) => ({
+      weekStart,
+      sessions,
+    }));
+  }, [sorted]);
 
   const dialogContent = (
     <div className="flex flex-col items-center gap-4">
@@ -182,21 +205,23 @@ export function SessionsPage() {
   );
 
   const sessionSkeleton = (
-    <>
-      {[0, 1, 2].map((i) => (
-        <Card key={i}>
-          <CardHeader>
-            <Skeleton className="h-5 w-1/2" />
-            <div className="ml-auto">
-              <Skeleton className="h-5 w-20 rounded-full" />
+    <div className="space-y-4">
+      {[0, 1].map((w) => (
+        <div key={w} className="space-y-1">
+          <Skeleton className="h-4 w-40 mb-2" />
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex items-center gap-3 py-3 px-2">
+              <div className="flex flex-col items-center w-8 gap-1">
+                <Skeleton className="h-3 w-6" />
+                <Skeleton className="h-5 w-5" />
+              </div>
+              <Skeleton className="h-4 flex-1" />
+              <Skeleton className="h-4 w-14" />
             </div>
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-3 w-28" />
-          </CardContent>
-        </Card>
+          ))}
+        </div>
       ))}
-    </>
+    </div>
   );
 
   const buttonToday = (
@@ -205,7 +230,7 @@ export function SessionsPage() {
       variant="outline"
       onClick={() => setCurrentMonth(new Date())}
     >
-      {t("sessions.today")}
+      <CalendarDays className="size-4" />
     </Button>
   );
 
@@ -225,51 +250,75 @@ export function SessionsPage() {
         subContent={monthNav}
         extraHeaderButton={buttonToday}
       >
-        {sorted?.map((session) => {
-          const sets = session.session_sets ?? [];
-          const exerciseCount = new Set(sets.map((s) => s.exercise_id)).size;
-          const templateName = session.template_id
-            ? templates?.find((t) => t.id === session.template_id)?.name
-            : null;
-          return (
-            <Card
-              key={session.id}
-              className="group cursor-pointer hover:ring-2 hover:ring-primary/40 transition-all"
-              onClick={() => navigate(`/sessions/${session.id}`)}
-            >
-              <CardHeader>
-                <CardTitle className="capitalize text-base">
-                  {formatSessionDate(session.scheduled_date)}
-                </CardTitle>
-                <CardAction className="flex items-center gap-2">
-                  {templateName && (
-                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                      {templateName}
-                    </span>
-                  )}
-                </CardAction>
-              </CardHeader>
-              <CardContent className="flex items-center">
-                {exerciseCount > 0 && (
-                  <p className="text-xs text-muted-foreground">
-                    {t("common.exerciseCount", { count: exerciseCount })}
-                  </p>
-                )}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="ml-auto md:opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setDeleteId(session.id);
-                  }}
-                >
-                  <Trash2 className="text-destructive size-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
+        <div className="space-y-6">
+          {groupedByWeek.map(({ weekStart, sessions }) => (
+            <div key={weekStart}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-medium text-muted-foreground capitalize">
+                  {formatWeekRange(weekStart)}
+                </span>
+                <div className="flex-1 h-px bg-border" />
+              </div>
+              <div className="rounded-lg overflow-hidden border divide-y">
+                {sessions.map((session) => {
+                  const sets = session.session_sets ?? [];
+                  const exerciseCount = new Set(sets.map((s) => s.exercise_id))
+                    .size;
+                  const templateName = session.template_id
+                    ? templates?.find((t) => t.id === session.template_id)?.name
+                    : null;
+                  const { weekday, day } = formatSessionDateRow(
+                    session.scheduled_date,
+                  );
+                  return (
+                    <div
+                      key={session.id}
+                      className="group flex items-center gap-3 px-3 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => navigate(`/sessions/${session.id}`)}
+                    >
+                      <div className="flex flex-col items-center w-8 shrink-0 text-muted-foreground">
+                        <span className="text-[10px] capitalize">
+                          {weekday}
+                        </span>
+                        <span className="text-base font-semibold leading-none text-foreground">
+                          {day}
+                        </span>
+                      </div>
+                      <div className="flex-1 flex items-center gap-2 min-w-0">
+                        {templateName && (
+                          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary shrink-0">
+                            {templateName}
+                          </span>
+                        )}
+                        {exerciseCount > 0 && (
+                          <span className="text-xs text-muted-foreground">
+                            {t("common.exerciseCount", {
+                              count: exerciseCount,
+                            })}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-7 md:opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteId(session.id);
+                          }}
+                        >
+                          <Trash2 className="text-destructive size-3.5" />
+                        </Button>
+                        <ArrowRight className="size-4 text-muted-foreground" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
       </PageLayout>
 
       <ConfirmDeleteDialog

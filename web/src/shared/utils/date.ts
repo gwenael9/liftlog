@@ -45,3 +45,21 @@ export function formatDateFull(dateStr: string): string {
     year: "numeric",
   });
 }
+
+export function formatSessionDateRow(dateStr: string): { weekday: string; day: number } {
+  const d = new Date(dateStr + "T00:00:00");
+  return {
+    weekday: d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", ""),
+    day: d.getDate(),
+  };
+}
+
+export function formatWeekRange(mondayStr: string): string {
+  const monday = new Date(mondayStr + "T00:00:00");
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  if (monday.getMonth() === sunday.getMonth()) {
+    return `${monday.getDate()} – ${sunday.getDate()} ${sunday.toLocaleDateString("fr-FR", { month: "long" })}`;
+  }
+  return `${monday.getDate()} ${monday.toLocaleDateString("fr-FR", { month: "long" })} – ${sunday.getDate()} ${sunday.toLocaleDateString("fr-FR", { month: "long" })}`;
+}

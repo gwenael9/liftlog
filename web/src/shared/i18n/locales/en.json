@@ -192,8 +192,7 @@
     "notes": "Notes",
     "notesPlaceholder": "Add notes about this session...",
     "created": "Session created",
-    "saved": "Session saved",
-    "today": "Today"
+    "saved": "Session saved"
   },
   "templates": {
     "title": "Template",
