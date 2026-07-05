@@ -12,7 +12,6 @@ import { useAuthStore } from "@/shared/store/auth.store";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { useTranslation } from "react-i18next";
-import { LanguageToggle } from "../LanguageToggle";
 import { ThemeToggle } from "../ThemeToggle";
 import ProfileButton from "../ProfileButton";
 
@@ -38,18 +37,45 @@ export function AppLayout() {
     { to: "/admin", label: t("nav.admin"), icon: ShieldCheck, adminOnly: true },
   ];
 
+  const headerLinks = navLinks.filter((link) =>
+    ["/sessions", "/templates"].includes(link.to),
+  );
+  const profileLinks = navLinks.filter(
+    (link) => !["/sessions", "/templates"].includes(link.to),
+  );
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <header className="border-b bg-card sticky top-0 z-40">
         <div className="px-4 h-14 flex items-center justify-between">
-          <Link to="/sessions" className="font-bold tracking-tight">
-            LiftLog
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link to="/sessions" className="font-bold tracking-tight">
+              LiftLog
+            </Link>
+            <nav className="hidden md:flex items-center gap-4">
+              {headerLinks.map(({ to, label }) => {
+                const active = pathname.startsWith(to);
+                return (
+                  <Link
+                    key={to}
+                    to={to}
+                    className={cn(
+                      "text-sm font-medium transition-colors",
+                      active
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
           <div className="flex items-center gap-2">
-            <LanguageToggle />
             <ThemeToggle />
             <div className="hidden md:flex">
-              <ProfileButton navLinks={navLinks} />
+              <ProfileButton navLinks={profileLinks} />
             </div>
             <Button
               variant="destructive"
