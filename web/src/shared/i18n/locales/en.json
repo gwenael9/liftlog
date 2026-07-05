@@ -32,6 +32,8 @@
     "chin_pull": "Chin Pull",
     "incline_curl": "Incline Curl",
     "preacher_curl": "Preacher Curl",
+    "butterfly": "Butterfly",
+    "incline_barbell_press": "Incline Barbell Press",
     "viewImage": "View image"
   },
   "muscleGroups": {

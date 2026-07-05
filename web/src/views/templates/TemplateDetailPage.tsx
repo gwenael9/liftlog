@@ -1,14 +1,13 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { Info } from "lucide-react";
+import { ChevronLeft, Clock, Globe, Lock, Trash2 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { Switch } from "@/shared/components/ui/switch";
 import { useTemplate } from "@/shared/hooks/useTemplates";
 import { useExercises } from "@/shared/hooks/useSessions";
 import { useTemplateEditor } from "@/views/templates/hooks/useTemplateEditor";
 import { AddExerciseDialog } from "@/shared/components/AddExerciseDialog";
 import { ConfirmDeleteDialog } from "@/shared/components/ConfirmDeleteDialog";
-import { DetailHeader } from "@/shared/components/layout/DetailHeader";
 import { PageContainer } from "@/shared/components/layout/PageContainer";
-import InfoDialog from "@/views/templates/components/InfoDialog";
 import { TemplateExerciseList } from "@/views/templates/components/ExerciseList";
 import { useTranslation } from "react-i18next";
 import { TemplateDetailSkeleton } from "./TemplateDetailSkeleton";
@@ -32,20 +31,15 @@ export function TemplateDetailPage() {
     info,
     rows,
     dirty,
-    infoChanged,
     addOpen,
     setAddOpen,
-    infoOpen,
-    setInfoOpen,
     deleteOpen,
     setDeleteOpen,
     handleInfoChange,
-    handleInfoOpenChange,
     handleAddExercise,
     handleRemoveExercise,
     handleReorderExercise,
     handleSave,
-    handleSaveInfo,
     handleDelete,
     exerciseName,
     exerciseSlug,
@@ -55,37 +49,91 @@ export function TemplateDetailPage() {
 
   return (
     <PageContainer>
-      <DetailHeader
-        onBack={() => navigate("/templates")}
-        title={template.name}
-        subtitle={template.description}
-        onDelete={canEdit ? () => setDeleteOpen(true) : undefined}
-        subHeader={
-          <>
-            <Button variant="outline" onClick={() => setInfoOpen(true)}>
-              <Info className="size-4" />
-              {t("templates.section.info")}
-            </Button>
-            {canEdit && (
-              <Button onClick={handleSave} disabled={isSaving || !dirty}>
-                {isSaving ? t("templates.saving") : t("common.save")}
-              </Button>
+      {/* Header row */}
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="icon" onClick={() => navigate("/templates")}>
+          <ChevronLeft />
+        </Button>
+        <div className="flex-1 min-w-0">
+          {canEdit ? (
+            <input
+              className="w-full bg-transparent border-none outline-none text-xl font-bold capitalize truncate"
+              value={info.name}
+              onChange={(e) => handleInfoChange({ name: e.target.value })}
+              placeholder={t("templates.form.name")}
+            />
+          ) : (
+            <h2 className="text-xl font-bold capitalize truncate">{info.name}</h2>
+          )}
+        </div>
+        {canEdit && (
+          <Button variant="ghost" size="icon" onClick={() => setDeleteOpen(true)}>
+            <Trash2 className="text-destructive" />
+          </Button>
+        )}
+      </div>
+
+      {/* Description */}
+      <div className="-mt-2 pl-11">
+        {canEdit ? (
+          <input
+            className="w-full bg-transparent border-none outline-none text-sm text-muted-foreground"
+            value={info.description}
+            onChange={(e) => handleInfoChange({ description: e.target.value })}
+            placeholder={t("common.optional")}
+          />
+        ) : (
+          info.description && (
+            <p className="text-sm text-muted-foreground">{info.description}</p>
+          )
+        )}
+      </div>
+
+      {/* Stats + save */}
+      <div className="border-t border-b py-2.5 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <Clock className="size-3.5 shrink-0" />
+            {canEdit ? (
+              <input
+                type="number"
+                min={1}
+                className="w-12 bg-transparent border-b border-muted outline-none text-sm text-foreground"
+                value={info.duration}
+                onChange={(e) => handleInfoChange({ duration: e.target.value })}
+                placeholder="60"
+              />
+            ) : (
+              <span>{info.duration ? `${info.duration} min` : "—"}</span>
             )}
-          </>
-        }
-      />
+            {canEdit && info.duration && <span className="text-xs">min</span>}
+          </span>
+          <span className="flex items-center gap-1.5">
+            {info.isPublic ? (
+              <Globe className="size-3.5 shrink-0" />
+            ) : (
+              <Lock className="size-3.5 shrink-0" />
+            )}
+            <span>
+              {info.isPublic
+                ? t("templates.visibility.public")
+                : t("templates.visibility.private")}
+            </span>
+            {canEdit && (
+              <Switch
+                className="scale-75 origin-left"
+                checked={info.isPublic}
+                onCheckedChange={(v: boolean) => handleInfoChange({ isPublic: v })}
+              />
+            )}
+          </span>
+        </div>
+        <Button size="sm" onClick={handleSave} disabled={isSaving || !dirty}>
+          {isSaving ? t("templates.saving") : t("common.save")}
+        </Button>
+      </div>
 
-      <InfoDialog
-        open={infoOpen}
-        onOpenChange={handleInfoOpenChange}
-        canEdit={canEdit}
-        info={info}
-        onChange={handleInfoChange}
-        onConfirm={handleSaveInfo}
-        isConfirming={isSaving}
-        infoChanged={infoChanged}
-      />
-
+      {/* Exercise list */}
       <TemplateExerciseList
         rows={rows}
         canEdit={canEdit}
