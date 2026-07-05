@@ -3,16 +3,19 @@ import {
   type Theme,
 } from "@/shared/store/preferences.store";
 import { useUpdateMe } from "@/shared/hooks/useAuth";
+import { useAuthStore } from "@/shared/store/auth.store";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
 export function usePreferences() {
   const store = usePreferencesStore();
   const updateMe = useUpdateMe();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const { t } = useTranslation();
 
   function setLanguage(lang: string) {
     store.setLanguage(lang);
+    if (!isAuthenticated) return;
     updateMe.mutate(
       { preferences: { language: lang } },
       { onError: () => toast.error(t("account.saveError")) },
@@ -21,6 +24,7 @@ export function usePreferences() {
 
   function setTheme(theme: Theme) {
     store.setTheme(theme);
+    if (!isAuthenticated) return;
     updateMe.mutate(
       { preferences: { theme } },
       { onError: () => toast.error(t("account.saveError")) },
@@ -29,6 +33,7 @@ export function usePreferences() {
 
   function setCouleurPrimary(color: string) {
     store.setCouleurPrimary(color);
+    if (!isAuthenticated) return;
     updateMe.mutate(
       { preferences: { couleur_primary: color } },
       { onError: () => toast.error(t("account.saveError")) },
