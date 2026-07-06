@@ -14,6 +14,8 @@ import {
 import type { ExerciseResponseDto } from '@/shared/api/exercises'
 import type { AddRow } from '@/views/sessions/types/session'
 import { emptyAddRow } from '@/views/sessions/types/session'
+import { useUnitSystem } from '@/shared/hooks/useAuth'
+import { weightKgToDisplayString, displayStringToWeightKg } from '@/shared/utils'
 
 interface Props {
   exercises: ExerciseResponseDto[] | undefined
@@ -23,6 +25,7 @@ interface Props {
 
 export function AddExerciseForm({ exercises, isPending, onSubmit }: Props) {
   const { t } = useTranslation()
+  const unit = useUnitSystem()
   const [exerciseId, setExerciseId] = useState('')
   const [rows, setRows] = useState<AddRow[]>([emptyAddRow()])
 
@@ -63,7 +66,7 @@ export function AddExerciseForm({ exercises, isPending, onSubmit }: Props) {
             <div className="grid grid-cols-[2rem_1fr_1fr_auto] gap-2 items-center">
               <span />
               <span className="text-xs text-muted-foreground">{t('exerciseForm.repsLong')}</span>
-              <span className="text-xs text-muted-foreground">{t('exerciseForm.weightLong')}</span>
+              <span className="text-xs text-muted-foreground">{t('exerciseForm.weightLong', { unit })}</span>
               <span />
             </div>
 
@@ -81,9 +84,9 @@ export function AddExerciseForm({ exercises, isPending, onSubmit }: Props) {
                   type="number"
                   min={0}
                   step={0.5}
-                  placeholder="80"
-                  value={row.weight_kg}
-                  onChange={e => setRows(r => r.map((x, idx) => idx === i ? { ...x, weight_kg: e.target.value } : x))}
+                  placeholder={unit === 'lbs' ? '176' : '80'}
+                  value={weightKgToDisplayString(row.weight_kg, unit)}
+                  onChange={e => setRows(r => r.map((x, idx) => idx === i ? { ...x, weight_kg: displayStringToWeightKg(e.target.value, unit) } : x))}
                 />
                 <Button
                   type="button"

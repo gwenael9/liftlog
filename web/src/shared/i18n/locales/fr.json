@@ -157,13 +157,13 @@
   },
   "stats": {
     "title": "Statistiques",
-    "volumeChart": "Volume / semaine (kg)",
+    "volumeChart": "Volume / semaine ({{unit}})",
     "personalRecords": "Records personnels",
     "noRecords": "Aucun record enregistré",
     "searchPlaceholder": "Rechercher un exercice…",
     "table": {
       "exercise": "Exercice",
-      "max": "Max (kg)",
+      "max": "Max ({{unit}})",
       "date": "Date"
     },
     "progression": "Progression par exercice",
@@ -278,7 +278,7 @@
     "exercise": "Exercice",
     "duration": "Durée (s)",
     "reps": "Rép",
-    "weight": "kg",
+    "weight": "{{unit}}",
     "warmup": "Éch.",
     "pr": "PR",
     "addSet": "Série",
@@ -288,7 +288,7 @@
     "rest": "Repos (s)",
     "add": "Ajouter",
     "repsLong": "Répétitions",
-    "weightLong": "Poids (kg)",
+    "weightLong": "Poids ({{unit}})",
     "addSetLong": "Ajouter une série",
     "save": "Enregistrer"
   }

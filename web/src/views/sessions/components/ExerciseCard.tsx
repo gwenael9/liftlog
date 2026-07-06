@@ -14,6 +14,8 @@ import type {
   AddRow,
 } from "@/views/sessions/types/session";
 import { useTranslation } from "react-i18next";
+import { useUnitSystem } from "@/shared/hooks/useAuth";
+import { weightKgToDisplayString, displayStringToWeightKg } from "@/shared/utils";
 
 interface Props {
   group: ExerciseGroup;
@@ -45,6 +47,7 @@ export function ExerciseCard({
   onDeleteSet,
 }: Props) {
   const { t } = useTranslation();
+  const unit = useUnitSystem();
   const totalSets = group.sets.length + pendingRows.length;
   const isDuration = group.trackingType === "duration";
 
@@ -100,7 +103,7 @@ export function ExerciseCard({
                 {t("exerciseForm.reps")}
               </span>
               <span className="text-xs text-muted-foreground">
-                {t("exerciseForm.weight")}
+                {t("exerciseForm.weight", { unit })}
               </span>
             </>
           )}
@@ -144,9 +147,11 @@ export function ExerciseCard({
                     min={0}
                     step={0.5}
                     placeholder="—"
-                    value={vals.weight_kg}
+                    value={weightKgToDisplayString(vals.weight_kg, unit)}
                     onChange={(e) =>
-                      onPatchEdit(set.id, { weight_kg: e.target.value })
+                      onPatchEdit(set.id, {
+                        weight_kg: displayStringToWeightKg(e.target.value, unit),
+                      })
                     }
                   />
                 </>
@@ -201,9 +206,11 @@ export function ExerciseCard({
                   min={0}
                   step={0.5}
                   placeholder="—"
-                  value={row.weight_kg}
+                  value={weightKgToDisplayString(row.weight_kg, unit)}
                   onChange={(e) =>
-                    onPatchPending(i, { weight_kg: e.target.value })
+                    onPatchPending(i, {
+                      weight_kg: displayStringToWeightKg(e.target.value, unit),
+                    })
                   }
                 />
               </>

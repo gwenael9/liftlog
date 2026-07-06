@@ -27,6 +27,8 @@ import { useExerciseProgression } from "@/views/stats/hooks/useStats";
 import Empty from "@/shared/components/Empty";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/ui/button";
+import { useUnitSystem } from "@/shared/hooks/useAuth";
+import { kgToDisplay } from "@/shared/utils";
 
 type Period = "1w" | "1m" | "3m" | "6m" | "1y" | "all";
 
@@ -45,6 +47,7 @@ function getFromDate(period: Period): string | undefined {
 
 export default function ProgressionStats() {
   const { t } = useTranslation();
+  const unit = useUnitSystem();
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>("");
   const [period, setPeriod] = useState<Period>("3m");
 
@@ -53,6 +56,15 @@ export default function ProgressionStats() {
   const { data: progression, isLoading: loadingProgression } =
     useExerciseProgression(selectedExerciseId || null, from);
   const { data: exercises } = useExercises();
+
+  const displayProgression = useMemo(
+    () =>
+      progression?.map((p) => ({
+        ...p,
+        max_weight_kg: kgToDisplay(p.max_weight_kg, unit),
+      })),
+    [progression, unit],
+  );
 
   const selectedExerciseSlug = exercises?.find(
     (e) => e.id === selectedExerciseId,
@@ -91,12 +103,12 @@ export default function ProgressionStats() {
           <Empty message={t("stats.selectPlaceholder")} />
         ) : loadingProgression ? (
           <Skeleton className="h-44 w-full rounded-lg" />
-        ) : !progression?.length ? (
+        ) : !displayProgression?.length ? (
           <Empty message={t("stats.noDataForExercise")} />
         ) : (
           <ResponsiveContainer width="100%" height={180}>
             <LineChart
-              data={progression}
+              data={displayProgression}
               margin={{ top: 4, right: 4, left: -20, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -114,7 +126,7 @@ export default function ProgressionStats() {
               />
               <Tooltip
                 labelFormatter={(v) => formatDateFull(v as string)}
-                formatter={(v) => [`${v} kg`, "Max"]}
+                formatter={(v) => [`${v} ${unit}`, "Max"]}
                 contentStyle={{
                   fontSize: 12,
                   background: "var(--card)",

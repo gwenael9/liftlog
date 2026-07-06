@@ -157,13 +157,13 @@
   },
   "stats": {
     "title": "Statistics",
-    "volumeChart": "Volume / week (kg)",
+    "volumeChart": "Volume / week ({{unit}})",
     "personalRecords": "Personal Records",
     "noRecords": "No records yet",
     "searchPlaceholder": "Search exercise…",
     "table": {
       "exercise": "Exercise",
-      "max": "Max (kg)",
+      "max": "Max ({{unit}})",
       "date": "Date"
     },
     "progression": "Exercise progression",
@@ -278,7 +278,7 @@
     "exercise": "Exercise",
     "duration": "Duration (s)",
     "reps": "Reps",
-    "weight": "kg",
+    "weight": "{{unit}}",
     "warmup": "Warm.",
     "pr": "PR",
     "addSet": "Set",
@@ -288,7 +288,7 @@
     "rest": "Rest (s)",
     "add": "Add",
     "repsLong": "Repetitions",
-    "weightLong": "Weight (kg)",
+    "weightLong": "Weight ({{unit}})",
     "addSetLong": "Add set",
     "save": "Save"
   }
