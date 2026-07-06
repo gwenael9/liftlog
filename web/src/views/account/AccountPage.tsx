@@ -114,15 +114,13 @@ export function AccountPage() {
                 <p className="text-sm font-medium truncate">{user?.email}</p>
               </div>
 
-              {user?.role === "admin" ? (
+              {user?.role === "admin" && (
                 <div className="space-y-1">
                   <Label className="text-muted-foreground text-xs">
                     {t("account.role")}
                   </Label>
                   <p className="text-sm font-medium capitalize">{user?.role}</p>
                 </div>
-              ) : (
-                <div className="space-y-1"></div>
               )}
 
               <div className="space-y-1">
