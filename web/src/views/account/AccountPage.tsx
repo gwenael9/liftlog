@@ -39,9 +39,6 @@ export function AccountPage() {
   const [displayName, setDisplayName] = useState<string>("");
   const [editingName, setEditingName] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [localColor, setLocalColor] = useState<string>("");
-
-  const currentPrimaryColor = localColor || prefs.couleur_primary;
 
   function startEdit() {
     setDisplayName(user?.display_name ?? "");
@@ -80,10 +77,6 @@ export function AccountPage() {
   function handleLanguageChange(value: string | null) {
     if (!value) return;
     prefs.setLanguage(value);
-  }
-
-  function handleSaveColor() {
-    prefs.setCouleurPrimary(currentPrimaryColor);
   }
 
   function handleUnitChange(value: string | null) {
@@ -258,25 +251,6 @@ export function AccountPage() {
                 </SelectContent>
               </Select>
             )}
-          </div>
-
-          <div className="flex items-center justify-between">
-            <Label className="text-sm">{t("account.couleurPrimary")}</Label>
-            <div className="flex items-center gap-2">
-              <input
-                type="color"
-                value={currentPrimaryColor}
-                onChange={(e) => setLocalColor(e.target.value)}
-                className="h-8 w-10 cursor-pointer rounded border border-input bg-transparent p-0.5"
-              />
-              <Button
-                size="sm"
-                onClick={handleSaveColor}
-                disabled={prefs.isPending}
-              >
-                {t("common.save")}
-              </Button>
-            </div>
           </div>
         </CardContent>
       </Card>

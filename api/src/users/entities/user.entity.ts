@@ -5,76 +5,80 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-} from 'typeorm';
+} from "typeorm";
 
 export enum UnitSystem {
-  KG = 'kg',
-  LBS = 'lbs',
+  KG = "kg",
+  LBS = "lbs",
 }
 
 export interface UserPreferences {
   language?: string;
   theme?: string;
-  couleur_primary?: string;
 }
 
 export enum UserRole {
-  USER = 'user',
-  ADMIN = 'admin',
+  USER = "user",
+  ADMIN = "admin",
 }
 
 export enum Sex {
-  MALE = 'male',
-  FEMALE = 'female',
+  MALE = "male",
+  FEMALE = "female",
 }
 
-@Entity('users')
+@Entity("users")
 export class User {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: "varchar", length: 255, unique: true })
   email: string;
 
-  @Column({ type: 'varchar', name: 'password_hash' })
+  @Column({ type: "varchar", name: "password_hash" })
   password_hash: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true, name: 'display_name' })
+  @Column({
+    type: "varchar",
+    length: 100,
+    nullable: true,
+    name: "display_name",
+  })
   display_name: string | null;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: UnitSystem,
     default: UnitSystem.KG,
-    name: 'unit_system',
+    name: "unit_system",
   })
   unit_system: UnitSystem;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: UserRole,
     default: UserRole.USER,
-    name: 'role',
+    name: "role",
   })
   role: UserRole;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: Sex,
     default: Sex.MALE,
-    name: 'sex',
+    name: "sex",
   })
   sex: Sex;
 
-  @Column({ type: 'jsonb', nullable: true, default: {} })
+  @Column({ type: "jsonb", nullable: true, default: {} })
   preferences: UserPreferences | null;
 
-  @Column({ type: 'varchar', nullable: true, name: 'refresh_token_hash' })
+  @Column({ type: "varchar", nullable: true, name: "refresh_token_hash" })
   refresh_token_hash: string | null;
 
-  @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
+  @CreateDateColumn({ type: "timestamptz", name: "created_at" })
   created_at: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at' })
+  @UpdateDateColumn({ type: "timestamptz", name: "updated_at" })
   updated_at: Date;
 }

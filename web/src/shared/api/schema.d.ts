@@ -395,8 +395,6 @@ export interface components {
             language?: string;
             /** @example dark */
             theme?: string;
-            /** @example #3b82f6 */
-            couleur_primary?: string;
         };
         UpdateUserDto: {
             display_name?: string;
@@ -584,6 +582,7 @@ export interface components {
         };
         UpdateSetDto: {
             set_index?: number;
+            exercise_order?: number;
             reps?: number;
             weight_kg?: number;
             duration_sec?: number;
