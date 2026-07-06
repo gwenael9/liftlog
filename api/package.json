@@ -11,7 +11,11 @@
     "typeorm": "typeorm-ts-node-commonjs -d src/data-source.ts",
     "migration:generate": "npm run typeorm migration:generate",
     "migration:run": "npm run typeorm migration:run",
-    "seed": "ts-node -r tsconfig-paths/register seeds/exercises.seed.ts"
+    "seed": "ts-node -r tsconfig-paths/register seeds/exercises.seed.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
@@ -33,12 +37,36 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.21",
+    "@nestjs/testing": "^11.1.27",
     "@types/bcryptjs": "^2.4.6",
+    "@types/jest": "^30.0.0",
     "@types/ms": "^2.1.0",
     "@types/node": "^20.0.0",
     "@types/passport-jwt": "^4.0.1",
+    "@types/supertest": "^7.2.0",
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.11",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.3"
+  },
+  "overrides": {
+    "unrs-resolver": "1.7.11"
+  },
+  "jest": {
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.ts$": ["ts-jest", { "isolatedModules": true }]
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s",
+      "!**/*.module.ts",
+      "!**/*.dto.ts",
+      "!**/entities/**",
+      "!migrations/**"
+    ],
+    "coverageDirectory": "../coverage"
   }
 }
