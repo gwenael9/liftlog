@@ -267,6 +267,11 @@
       "fallback": "An error occurred. Please try again."
     }
   },
+  "notFound": {
+    "title": "Page not found",
+    "description": "This page doesn't exist or was moved. Let's get you back on track.",
+    "backHome": "Back to sessions"
+  },
   "exerciseForm": {
     "title": "Add exercise",
     "selectExercise": "Select an exercise",

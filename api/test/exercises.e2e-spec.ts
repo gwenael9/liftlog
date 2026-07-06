@@ -1,8 +1,16 @@
 import { INestApplication } from "@nestjs/common";
 import { DataSource } from "typeorm";
-import * as request from "supertest";
+import request from "supertest";
 import { createTestApp, clearDatabase, promoteToAdmin } from "./utils/test-app";
 import { MuscleGroup } from "../src/exercises/entities/exercise.entity";
+import {
+  describe,
+  it,
+  beforeAll,
+  afterAll,
+  afterEach,
+  expect,
+} from "@jest/globals";
 
 describe("Exercises (e2e)", () => {
   let app: INestApplication;

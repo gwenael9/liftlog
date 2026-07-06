@@ -2,7 +2,9 @@ import createClient, { type Middleware } from 'openapi-fetch'
 import type { paths } from './schema'
 import { useAuthStore } from '@/shared/store/auth.store'
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+const BASE_URL = import.meta.env.DEV
+  ? '/api'
+  : (import.meta.env.VITE_API_URL ?? 'http://localhost:3000')
 
 export const apiClient = createClient<paths>({ baseUrl: BASE_URL })
 

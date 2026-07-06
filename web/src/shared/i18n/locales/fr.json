@@ -267,6 +267,11 @@
       "fallback": "Une erreur est survenue. Veuillez réessayer."
     }
   },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "Cette page n'existe pas ou a été déplacée. Retournons sur le droit chemin.",
+    "backHome": "Retour aux séances"
+  },
   "exerciseForm": {
     "title": "Ajouter un exercice",
     "selectExercise": "Sélectionner un exercice",

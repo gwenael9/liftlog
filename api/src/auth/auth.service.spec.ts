@@ -6,6 +6,7 @@ import { createHash } from "crypto";
 import { AuthService } from "./auth.service";
 import { UsersService } from "../users/users.service";
 import { Sex, UnitSystem, UserRole } from "../users/entities/user.entity";
+import { jest, describe, beforeEach, it, expect } from "@jest/globals";
 
 jest.mock("bcryptjs");
 
@@ -67,8 +68,8 @@ describe("AuthService", () => {
     it("creates user, hashes password, stores refresh token, returns tokens", async () => {
       usersService.findByEmail!.mockResolvedValue(null);
       usersService.create!.mockResolvedValue(user);
-      jwtService.signAsync!
-        .mockResolvedValueOnce("access_token")
+      jwtService
+        .signAsync!.mockResolvedValueOnce("access_token")
         .mockResolvedValueOnce("refresh_token");
 
       const result = await service.register({
