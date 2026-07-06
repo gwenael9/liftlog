@@ -5,6 +5,7 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import type { StringValue } from "ms";
+import { randomUUID, createHash, timingSafeEqual } from "crypto";
 import * as bcrypt from "bcryptjs";
 import { UsersService } from "../users/users.service";
 import { RegisterDto } from "./dto/register.dto";
@@ -67,7 +68,7 @@ export class AuthService {
       throw new HttpException({ code: "ACCESS_DENIED" }, HttpStatus.UNAUTHORIZED);
     }
 
-    const tokenValid = await bcrypt.compare(
+    const tokenValid = this.compareTokenHash(
       rawRefreshToken,
       user.refresh_token_hash,
     );
@@ -87,14 +88,20 @@ export class AuthService {
     const payload = { sub: userId, email };
 
     const [access_token, refresh_token] = await Promise.all([
-      this.jwtService.signAsync(payload, {
-        secret: process.env.JWT_ACCESS_SECRET || "default_access_secret",
-        expiresIn: process.env.JWT_ACCESS_EXPIRES_IN as StringValue,
-      }),
-      this.jwtService.signAsync(payload, {
-        secret: process.env.JWT_REFRESH_SECRET || "default_refresh_secret",
-        expiresIn: process.env.JWT_REFRESH_EXPIRES_IN as StringValue,
-      }),
+      this.jwtService.signAsync(
+        { ...payload, jti: randomUUID() },
+        {
+          secret: process.env.JWT_ACCESS_SECRET || "default_access_secret",
+          expiresIn: process.env.JWT_ACCESS_EXPIRES_IN as StringValue,
+        },
+      ),
+      this.jwtService.signAsync(
+        { ...payload, jti: randomUUID() },
+        {
+          secret: process.env.JWT_REFRESH_SECRET || "default_refresh_secret",
+          expiresIn: process.env.JWT_REFRESH_EXPIRES_IN as StringValue,
+        },
+      ),
     ]);
 
     return { access_token, refresh_token };
@@ -104,7 +111,27 @@ export class AuthService {
     userId: string,
     rawToken: string,
   ): Promise<void> {
-    const hash = await bcrypt.hash(rawToken, 10);
-    await this.usersService.updateRefreshTokenHash(userId, hash);
+    await this.usersService.updateRefreshTokenHash(
+      userId,
+      this.hashToken(rawToken),
+    );
+  }
+
+  // bcrypt tronque l'entrée à 72 octets : sur un JWT (>200 caractères,
+  // préfixe header+sub+email identique entre tokens d'un même user), tous
+  // les refresh tokens hasheraient pareil et la rotation serait inopérante.
+  // sha256 traite la chaîne entière ; le token a déjà une entropie
+  // suffisante donc pas besoin d'un hash lent/salé comme pour un mot de passe.
+  private hashToken(token: string): string {
+    return createHash("sha256").update(token).digest("hex");
+  }
+
+  private compareTokenHash(rawToken: string, storedHashHex: string): boolean {
+    const rawHash = Buffer.from(this.hashToken(rawToken), "hex");
+    const storedHash = Buffer.from(storedHashHex, "hex");
+    if (rawHash.length !== storedHash.length) {
+      return false;
+    }
+    return timingSafeEqual(rawHash, storedHash);
   }
 }

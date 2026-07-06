@@ -42,6 +42,8 @@ Insère les exercices globaux (bench press, squat, etc.) si absents.
 | `npm run build`        | Compilation TypeScript      |
 | `npm run start:prod`   | Production (`dist/main`)    |
 | `npm run seed`         | Seed exercices globaux      |
+| `npm test`             | Tests unitaires             |
+| `npm run test:e2e`     | Tests d'intégration         |
 | `docker compose up -d` | Démarrer Postgres + pgAdmin |
 | `docker compose down`  | Arrêter les services        |
 
@@ -145,6 +147,19 @@ GET /stats/exercise/:exerciseId    Progression poids max par date
 GET /stats/prs                     Records personnels par exercice
 GET /stats/activity-dates          Affichage des séances
 ```
+
+## Tests
+
+```bash
+npm test              # Tests unitaires (services, mocks)
+npm run test:watch    # Mode watch
+npm run test:cov      # Avec couverture
+npm run test:e2e      # Tests d'intégration (HTTP + vraie DB Postgres)
+```
+
+Les tests unitaires (`*.spec.ts`, à côté du code dans `src/`) mockent les repositories/services, aucune dépendance externe requise.
+
+Les tests d'intégration (`*.e2e-spec.ts` dans `test/`) démarrent l'app Nest complète et tapent sur une vraie base Postgres. Prérequis : `docker compose up -d postgres` (utilise les credentials du `.env` existant). Une base séparée `<DATABASE_NAME>_test` est créée automatiquement si absente (`test/global-setup.ts`) et vidée entre chaque test (`clearDatabase` dans `test/utils/test-app.ts`).
 
 ## Base de données
 
