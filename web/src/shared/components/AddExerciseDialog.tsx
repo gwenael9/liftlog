@@ -14,6 +14,8 @@ import type { ExerciseResponseDto } from '@/shared/api/exercises'
 import type { AddRow } from '@/views/sessions/types/session'
 import { emptyAddRow } from '@/views/sessions/types/session'
 import { useTranslation } from 'react-i18next'
+import { useUnitSystem } from '@/shared/hooks/useAuth'
+import { weightKgToDisplayString, displayStringToWeightKg } from '@/shared/utils'
 
 export interface TemplateExerciseData {
   targetSets?: number
@@ -35,6 +37,7 @@ type Props = {
 export function AddExerciseDialog(props: Props) {
   const { exercises, open, onOpenChange, isPending } = props
   const { t } = useTranslation()
+  const unit = useUnitSystem()
 
   const [exerciseId, setExerciseId] = useState('')
   const [rows, setRows] = useState<AddRow[]>([emptyAddRow()])
@@ -102,7 +105,7 @@ export function AddExerciseDialog(props: Props) {
                   <span />
                   {isDuration
                     ? <span className="text-xs text-muted-foreground">{t('exerciseForm.duration')}</span>
-                    : <><span className="text-xs text-muted-foreground">{t('exerciseForm.reps')}</span><span className="text-xs text-muted-foreground">{t('exerciseForm.weight')}</span></>}
+                    : <><span className="text-xs text-muted-foreground">{t('exerciseForm.reps')}</span><span className="text-xs text-muted-foreground">{t('exerciseForm.weight', { unit })}</span></>}
                   <span />
                 </div>
                 {rows.map((row, i) => (
@@ -120,8 +123,9 @@ export function AddExerciseDialog(props: Props) {
                           onChange={e => setRows(r => r.map((x, idx) => idx === i ? { ...x, reps: e.target.value } : x))}
                         />
                         <Input
-                          type="number" min={0} step={0.5} placeholder="80" value={row.weight_kg}
-                          onChange={e => setRows(r => r.map((x, idx) => idx === i ? { ...x, weight_kg: e.target.value } : x))}
+                          type="number" min={0} step={0.5} placeholder={unit === 'lbs' ? '176' : '80'}
+                          value={weightKgToDisplayString(row.weight_kg, unit)}
+                          onChange={e => setRows(r => r.map((x, idx) => idx === i ? { ...x, weight_kg: displayStringToWeightKg(e.target.value, unit) } : x))}
                         />
                       </>
                     )}

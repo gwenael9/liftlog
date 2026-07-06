@@ -101,6 +101,10 @@ export function useUpdateMe() {
   });
 }
 
+export function useUnitSystem(): "kg" | "lbs" {
+  return useUserStore((s) => s.user?.unit_system ?? "kg");
+}
+
 export function useDeleteMe() {
   const logout = useAuthStore((s) => s.logout);
   const clearUser = useUserStore((s) => s.clearUser);

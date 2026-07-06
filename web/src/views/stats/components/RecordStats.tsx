@@ -22,9 +22,12 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import SearchInput from "@/shared/components/SearchInput";
 import { normalizeSearch } from "@/shared/utils";
 import { useState, useEffect } from "react";
+import { useUnitSystem } from "@/shared/hooks/useAuth";
+import { formatWeight } from "@/shared/utils";
 
 export default function RecordStats() {
   const { t } = useTranslation();
+  const unit = useUnitSystem();
   const { data: prs, isLoading } = usePersonalRecords();
   const [search, setSearch] = useState("");
 
@@ -77,7 +80,7 @@ export default function RecordStats() {
                     {t("stats.table.exercise")}
                   </TableHead>
                   <TableHead className="text-right text-xs">
-                    {t("stats.table.max")}
+                    {t("stats.table.max", { unit })}
                   </TableHead>
                   <TableHead className="pr-0 text-right text-xs">
                     {t("stats.table.date")}
@@ -91,7 +94,7 @@ export default function RecordStats() {
                       {t(`exercises.${pr.exercise_slug}`)}
                     </TableCell>
                     <TableCell className="py-2 text-right text-sm font-medium">
-                      {pr.max_weight_kg} kg
+                      {formatWeight(pr.max_weight_kg, unit)}
                     </TableCell>
                     <TableCell className="pr-0 py-2 text-right text-sm text-muted-foreground">
                       {pr.performed_at ? formatDateFull(pr.performed_at) : "—"}
