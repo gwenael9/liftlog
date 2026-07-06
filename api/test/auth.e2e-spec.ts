@@ -1,7 +1,16 @@
 import { INestApplication } from "@nestjs/common";
 import { DataSource } from "typeorm";
-import * as request from "supertest";
+import request from "supertest";
 import { createTestApp, clearDatabase } from "./utils/test-app";
+import {
+  describe,
+  it,
+  beforeAll,
+  afterAll,
+  afterEach,
+  beforeEach,
+  expect,
+} from "@jest/globals";
 
 describe("Auth (e2e)", () => {
   let app: INestApplication;
@@ -35,7 +44,9 @@ describe("Auth (e2e)", () => {
     });
 
     it("rejects duplicate email with 409", async () => {
-      await request(app.getHttpServer()).post("/auth/register").send(credentials);
+      await request(app.getHttpServer())
+        .post("/auth/register")
+        .send(credentials);
 
       const res = await request(app.getHttpServer())
         .post("/auth/register")
@@ -55,7 +66,9 @@ describe("Auth (e2e)", () => {
 
   describe("POST /auth/login", () => {
     beforeEach(async () => {
-      await request(app.getHttpServer()).post("/auth/register").send(credentials);
+      await request(app.getHttpServer())
+        .post("/auth/register")
+        .send(credentials);
     });
 
     it("returns tokens for valid credentials", async () => {
