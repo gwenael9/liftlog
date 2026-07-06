@@ -27,7 +27,6 @@ import { useExerciseProgression } from "@/views/stats/hooks/useStats";
 import Empty from "@/shared/components/Empty";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/ui/button";
-import { usePreferencesStore } from "@/shared/store/preferences.store";
 
 type Period = "1w" | "1m" | "3m" | "6m" | "1y" | "all";
 
@@ -48,7 +47,6 @@ export default function ProgressionStats() {
   const { t } = useTranslation();
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>("");
   const [period, setPeriod] = useState<Period>("3m");
-  const color = usePreferencesStore((s) => s.couleur_primary);
 
   const from = useMemo(() => getFromDate(period), [period]);
 
@@ -144,9 +142,6 @@ export default function ProgressionStats() {
                 size="xs"
                 variant={period === p ? "default" : "outline"}
                 onClick={() => setPeriod(p)}
-                style={{
-                  backgroundColor: period === p ? color : undefined,
-                }}
               >
                 {t(`stats.period.${p}`)}
               </Button>

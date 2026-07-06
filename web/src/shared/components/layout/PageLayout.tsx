@@ -4,8 +4,6 @@ import { Button } from "@/shared/components/ui/button";
 import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
-import { usePreferencesStore } from "@/shared/store/preferences.store";
-import { getContrastColor } from "@/shared/lib/utils";
 
 interface DialogConfig {
   open: boolean;
@@ -41,8 +39,6 @@ export default function PageLayout<T>({
   const { t } = useTranslation();
   const items = data.items ?? [];
 
-  const color = usePreferencesStore((s) => s.couleur_primary);
-
   return (
     <div className="max-w-2xl mx-auto">
       <div className="sticky top-0 z-10 bg-background px-4 pt-4 pb-2 space-y-4 mb-2">
@@ -50,11 +46,7 @@ export default function PageLayout<T>({
           <h2 className="text-2xl font-bold">{title}s</h2>
           <div className="flex gap-2">
             {extraHeaderButton}
-            <Button
-              style={{ backgroundColor: color, color: getContrastColor(color) }}
-              size="sm"
-              onClick={() => dialog.onOpenChange(true)}
-            >
+            <Button size="sm" onClick={() => dialog.onOpenChange(true)}>
               <Plus className="size-4" />
               {t(`common.new_${female ? "female" : "male"}`, {
                 title: title.toLowerCase(),

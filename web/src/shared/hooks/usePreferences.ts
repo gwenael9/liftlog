@@ -31,22 +31,11 @@ export function usePreferences() {
     );
   }
 
-  function setCouleurPrimary(color: string) {
-    store.setCouleurPrimary(color);
-    if (!isAuthenticated) return;
-    updateMe.mutate(
-      { preferences: { couleur_primary: color } },
-      { onError: () => toast.error(t("account.saveError")) },
-    );
-  }
-
   return {
     language: store.language,
     theme: store.theme,
-    couleur_primary: store.couleur_primary,
     setLanguage,
     setTheme,
-    setCouleurPrimary,
     isPending: updateMe.isPending,
   };
 }
