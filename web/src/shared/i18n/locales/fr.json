@@ -290,6 +290,9 @@
     "repsLong": "Répétitions",
     "weightLong": "Poids ({{unit}})",
     "addSetLong": "Ajouter une série",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "addSegment": "+ palier",
+    "addSegmentLong": "Ajouter un palier dégressif",
+    "removeSegment": "Supprimer ce palier"
   }
 }

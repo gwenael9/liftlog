@@ -7,12 +7,17 @@ function round1(n: number): number {
   return Math.round(n * 10) / 10;
 }
 
+// Arrondi à 2 décimales — le backend rejette weight_kg avec plus de 2 décimales.
+function round2(n: number): number {
+  return Math.round(n * 100) / 100;
+}
+
 export function kgToDisplay(kg: number, unit: UnitSystem): number {
   return unit === "lbs" ? round1(kg * KG_TO_LBS) : round1(kg);
 }
 
 export function displayToKg(value: number, unit: UnitSystem): number {
-  return unit === "lbs" ? value / KG_TO_LBS : value;
+  return unit === "lbs" ? round2(value / KG_TO_LBS) : round2(value);
 }
 
 // Convertit une valeur de poids stockée en kg (string de formulaire) vers

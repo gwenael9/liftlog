@@ -290,6 +290,9 @@
     "repsLong": "Repetitions",
     "weightLong": "Weight ({{unit}})",
     "addSetLong": "Add set",
-    "save": "Save"
+    "save": "Save",
+    "addSegment": "+ drop",
+    "addSegmentLong": "Add a drop-set segment",
+    "removeSegment": "Remove this segment"
   }
 }

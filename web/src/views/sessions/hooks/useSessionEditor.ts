@@ -9,7 +9,7 @@ import {
   useUpdateSession,
 } from "@/shared/hooks/useSessions";
 import type { SetResponseDto, BulkUpdateSetsDto } from "@/shared/api/sessions";
-import type { SetEditValue, AddRow, ExerciseGroup } from "@/views/sessions/types/session";
+import type { SetEditValue, AddRow, ExerciseGroup, SegmentEditValue } from "@/views/sessions/types/session";
 import { emptyAddRow } from "@/views/sessions/types/session";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -111,8 +111,18 @@ export function useSessionEditor(id: string) {
   const group = setsByExercise[clampedIndex];
 
   // Fusionne patch local par-dessus la valeur serveur pour un set donné.
+  // Le premier segment (s'il existe) est porté par reps/weight_kg au niveau
+  // racine ; les segments suivants sont les paliers additionnels du drop set.
+  function serverExtraSegmentsOf(set: SetResponseDto): SegmentEditValue[] {
+    return (set.segments ?? []).slice(1).map((seg) => ({
+      reps: String(seg.reps),
+      weight_kg: seg.weight_kg != null ? String(seg.weight_kg) : "",
+    }));
+  }
+
   function resolveEditValue(set: SetResponseDto): SetEditValue {
     const patch = patches[set.id] ?? {};
+    const serverExtraSegments = serverExtraSegmentsOf(set);
     return {
       reps: patch.reps ?? (set.reps != null ? String(set.reps) : ""),
       weight_kg:
@@ -120,6 +130,7 @@ export function useSessionEditor(id: string) {
       duration_sec:
         patch.duration_sec ??
         (set.duration_sec != null ? String(set.duration_sec) : ""),
+      extraSegments: patch.extraSegments ?? serverExtraSegments,
     };
   }
 
@@ -142,9 +153,27 @@ export function useSessionEditor(id: string) {
             (set.weight_kg != null ? String(set.weight_kg) : "")) ||
         (patch.duration_sec !== undefined &&
           patch.duration_sec !==
-            (set.duration_sec != null ? String(set.duration_sec) : ""))
+            (set.duration_sec != null ? String(set.duration_sec) : "")) ||
+        (patch.extraSegments !== undefined &&
+          JSON.stringify(patch.extraSegments) !==
+            JSON.stringify(serverExtraSegmentsOf(set)))
       );
     });
+  }
+
+  // Construit le tableau `segments` à envoyer à l'API à partir des reps/poids
+  // du premier palier + des paliers additionnels ; null si pas de drop set.
+  function buildSegments(
+    reps: string,
+    weight_kg: string,
+    extraSegments: SegmentEditValue[],
+  ): { reps: number; weight_kg: number | null }[] | null {
+    if (extraSegments.length === 0) return null;
+    const toSegment = (r: string, w: string) => ({
+      reps: r ? Number(r) : 0,
+      weight_kg: w ? Number(w) : null,
+    });
+    return [toSegment(reps, weight_kg), ...extraSegments.map((s) => toSegment(s.reps, s.weight_kg))];
   }
 
   const orderDirty = Object.keys(orderOverride).length > 0;
@@ -217,12 +246,14 @@ export function useSessionEditor(id: string) {
     for (const g of setsByExercise) {
       for (const set of g.sets) {
         const vals = resolveEditValue(set);
+        const segments = buildSegments(vals.reps, vals.weight_kg, vals.extraSegments);
         body.updates.push({
           id: set.id,
           exercise_order: orderOverride[g.exerciseId] !== undefined ? g.exerciseOrder : undefined,
           reps: vals.reps ? Number(vals.reps) : undefined,
           weight_kg: vals.weight_kg ? Number(vals.weight_kg) : undefined,
           duration_sec: vals.duration_sec ? Number(vals.duration_sec) : undefined,
+          segments,
         });
       }
       const pending = (pendingRows[g.exerciseId] ?? []).filter(
@@ -230,6 +261,7 @@ export function useSessionEditor(id: string) {
       );
       for (let i = 0; i < pending.length; i++) {
         const row = pending[i];
+        const segments = buildSegments(row.reps, row.weight_kg, row.extraSegments);
         body.creates?.push({
           exercise_id: g.exerciseId,
           exercise_order: g.exerciseOrder,
@@ -237,6 +269,7 @@ export function useSessionEditor(id: string) {
           reps: row.reps ? Number(row.reps) : undefined,
           weight_kg: row.weight_kg ? Number(row.weight_kg) : undefined,
           duration_sec: row.duration_sec ? Number(row.duration_sec) : undefined,
+          segments: segments ?? undefined,
           performed_at: new Date().toISOString(),
         });
       }

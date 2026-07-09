@@ -51,20 +51,20 @@ cp .env.example .env
 
 Renseigner dans `.env` :
 
-| Variable | Description |
-|---|---|
-| `DATABASE_HOST` | Host PostgreSQL (`localhost` en local) |
-| `DATABASE_PORT` | Port PostgreSQL (défaut `5432`) |
-| `DATABASE_USER` | Utilisateur PostgreSQL |
-| `DATABASE_PASSWORD` | Mot de passe PostgreSQL |
-| `DATABASE_NAME` | Nom de la base |
-| `JWT_ACCESS_SECRET` | Secret du token d'accès |
-| `JWT_ACCESS_EXPIRES_IN` | Durée de vie du token d'accès (ex. `8h`) |
-| `JWT_REFRESH_SECRET` | Secret du refresh token |
+| Variable                 | Description                              |
+| ------------------------ | ---------------------------------------- |
+| `DATABASE_HOST`          | Host PostgreSQL (`localhost` en local)   |
+| `DATABASE_PORT`          | Port PostgreSQL (défaut `5432`)          |
+| `DATABASE_USER`          | Utilisateur PostgreSQL                   |
+| `DATABASE_PASSWORD`      | Mot de passe PostgreSQL                  |
+| `DATABASE_NAME`          | Nom de la base                           |
+| `JWT_ACCESS_SECRET`      | Secret du token d'accès                  |
+| `JWT_ACCESS_EXPIRES_IN`  | Durée de vie du token d'accès (ex. `8h`) |
+| `JWT_REFRESH_SECRET`     | Secret du refresh token                  |
 | `JWT_REFRESH_EXPIRES_IN` | Durée de vie du refresh token (ex. `7d`) |
-| `PORT` | Port du serveur NestJS (défaut `3000`) |
-| `PGADMIN_EMAIL` | Email de connexion pgAdmin |
-| `PGADMIN_PASSWORD` | Mot de passe pgAdmin |
+| `PORT`                   | Port du serveur NestJS (défaut `3000`)   |
+| `PGADMIN_EMAIL`          | Email de connexion pgAdmin               |
+| `PGADMIN_PASSWORD`       | Mot de passe pgAdmin                     |
 
 ### 2. Base de données
 
@@ -102,25 +102,25 @@ App disponible sur `http://localhost:5173`.
 
 ### `api/`
 
-| Commande | Description |
-|---|---|
-| `npm run start:dev` | Démarre l'API en mode watch |
-| `npm run build` | Build de production (`dist/`) |
-| `npm run start:prod` | Démarre l'API buildée |
+| Commande                     | Description                                       |
+| ---------------------------- | ------------------------------------------------- |
+| `npm run start:dev`          | Démarre l'API en mode watch                       |
+| `npm run build`              | Build de production (`dist/`)                     |
+| `npm run start:prod`         | Démarre l'API buildée                             |
 | `npm run migration:generate` | Génère une migration TypeORM à partir des entités |
-| `npm run migration:run` | Applique les migrations en attente |
-| `npm run seed` | Seed la table des exercices |
+| `npm run migration:run`      | Applique les migrations en attente                |
+| `npm run seed`               | Seed la table des exercices                       |
 
 ### `web/`
 
-| Commande | Description |
-|---|---|
-| `npm run dev` | Démarre le serveur de dev Vite |
-| `npm run build` | Build de production (`tsc -b && vite build`) |
-| `npm run lint` | Lint ESLint |
-| `npm run preview` | Build + preview via `wrangler dev` |
+| Commande                 | Description                                                                                                 |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `npm run dev`            | Démarre le serveur de dev Vite                                                                              |
+| `npm run build`          | Build de production (`tsc -b && vite build`)                                                                |
+| `npm run lint`           | Lint ESLint                                                                                                 |
+| `npm run preview`        | Build + preview via `wrangler dev`                                                                          |
 | `npm run generate:types` | Régénère `src/shared/api/schema.d.ts` depuis le schéma OpenAPI de l'API (nécessite l'API démarrée en local) |
-| `npm run deploy` | Build + déploiement sur Cloudflare Workers (`wrangler deploy`) |
+| `npm run deploy`         | Build + déploiement sur Cloudflare Workers (`wrangler deploy`)                                              |
 
 ---
 
@@ -165,9 +165,3 @@ liftlog/
 ```
 
 ---
-
-## Notes
-
-- Le client API du front (`web/src/shared/api/schema.d.ts`) est **généré**, ne pas éditer à la main : régénérer via `npm run generate:types` après toute évolution du schéma backend.
-- Voir [`web/ARCHITECTURE.md`](web/ARCHITECTURE.md) pour les règles de placement du code front (`shared/` vs `views/`).
-- Voir [`TODO.md`](TODO.md) pour les tâches restantes.

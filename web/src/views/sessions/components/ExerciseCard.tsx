@@ -1,4 +1,4 @@
-import { Trash2, Plus, ChevronUp, ChevronDown } from "lucide-react";
+import { Trash2, Plus, ChevronUp, ChevronDown, X } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -12,7 +12,9 @@ import type {
   ExerciseGroup,
   SetEditValue,
   AddRow,
+  SegmentEditValue,
 } from "@/views/sessions/types/session";
+import { emptySegment } from "@/views/sessions/types/session";
 import { useTranslation } from "react-i18next";
 import { useUnitSystem } from "@/shared/hooks/useAuth";
 import { weightKgToDisplayString, displayStringToWeightKg } from "@/shared/utils";
@@ -54,6 +56,75 @@ export function ExerciseCard({
   const colClass = isDuration
     ? "grid-cols-[1.5rem_1fr_auto]"
     : "grid-cols-[1.5rem_1fr_1fr_auto]";
+
+  // Paliers d'une série dégressive : chaque palier additionnel a ses propres
+  // reps/poids, affichés en retrait sous la ligne principale de la série.
+  function renderExtraSegments(
+    extraSegments: SegmentEditValue[],
+    onPatch: (patch: { extraSegments: SegmentEditValue[] }) => void,
+  ) {
+    return (
+      <>
+        {extraSegments.map((seg, i) => (
+          <div key={i} className={`grid ${colClass} gap-2 items-center pl-4`}>
+            <span className="text-xs text-muted-foreground text-right">↳</span>
+            <Input
+              type="number"
+              min={0}
+              placeholder="—"
+              value={seg.reps}
+              onChange={(e) =>
+                onPatch({
+                  extraSegments: extraSegments.map((s, idx) =>
+                    idx === i ? { ...s, reps: e.target.value } : s,
+                  ),
+                })
+              }
+            />
+            <Input
+              type="number"
+              min={0}
+              step={0.5}
+              placeholder="—"
+              value={weightKgToDisplayString(seg.weight_kg, unit)}
+              onChange={(e) =>
+                onPatch({
+                  extraSegments: extraSegments.map((s, idx) =>
+                    idx === i
+                      ? { ...s, weight_kg: displayStringToWeightKg(e.target.value, unit) }
+                      : s,
+                  ),
+                })
+              }
+            />
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label={t("exerciseForm.removeSegment")}
+              onClick={() =>
+                onPatch({ extraSegments: extraSegments.filter((_, idx) => idx !== i) })
+              }
+            >
+              <X className="size-3" />
+            </Button>
+          </div>
+        ))}
+        <div className={`grid ${colClass} gap-2 items-center pl-4`}>
+          <span />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="w-fit justify-start px-2 text-xs text-muted-foreground"
+            aria-label={t("exerciseForm.addSegmentLong")}
+            onClick={() => onPatch({ extraSegments: [...extraSegments, emptySegment()] })}
+          >
+            {t("exerciseForm.addSegment")}
+          </Button>
+        </div>
+      </>
+    );
+  }
 
   return (
     <Card>
@@ -115,20 +186,86 @@ export function ExerciseCard({
             reps: "",
             weight_kg: "",
             duration_sec: "",
+            extraSegments: [],
           };
           return (
-            <div key={set.id} className={`grid ${colClass} gap-2 items-center`}>
+            <div key={set.id}>
+              <div className={`grid ${colClass} gap-2 items-center`}>
+                <span className="text-xs text-muted-foreground text-right">
+                  S{set.set_index}
+                </span>
+                {isDuration ? (
+                  <Input
+                    type="number"
+                    min={0}
+                    placeholder="—"
+                    value={vals.duration_sec}
+                    onChange={(e) =>
+                      onPatchEdit(set.id, { duration_sec: e.target.value })
+                    }
+                  />
+                ) : (
+                  <>
+                    <Input
+                      type="number"
+                      min={0}
+                      placeholder="—"
+                      value={vals.reps}
+                      onChange={(e) =>
+                        onPatchEdit(set.id, { reps: e.target.value })
+                      }
+                    />
+                    <Input
+                      type="number"
+                      min={0}
+                      step={0.5}
+                      placeholder="—"
+                      value={weightKgToDisplayString(vals.weight_kg, unit)}
+                      onChange={(e) =>
+                        onPatchEdit(set.id, {
+                          weight_kg: displayStringToWeightKg(e.target.value, unit),
+                        })
+                      }
+                    />
+                  </>
+                )}
+                <div className="flex items-center gap-1">
+                  {set.is_pr && (
+                    <span className="text-xs text-yellow-500 font-semibold">
+                      {t("exerciseForm.pr")}
+                    </span>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => onDeleteSet(set.id)}
+                  >
+                    <Trash2 className="size-3" />
+                  </Button>
+                </div>
+              </div>
+              {!isDuration &&
+                renderExtraSegments(vals.extraSegments, (patch) =>
+                  onPatchEdit(set.id, patch),
+                )}
+            </div>
+          );
+        })}
+
+        {pendingRows.map((row, i) => (
+          <div key={`pending-${i}`}>
+            <div className={`grid ${colClass} gap-2 items-center`}>
               <span className="text-xs text-muted-foreground text-right">
-                S{set.set_index}
+                S{group.sets.length + i + 1}
               </span>
               {isDuration ? (
                 <Input
                   type="number"
                   min={0}
                   placeholder="—"
-                  value={vals.duration_sec}
+                  value={row.duration_sec}
                   onChange={(e) =>
-                    onPatchEdit(set.id, { duration_sec: e.target.value })
+                    onPatchPending(i, { duration_sec: e.target.value })
                   }
                 />
               ) : (
@@ -137,91 +274,35 @@ export function ExerciseCard({
                     type="number"
                     min={0}
                     placeholder="—"
-                    value={vals.reps}
-                    onChange={(e) =>
-                      onPatchEdit(set.id, { reps: e.target.value })
-                    }
+                    value={row.reps}
+                    onChange={(e) => onPatchPending(i, { reps: e.target.value })}
                   />
                   <Input
                     type="number"
                     min={0}
                     step={0.5}
                     placeholder="—"
-                    value={weightKgToDisplayString(vals.weight_kg, unit)}
+                    value={weightKgToDisplayString(row.weight_kg, unit)}
                     onChange={(e) =>
-                      onPatchEdit(set.id, {
+                      onPatchPending(i, {
                         weight_kg: displayStringToWeightKg(e.target.value, unit),
                       })
                     }
                   />
                 </>
               )}
-              <div className="flex items-center gap-1">
-                {set.is_pr && (
-                  <span className="text-xs text-yellow-500 font-semibold">
-                    {t("exerciseForm.pr")}
-                  </span>
-                )}
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => onDeleteSet(set.id)}
-                >
-                  <Trash2 className="size-3" />
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => onRemovePending(i)}
+              >
+                <Trash2 className="size-3" />
+              </Button>
             </div>
-          );
-        })}
-
-        {pendingRows.map((row, i) => (
-          <div
-            key={`pending-${i}`}
-            className={`grid ${colClass} gap-2 items-center`}
-          >
-            <span className="text-xs text-muted-foreground text-right">
-              S{group.sets.length + i + 1}
-            </span>
-            {isDuration ? (
-              <Input
-                type="number"
-                min={0}
-                placeholder="—"
-                value={row.duration_sec}
-                onChange={(e) =>
-                  onPatchPending(i, { duration_sec: e.target.value })
-                }
-              />
-            ) : (
-              <>
-                <Input
-                  type="number"
-                  min={0}
-                  placeholder="—"
-                  value={row.reps}
-                  onChange={(e) => onPatchPending(i, { reps: e.target.value })}
-                />
-                <Input
-                  type="number"
-                  min={0}
-                  step={0.5}
-                  placeholder="—"
-                  value={weightKgToDisplayString(row.weight_kg, unit)}
-                  onChange={(e) =>
-                    onPatchPending(i, {
-                      weight_kg: displayStringToWeightKg(e.target.value, unit),
-                    })
-                  }
-                />
-              </>
-            )}
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => onRemovePending(i)}
-            >
-              <Trash2 className="size-3" />
-            </Button>
+            {!isDuration &&
+              renderExtraSegments(row.extraSegments, (patch) =>
+                onPatchPending(i, patch),
+              )}
           </div>
         ))}
 

@@ -4,8 +4,12 @@ import {
   IsNumber,
   Min,
   IsDateString,
+  IsArray,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { SetSegmentDto } from './set-segment.dto';
 
 export class UpdateSetDto {
   @ApiPropertyOptional({ minimum: 0 })
@@ -42,4 +46,11 @@ export class UpdateSetDto {
   @IsOptional()
   @IsDateString()
   performed_at?: string;
+
+  @ApiPropertyOptional({ type: [SetSegmentDto], nullable: true, description: 'Segments successifs (drop set) ; null pour repasser à une série simple' })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => SetSegmentDto)
+  segments?: SetSegmentDto[] | null;
 }
