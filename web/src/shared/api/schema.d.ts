@@ -507,6 +507,10 @@ export interface components {
             is_public?: boolean;
             exercises?: components["schemas"]["TemplateExerciseItemDto"][];
         };
+        SetSegmentDto: {
+            reps: number;
+            weight_kg?: number | null;
+        };
         SetResponseDto: {
             /** Format: uuid */
             id: string;
@@ -520,6 +524,7 @@ export interface components {
             reps?: number | null;
             weight_kg?: number | null;
             duration_sec?: number | null;
+            segments?: components["schemas"]["SetSegmentDto"][] | null;
             is_pr: boolean;
             /** Format: date-time */
             performed_at?: string | null;
@@ -561,6 +566,8 @@ export interface components {
             duration_sec?: number;
             /** Format: date-time */
             performed_at?: string;
+            /** @description Segments successifs (drop set) ; null pour repasser à une série simple */
+            segments?: components["schemas"]["SetSegmentDto"][] | null;
             /** Format: uuid */
             id: string;
         };
@@ -575,6 +582,8 @@ export interface components {
             duration_sec?: number;
             /** Format: date-time */
             performed_at?: string;
+            /** @description Segments successifs (drop set) */
+            segments?: components["schemas"]["SetSegmentDto"][];
         };
         BulkUpdateSetsDto: {
             updates: components["schemas"]["UpdateSetItemDto"][];
@@ -588,6 +597,8 @@ export interface components {
             duration_sec?: number;
             /** Format: date-time */
             performed_at?: string;
+            /** @description Segments successifs (drop set) ; null pour repasser à une série simple */
+            segments?: components["schemas"]["SetSegmentDto"][] | null;
         };
         ExerciseProgressionPointDto: {
             /** @example 2026-05-08 */

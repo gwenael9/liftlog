@@ -9,6 +9,11 @@ import {
 import { WorkoutSession } from '../../workout-sessions/entities/workout-session.entity';
 import { Exercise } from '../../exercises/entities/exercise.entity';
 
+export interface SessionSetSegment {
+  reps: number;
+  weight_kg?: number | null;
+}
+
 @Entity('session_sets')
 @Index(['exercise_id', 'performed_at'])
 export class SessionSet {
@@ -45,6 +50,10 @@ export class SessionSet {
 
   @Column({ type: 'int', nullable: true, name: 'duration_sec' })
   duration_sec: number | null;
+
+  // Segments successifs d'une même série (drop set) : ex. 4 reps @ X kg puis 3 reps @ Y kg.
+  @Column({ type: 'jsonb', nullable: true })
+  segments: SessionSetSegment[] | null;
 
   is_pr: boolean = false;
 

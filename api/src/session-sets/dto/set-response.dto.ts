@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ExerciseResponseDto } from '../../exercises/dto/exercise-response.dto';
+import { SetSegmentDto } from './set-segment.dto';
 
 export class SetResponseDto {
   @ApiProperty({ format: 'uuid' })
@@ -28,6 +29,9 @@ export class SetResponseDto {
 
   @ApiPropertyOptional({ nullable: true })
   duration_sec: number | null;
+
+  @ApiPropertyOptional({ type: [SetSegmentDto], nullable: true })
+  segments: SetSegmentDto[] | null;
 
   @ApiProperty()
   is_pr: boolean;

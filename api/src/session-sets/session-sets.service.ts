@@ -44,6 +44,7 @@ export class SessionSetsService {
       reps: dto.reps ?? null,
       weight_kg: dto.weight_kg ?? null,
       duration_sec: dto.duration_sec ?? null,
+      segments: dto.segments ?? null,
       performed_at: dto.performed_at ? new Date(dto.performed_at) : null,
     });
 
@@ -69,6 +70,7 @@ export class SessionSetsService {
     if (dto.reps !== undefined) set.reps = dto.reps;
     if (dto.weight_kg !== undefined) set.weight_kg = dto.weight_kg;
     if (dto.duration_sec !== undefined) set.duration_sec = dto.duration_sec;
+    if (dto.segments !== undefined) set.segments = dto.segments;
     if (dto.performed_at !== undefined) set.performed_at = new Date(dto.performed_at);
 
     return this.setsRepository.save(set);
@@ -97,6 +99,7 @@ export class SessionSetsService {
       if (item.reps !== undefined) set.reps = item.reps;
       if (item.weight_kg !== undefined) set.weight_kg = item.weight_kg;
       if (item.duration_sec !== undefined) set.duration_sec = item.duration_sec;
+      if (item.segments !== undefined) set.segments = item.segments;
       if (item.performed_at !== undefined) set.performed_at = new Date(item.performed_at);
 
       results.push(await this.setsRepository.save(set));
@@ -111,6 +114,7 @@ export class SessionSetsService {
         reps: createDto.reps ?? null,
         weight_kg: createDto.weight_kg ?? null,
         duration_sec: createDto.duration_sec ?? null,
+        segments: createDto.segments ?? null,
         performed_at: createDto.performed_at ? new Date(createDto.performed_at) : null,
       });
       results.push(await this.setsRepository.save(set));
