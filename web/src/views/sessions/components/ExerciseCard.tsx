@@ -64,7 +64,7 @@ export function ExerciseCard({
     onPatch: (patch: { extraSegments: SegmentEditValue[] }) => void,
   ) {
     return (
-      <>
+      <div className="mt-2 space-y-2">
         {extraSegments.map((seg, i) => (
           <div key={i} className={`grid ${colClass} gap-2 items-center pl-4`}>
             <span className="text-xs text-muted-foreground text-right">↳</span>
@@ -122,7 +122,7 @@ export function ExerciseCard({
             {t("exerciseForm.addSegment")}
           </Button>
         </div>
-      </>
+      </div>
     );
   }
 
