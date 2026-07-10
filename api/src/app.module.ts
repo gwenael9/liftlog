@@ -16,15 +16,27 @@ import { TemplateExercise } from "./workout-templates/entities/template-exercise
 import { WorkoutSession } from "./workout-sessions/entities/workout-session.entity";
 import { SessionSet } from "./session-sets/entities/session-set.entity";
 
+// Helper pour parser DATABASE_URL
+const getDatabaseConfig = () => {
+  if (process.env.DATABASE_URL) {
+    return {
+      url: process.env.DATABASE_URL,
+    };
+  }
+  return {
+    host: process.env.DATABASE_HOST || "localhost",
+    port: parseInt(process.env.DATABASE_PORT || "5432", 10),
+    username: process.env.DATABASE_USER || "liftlog",
+    password: process.env.DATABASE_PASSWORD || "liftlog_password",
+    database: process.env.DATABASE_NAME || "liftlog_db",
+  };
+};
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: "postgres",
-      host: process.env.DATABASE_HOST || "localhost",
-      port: parseInt(process.env.DATABASE_PORT || "5432", 10),
-      username: process.env.DATABASE_USER || "liftlog",
-      password: process.env.DATABASE_PASSWORD || "liftlog_password",
-      database: process.env.DATABASE_NAME || "liftlog_db",
+      ...getDatabaseConfig(),
       entities: [
         User,
         Exercise,
