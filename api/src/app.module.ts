@@ -49,7 +49,7 @@ const getDatabaseConfig = () => {
       // synchronize: process.env.NODE_ENV !== "production",
       // migrationsRun: process.env.NODE_ENV === "production",
       synchronize: false,
-      migrationsRun: true,
+      migrationsRun: false,
       migrations: [__dirname + "/migrations/*{.ts,.js}"],
       logging: process.env.NODE_ENV === "development",
     }),
