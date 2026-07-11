@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Trash2, Plus } from 'lucide-react'
 import { Dialog, DialogContent } from '@/shared/components/ui/dialog'
 import { Button } from '@/shared/components/ui/button'
@@ -7,7 +7,9 @@ import { Label } from '@/shared/components/ui/label'
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
 } from '@/shared/components/ui/select'
 import type { ExerciseResponseDto } from '@/shared/api/exercises'
@@ -15,7 +17,7 @@ import type { AddRow } from '@/views/sessions/types/session'
 import { emptyAddRow } from '@/views/sessions/types/session'
 import { useTranslation } from 'react-i18next'
 import { useUnitSystem } from '@/shared/hooks/useAuth'
-import { weightKgToDisplayString, displayStringToWeightKg } from '@/shared/utils'
+import { weightKgToDisplayString, displayStringToWeightKg, groupExercisesByMuscleGroup } from '@/shared/utils'
 
 export interface TemplateExerciseData {
   targetSets?: number
@@ -46,6 +48,11 @@ export function AddExerciseDialog(props: Props) {
   const [targetReps, setTargetReps] = useState('')
   const [restSeconds, setRestSeconds] = useState('')
   const [targetDurationSec, setTargetDurationSec] = useState('')
+
+  const exerciseGroups = useMemo(
+    () => groupExercisesByMuscleGroup(exercises, t),
+    [exercises, t],
+  )
 
   function reset() {
     setExerciseId('')
@@ -86,8 +93,13 @@ export function AddExerciseDialog(props: Props) {
                   : <span className="text-muted-foreground">{t('exerciseForm.selectExercise')}</span>}
               </SelectTrigger>
               <SelectContent>
-                {exercises?.map(ex => (
-                  <SelectItem key={ex.id} value={ex.id}>{t(`exercises.${ex.slug}`)}</SelectItem>
+                {exerciseGroups.map(group => (
+                  <SelectGroup key={group.muscleGroup}>
+                    <SelectLabel>{t(`muscleGroups.${group.muscleGroup}`)}</SelectLabel>
+                    {group.exercises.map(ex => (
+                      <SelectItem key={ex.id} value={ex.id}>{t(`exercises.${ex.slug}`)}</SelectItem>
+                    ))}
+                  </SelectGroup>
                 ))}
               </SelectContent>
             </Select>

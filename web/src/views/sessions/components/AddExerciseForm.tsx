@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Trash2, Plus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card'
@@ -8,14 +8,16 @@ import { Label } from '@/shared/components/ui/label'
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
 } from '@/shared/components/ui/select'
 import type { ExerciseResponseDto } from '@/shared/api/exercises'
 import type { AddRow } from '@/views/sessions/types/session'
 import { emptyAddRow } from '@/views/sessions/types/session'
 import { useUnitSystem } from '@/shared/hooks/useAuth'
-import { weightKgToDisplayString, displayStringToWeightKg } from '@/shared/utils'
+import { weightKgToDisplayString, displayStringToWeightKg, groupExercisesByMuscleGroup } from '@/shared/utils'
 
 interface Props {
   exercises: ExerciseResponseDto[] | undefined
@@ -28,6 +30,11 @@ export function AddExerciseForm({ exercises, isPending, onSubmit }: Props) {
   const unit = useUnitSystem()
   const [exerciseId, setExerciseId] = useState('')
   const [rows, setRows] = useState<AddRow[]>([emptyAddRow()])
+
+  const exerciseGroups = useMemo(
+    () => groupExercisesByMuscleGroup(exercises, t),
+    [exercises, t],
+  )
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -53,10 +60,15 @@ export function AddExerciseForm({ exercises, isPending, onSubmit }: Props) {
                   : <span className="text-muted-foreground">{t('exerciseForm.selectExercise')}</span>}
               </SelectTrigger>
               <SelectContent>
-                {exercises?.map(ex => (
-                  <SelectItem key={ex.id} value={ex.id}>
-                    {t(`exercises.${ex.slug}`)}
-                  </SelectItem>
+                {exerciseGroups.map(group => (
+                  <SelectGroup key={group.muscleGroup}>
+                    <SelectLabel>{t(`muscleGroups.${group.muscleGroup}`)}</SelectLabel>
+                    {group.exercises.map(ex => (
+                      <SelectItem key={ex.id} value={ex.id}>
+                        {t(`exercises.${ex.slug}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
                 ))}
               </SelectContent>
             </Select>
