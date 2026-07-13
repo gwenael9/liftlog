@@ -34,6 +34,8 @@
     "preacher_curl": "Preacher Curl",
     "butterfly": "Butterfly",
     "incline_barbell_press": "Incline Barbell Press",
+    "chest_press": "Chest Press",
+    "bench_dumbbell_press": "Bench Dumbbell Press",
     "viewImage": "View image"
   },
   "muscleGroups": {
@@ -293,6 +295,9 @@
     "save": "Save",
     "addSegment": "+ drop",
     "addSegmentLong": "Add a drop-set segment",
-    "removeSegment": "Remove this segment"
+    "removeSegment": "Remove this segment",
+    "switchTitle": "Replace exercise",
+    "switchLong": "Replace this exercise",
+    "switch": "Replace"
   }
 }

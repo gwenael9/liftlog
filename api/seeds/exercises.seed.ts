@@ -50,6 +50,21 @@ const exercises: {
     muscle_group: MuscleGroup.CHEST,
     tracking_type: TrackingType.STRENGTH,
   },
+  {
+    slug: "incline_barbell_press",
+    muscle_group: MuscleGroup.CHEST,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "chest_press",
+    muscle_group: MuscleGroup.CHEST,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "butterfly",
+    muscle_group: MuscleGroup.CHEST,
+    tracking_type: TrackingType.STRENGTH,
+  },
   // Back
   {
     slug: "pull_up",
@@ -110,6 +125,16 @@ const exercises: {
   },
   {
     slug: "hammer_curl",
+    muscle_group: MuscleGroup.BICEPS,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "incline_curl",
+    muscle_group: MuscleGroup.BICEPS,
+    tracking_type: TrackingType.STRENGTH,
+  },
+  {
+    slug: "preacher_curl",
     muscle_group: MuscleGroup.BICEPS,
     tracking_type: TrackingType.STRENGTH,
   },

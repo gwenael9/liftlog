@@ -34,6 +34,8 @@
     "preacher_curl": "Curl pupitre",
     "butterfly": "Butterfly",
     "incline_barbell_press": "Développé incliné barre",
+    "chest_press": "Presse à pectoraux",
+    "bench_dumbbell_press": "Développé couché haltères",
     "viewImage": "Voir l'image"
   },
   "muscleGroups": {
@@ -293,6 +295,9 @@
     "save": "Enregistrer",
     "addSegment": "+ palier",
     "addSegmentLong": "Ajouter un palier dégressif",
-    "removeSegment": "Supprimer ce palier"
+    "removeSegment": "Supprimer ce palier",
+    "switchTitle": "Remplacer l'exercice",
+    "switchLong": "Remplacer cet exercice",
+    "switch": "Remplacer"
   }
 }

@@ -1,4 +1,4 @@
-import { Plus, ChevronUp, ChevronDown } from "lucide-react";
+import { Plus, ChevronUp, ChevronDown, Repeat } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -29,6 +29,7 @@ interface Props {
   onPatchPending: (i: number, patch: Partial<AddRow>) => void;
   onRemovePending: (i: number) => void;
   onDeleteSet: (setId: string) => void;
+  onSwitch: () => void;
 }
 
 export function ExerciseCard({
@@ -44,6 +45,7 @@ export function ExerciseCard({
   onPatchPending,
   onRemovePending,
   onDeleteSet,
+  onSwitch,
 }: Props) {
   const { t } = useTranslation();
   const unit = useUnitSystem();
@@ -86,6 +88,14 @@ export function ExerciseCard({
             ×{totalSets}
           </span>
           <ExerciseImageButton exerciseSlug={group.exerciseSlug} />
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={onSwitch}
+            title={t("exerciseForm.switchLong")}
+          >
+            <Repeat className="size-4" />
+          </Button>
         </CardTitle>
       </CardHeader>
 
