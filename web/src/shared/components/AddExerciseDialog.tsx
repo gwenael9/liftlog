@@ -34,6 +34,7 @@ type Props = {
 } & (
   | { mode: 'session'; onSubmit: (exerciseId: string, rows: AddRow[]) => void | Promise<void> }
   | { mode: 'template'; onSubmit: (exerciseId: string, data: TemplateExerciseData) => void }
+  | { mode: 'switch'; onSubmit: (exerciseId: string) => void }
 )
 
 export function AddExerciseDialog(props: Props) {
@@ -68,6 +69,8 @@ export function AddExerciseDialog(props: Props) {
     if (!exerciseId) return
     if (props.mode === 'session') {
       await props.onSubmit(exerciseId, rows)
+    } else if (props.mode === 'switch') {
+      props.onSubmit(exerciseId)
     } else {
       props.onSubmit(exerciseId, {
         targetSets: targetSets ? Number(targetSets) : undefined,
@@ -82,7 +85,7 @@ export function AddExerciseDialog(props: Props) {
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) reset(); onOpenChange(v) }}>
-      <DialogContent title={t('exerciseForm.title')}>
+      <DialogContent title={props.mode === 'switch' ? t('exerciseForm.switchTitle') : t('exerciseForm.title')}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1">
             <Label>{t('exerciseForm.exercise')}</Label>
@@ -190,7 +193,7 @@ export function AddExerciseDialog(props: Props) {
           })()}
 
           <Button type="submit" className="w-full" disabled={isPending || !exerciseId}>
-            {t('exerciseForm.add')}
+            {props.mode === 'switch' ? t('exerciseForm.switch') : t('exerciseForm.add')}
           </Button>
         </form>
       </DialogContent>

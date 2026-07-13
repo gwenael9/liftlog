@@ -40,6 +40,10 @@ export function SessionDetailPage() {
     setAddOpen,
     deleteOpen,
     setDeleteOpen,
+    switchOpen,
+    setSwitchOpen,
+    openSwitchDialog,
+    submitSwitch,
     setActiveIndex,
     moveExercise,
     patchEdit,
@@ -137,6 +141,7 @@ export function SessionDetailPage() {
                   }
                   onRemovePending={(i) => removePendingRow(group.exerciseId, i)}
                   onDeleteSet={handleDeleteSet}
+                  onSwitch={() => openSwitchDialog(group.exerciseId)}
                 />
               </div>
             </div>
@@ -175,6 +180,14 @@ export function SessionDetailPage() {
         onOpenChange={setAddOpen}
         onSubmit={handleAddExercise}
         isPending={isSaving}
+      />
+
+      <AddExerciseDialog
+        mode="switch"
+        exercises={exercises}
+        open={switchOpen}
+        onOpenChange={setSwitchOpen}
+        onSubmit={submitSwitch}
       />
 
       <ConfirmDeleteDialog

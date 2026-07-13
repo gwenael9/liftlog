@@ -55,8 +55,18 @@ export function useSessionEditor(id: string) {
   // carousel avec leurs pendingRows, envoyés au serveur à la sauvegarde.
   const [pendingExerciseIds, setPendingExerciseIds] = useState<string[]>([]);
 
+  // Sous-ensemble de pendingExerciseIds créés via "remplacer l'exercice" — leurs
+  // pendingRows sont envoyées telles quelles à la sauvegarde même si elles sont
+  // vides (cas d'une séance issue d'un template, où les séries n'ont pas encore
+  // de reps/poids/durée renseignés).
+  const [carriedOverExerciseIds, setCarriedOverExerciseIds] = useState<Set<string>>(new Set());
+
   const [addOpen, setAddOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+
+  // Exercice ciblé par le bouton "remplacer" — ouvre AddExerciseDialog en mode switch.
+  const [switchOpen, setSwitchOpen] = useState(false);
+  const [switchTargetId, setSwitchTargetId] = useState<string | null>(null);
 
   // Regroupe les sets par exercice en respectant l'ordre et en excluant les
   // sets en cours de suppression optimiste.
@@ -96,12 +106,15 @@ export function useSessionEditor(id: string) {
         exerciseId: exId,
         exerciseSlug: exInfo.slug,
         trackingType: (exInfo.tracking_type ?? "strength") as "strength" | "duration",
-        exerciseOrder: serverGroups.length + pendingGroups.length,
+        exerciseOrder:
+          orderOverride[exId] ?? serverGroups.length + pendingGroups.length,
         sets: [],
       });
     }
 
-    return [...serverGroups, ...pendingGroups];
+    return [...serverGroups, ...pendingGroups].sort(
+      (a, b) => a.exerciseOrder - b.exerciseOrder,
+    );
   }, [session, deletingSetIds, orderOverride, pendingExerciseIds, exercises]);
 
   const total = setsByExercise.length;
@@ -256,9 +269,11 @@ export function useSessionEditor(id: string) {
           segments,
         });
       }
-      const pending = (pendingRows[g.exerciseId] ?? []).filter(
-        (r) => r.reps || r.weight_kg || r.duration_sec,
-      );
+      const pending = carriedOverExerciseIds.has(g.exerciseId)
+        ? (pendingRows[g.exerciseId] ?? [])
+        : (pendingRows[g.exerciseId] ?? []).filter(
+            (r) => r.reps || r.weight_kg || r.duration_sec,
+          );
       for (let i = 0; i < pending.length; i++) {
         const row = pending[i];
         const segments = buildSegments(row.reps, row.weight_kg, row.extraSegments);
@@ -275,10 +290,12 @@ export function useSessionEditor(id: string) {
       }
     }
 
-    const promises: Promise<unknown>[] = [
-      bulkUpdateSets.mutateAsync(body),
-      ...[...pendingDeleteIds].map((id) => deleteSet.mutateAsync(id)),
-    ];
+    // Les deletes tournent d'abord : bulkUpdateSets passe en dernier pour que
+    // son invalidate/refetch reflète bien l'état final (sinon un refetch de
+    // delete peut écraser le cache avant que les créations soient committées).
+    await Promise.all([...pendingDeleteIds].map((id) => deleteSet.mutateAsync(id)));
+
+    const promises: Promise<unknown>[] = [bulkUpdateSets.mutateAsync(body)];
     if (notesDirty) promises.push(updateSession.mutateAsync({ notes }));
     await Promise.all(promises);
 
@@ -286,6 +303,7 @@ export function useSessionEditor(id: string) {
     setPendingRows({});
     setOrderOverride({});
     setPendingExerciseIds([]);
+    setCarriedOverExerciseIds(new Set());
     setDeletingSetIds(new Set());
     setPendingDeleteIds(new Set());
     setNotesOverride(undefined);
@@ -297,6 +315,7 @@ export function useSessionEditor(id: string) {
     setPendingRows({});
     setOrderOverride({});
     setPendingExerciseIds([]);
+    setCarriedOverExerciseIds(new Set());
     setDeletingSetIds(new Set());
     setPendingDeleteIds(new Set());
     setNotesOverride(undefined);
@@ -325,6 +344,71 @@ export function useSessionEditor(id: string) {
     setActiveIndex(existingIndex !== -1 ? existingIndex : setsByExercise.length);
   }
 
+  function openSwitchDialog(exerciseId: string) {
+    setSwitchTargetId(exerciseId);
+    setSwitchOpen(true);
+  }
+
+  // Remplace un exercice par un autre en conservant ses séries (valeurs reportées
+  // telles quelles). Si l'exercice n'est pas encore persisté, renomme juste la clé ;
+  // sinon ses sets serveur sont marqués supprimés et de nouvelles pending rows
+  // portent les mêmes valeurs sous le nouvel exercice.
+  function handleSwitchExercise(oldExerciseId: string, newExerciseId: string) {
+    if (oldExerciseId === newExerciseId) return;
+    const oldGroup = setsByExercise.find((g) => g.exerciseId === oldExerciseId);
+    if (!oldGroup) return;
+
+    // Le nouvel exercice hérite de l'exerciseOrder de l'ancien pour rester
+    // à la même position dans le carousel au lieu d'atterrir en fin de liste.
+    setOrderOverride((prev) => {
+      const n = { ...prev };
+      delete n[oldExerciseId];
+      n[newExerciseId] = oldGroup.exerciseOrder;
+      return n;
+    });
+
+    if (pendingExerciseIds.includes(oldExerciseId)) {
+      setPendingExerciseIds((prev) =>
+        prev.map((id) => (id === oldExerciseId ? newExerciseId : id)),
+      );
+      setPendingRows((prev) => {
+        const { [oldExerciseId]: rows, ...rest } = prev;
+        return rows ? { ...rest, [newExerciseId]: rows } : prev;
+      });
+      setCarriedOverExerciseIds((prev) => {
+        if (!prev.has(oldExerciseId)) return prev;
+        const n = new Set(prev);
+        n.delete(oldExerciseId);
+        n.add(newExerciseId);
+        return n;
+      });
+    } else {
+      const carriedRows: AddRow[] = oldGroup.sets.map((set) => resolveEditValue(set));
+      const oldSetIds = oldGroup.sets.map((s) => s.id);
+      setDeletingSetIds((prev) => new Set([...prev, ...oldSetIds]));
+      setPendingDeleteIds((prev) => new Set([...prev, ...oldSetIds]));
+      setCarriedOverExerciseIds((prev) => new Set([...prev, newExerciseId]));
+      setPatches((prev) => {
+        const n = { ...prev };
+        for (const id of oldSetIds) delete n[id];
+        return n;
+      });
+      setPendingExerciseIds((prev) => [...prev, newExerciseId]);
+      if (carriedRows.length > 0) {
+        setPendingRows((prev) => ({
+          ...prev,
+          [newExerciseId]: [...(prev[newExerciseId] ?? []), ...carriedRows],
+        }));
+      }
+    }
+  }
+
+  function submitSwitch(newExerciseId: string) {
+    if (switchTargetId) handleSwitchExercise(switchTargetId, newExerciseId);
+    setSwitchOpen(false);
+    setSwitchTargetId(null);
+  }
+
   function handleDeleteSession() {
     deleteSession.mutate(id, { onSuccess: () => navigate("/sessions") });
   }
@@ -347,6 +431,10 @@ export function useSessionEditor(id: string) {
     setAddOpen,
     deleteOpen,
     setDeleteOpen,
+    switchOpen,
+    setSwitchOpen,
+    openSwitchDialog,
+    submitSwitch,
     activeIndex,
     setActiveIndex,
     moveExercise,
