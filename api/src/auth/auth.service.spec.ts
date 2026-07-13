@@ -10,10 +10,23 @@ import { jest, describe, beforeEach, it, expect } from "@jest/globals";
 
 jest.mock("bcryptjs");
 
+type MethodMock<F> = F extends (...args: infer A) => infer R
+  ? jest.Mock<(...args: A) => R>
+  : never;
+
+type ServiceMock<T> = { [K in keyof T]?: MethodMock<T[K]> };
+
+const mockedHash = bcrypt.hash as unknown as jest.Mock<
+  (password: string, salt: string | number) => Promise<string>
+>;
+const mockedCompare = bcrypt.compare as unknown as jest.Mock<
+  (password: string, hash: string) => Promise<boolean>
+>;
+
 describe("AuthService", () => {
   let service: AuthService;
-  let usersService: Partial<Record<keyof UsersService, jest.Mock>>;
-  let jwtService: Partial<Record<keyof JwtService, jest.Mock>>;
+  let usersService: ServiceMock<UsersService>;
+  let jwtService: ServiceMock<JwtService>;
 
   const user = {
     id: "user-1",
@@ -37,8 +50,9 @@ describe("AuthService", () => {
       updateRefreshTokenHash: jest.fn(),
     };
     jwtService = {
-      signAsync: jest.fn().mockResolvedValue("signed_token"),
+      signAsync: jest.fn(),
     };
+    jwtService.signAsync!.mockResolvedValue("signed_token");
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -50,7 +64,7 @@ describe("AuthService", () => {
 
     service = module.get(AuthService);
     jest.clearAllMocks();
-    (bcrypt.hash as jest.Mock).mockResolvedValue("hashed_value");
+    mockedHash.mockResolvedValue("hashed_value");
   });
 
   describe("register", () => {
@@ -106,7 +120,7 @@ describe("AuthService", () => {
 
     it("throws UNAUTHORIZED when password invalid", async () => {
       usersService.findByEmail!.mockResolvedValue(user);
-      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+      mockedCompare.mockResolvedValue(false);
 
       await expect(
         service.login({ email: user.email, password: "wrong" }),
@@ -115,7 +129,7 @@ describe("AuthService", () => {
 
     it("returns tokens on valid credentials", async () => {
       usersService.findByEmail!.mockResolvedValue(user);
-      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      mockedCompare.mockResolvedValue(true);
 
       const result = await service.login({
         email: user.email,

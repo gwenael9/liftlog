@@ -45,6 +45,10 @@ export class UsersService {
     await this.usersRepository.update(id, { refresh_token_hash: hash });
   }
 
+  async updatePasswordHash(id: string, password_hash: string): Promise<void> {
+    await this.usersRepository.update(id, { password_hash });
+  }
+
   async findAll(): Promise<User[]> {
     return this.usersRepository.find({ order: { created_at: 'DESC' } });
   }

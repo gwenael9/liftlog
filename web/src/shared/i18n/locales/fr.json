@@ -90,7 +90,14 @@
     "unitSystem": "Unités",
     "unitKg": "Kilogrammes (kg)",
     "unitLbs": "Livres (lbs)",
-    "couleurPrimary": "Couleur principale"
+    "couleurPrimary": "Couleur principale",
+    "changePasswordTitle": "Mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmer le nouveau mot de passe",
+    "changePassword": "Changer le mot de passe",
+    "passwordChanged": "Mot de passe mis à jour",
+    "changePasswordError": "Échec du changement de mot de passe"
   },
   "common": {
     "save": "Enregistrer",
@@ -266,6 +273,7 @@
     "errors": {
       "INVALID_CREDENTIALS": "Email ou mot de passe incorrect.",
       "EMAIL_ALREADY_IN_USE": "Cet email est déjà utilisé.",
+      "INVALID_CURRENT_PASSWORD": "Mot de passe actuel incorrect.",
       "fallback": "Une erreur est survenue. Veuillez réessayer."
     }
   },
