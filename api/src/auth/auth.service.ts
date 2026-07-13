@@ -10,6 +10,7 @@ import * as bcrypt from "bcryptjs";
 import { UsersService } from "../users/users.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
+import { ChangePasswordDto } from "../users/dto/change-password.dto";
 
 export interface TokenPair {
   access_token: string;
@@ -79,6 +80,25 @@ export class AuthService {
     const tokens = await this.generateTokens(user.id, user.email);
     await this.storeRefreshTokenHash(user.id, tokens.refresh_token);
     return tokens;
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto): Promise<void> {
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new HttpException({ code: "USER_NOT_FOUND" }, HttpStatus.NOT_FOUND);
+    }
+
+    const passwordValid = await bcrypt.compare(
+      dto.current_password,
+      user.password_hash,
+    );
+    if (!passwordValid) {
+      throw new HttpException({ code: "INVALID_CURRENT_PASSWORD" }, HttpStatus.UNAUTHORIZED);
+    }
+
+    const password_hash = await bcrypt.hash(dto.new_password, 12);
+    await this.usersService.updatePasswordHash(userId, password_hash);
+    await this.usersService.updateRefreshTokenHash(userId, null);
   }
 
   private async generateTokens(

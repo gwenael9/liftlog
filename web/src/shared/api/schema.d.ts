@@ -52,6 +52,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/change-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_changePassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users": {
         parameters: {
             query?: never;
@@ -371,6 +387,12 @@ export interface components {
             email: string;
             /** @example password123 */
             password: string;
+        };
+        ChangePasswordDto: {
+            /** @example oldPassword123 */
+            current_password: string;
+            /** @example newPassword123 */
+            new_password: string;
         };
         UserResponseDto: {
             /** Format: uuid */
@@ -693,6 +715,27 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TokenPairDto"];
                 };
+            };
+        };
+    };
+    AuthController_changePassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

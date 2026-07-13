@@ -1,7 +1,12 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { authApi, type LoginDto, type RegisterDto } from "@/shared/api/auth";
+import {
+  authApi,
+  type LoginDto,
+  type RegisterDto,
+  type ChangePasswordDto,
+} from "@/shared/api/auth";
 import { usersApi, type UpdateUserDto } from "@/shared/api/users";
 import { useAuthStore } from "@/shared/store/auth.store";
 import { useUserStore } from "@/shared/store/user.store";
@@ -103,6 +108,15 @@ export function useUpdateMe() {
 
 export function useUnitSystem(): "kg" | "lbs" {
   return useUserStore((s) => s.user?.unit_system ?? "kg");
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: async (dto: ChangePasswordDto) => {
+      const { error } = await authApi.changePassword(dto);
+      if (error) throw error;
+    },
+  });
 }
 
 export function useDeleteMe() {
