@@ -23,4 +23,4 @@ COPY --from=build /app/dist ./dist
 EXPOSE 3000
 
 # Script de démarrage avec Tailscale
-CMD ["sh", "-c", "tailscale up --authkey=${TAILSCALE_AUTH_KEY} --hostname=liftlog-api && node dist/main"]
+CMD ["sh", "-c", "tailscale up --authkey=${TAILSCALE_AUTH_KEY} --hostname=liftlog-api && sleep 5 && node dist/main"]
