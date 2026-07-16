@@ -32,7 +32,7 @@ export class InitialSchema1778356723840 implements MigrationInterface {
     // Tables
     await queryRunner.query(`
       CREATE TABLE public.users (
-        id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+        id uuid DEFAULT public.gen_random_uuid() NOT NULL,
         email character varying(255) NOT NULL,
         password_hash character varying NOT NULL,
         display_name character varying(100),
@@ -48,7 +48,7 @@ export class InitialSchema1778356723840 implements MigrationInterface {
 
     await queryRunner.query(`
       CREATE TABLE public.exercises (
-        id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+        id uuid DEFAULT public.gen_random_uuid() NOT NULL,
         created_by uuid,
         slug character varying(150) NOT NULL,
         muscle_group public.exercises_muscle_group_enum NOT NULL,
@@ -65,7 +65,7 @@ export class InitialSchema1778356723840 implements MigrationInterface {
 
     await queryRunner.query(`
       CREATE TABLE public.workout_templates (
-        id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+        id uuid DEFAULT public.gen_random_uuid() NOT NULL,
         user_id uuid NOT NULL,
         name character varying(150) NOT NULL,
         description text,
@@ -79,7 +79,7 @@ export class InitialSchema1778356723840 implements MigrationInterface {
 
     await queryRunner.query(`
       CREATE TABLE public.workout_sessions (
-        id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+        id uuid DEFAULT public.gen_random_uuid() NOT NULL,
         user_id uuid NOT NULL,
         template_id uuid,
         status public.workout_sessions_status_enum DEFAULT 'planned' NOT NULL,
@@ -97,7 +97,7 @@ export class InitialSchema1778356723840 implements MigrationInterface {
 
     await queryRunner.query(`
       CREATE TABLE public.template_exercises (
-        id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+        id uuid DEFAULT public.gen_random_uuid() NOT NULL,
         template_id uuid NOT NULL,
         exercise_id uuid NOT NULL,
         order_index integer NOT NULL,
@@ -115,7 +115,7 @@ export class InitialSchema1778356723840 implements MigrationInterface {
 
     await queryRunner.query(`
       CREATE TABLE public.session_sets (
-        id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+        id uuid DEFAULT public.gen_random_uuid() NOT NULL,
         session_id uuid NOT NULL,
         exercise_id uuid NOT NULL,
         set_index integer NOT NULL,
