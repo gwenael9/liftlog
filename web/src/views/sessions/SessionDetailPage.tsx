@@ -16,11 +16,14 @@ import { Label } from "@/shared/components/ui/label";
 import { useSwipe } from "@/shared/hooks/useSwipe";
 import { useRef, useState, useEffect } from "react";
 import { cn } from "@/shared/lib/utils";
+import { useTemplates } from "@/shared/hooks/useTemplates";
 
 export function SessionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const { data: templates } = useTemplates();
 
   const editor = useSessionEditor(id!);
 
@@ -77,6 +80,10 @@ export function SessionDetailPage() {
   if (isLoading) return <SessionDetailSkeleton />;
   if (!session) return <NotFound />;
 
+  const templateName = session.template_id
+    ? templates?.find((t) => t.id === session.template_id)?.name
+    : null;
+
   return (
     <PageContainer>
       <DetailHeader
@@ -84,25 +91,39 @@ export function SessionDetailPage() {
         title={formatSessionDateLong(session.scheduled_date)}
         onDelete={() => setDeleteOpen(true)}
         subHeader={
-          <>
-            {isAnyDirty && (
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={cancelAll}
-                disabled={isSaving}
-              >
-                {t("common.cancel")}
-              </Button>
+          <div className="flex justify-between w-full items-center">
+            {templateName && (
+              <div>
+                <span
+                  className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary shrink-0 cursor-pointer"
+                  onClick={() => {
+                    navigate(`/templates/${session.template_id}`);
+                  }}
+                >
+                  {templateName}
+                </span>
+              </div>
             )}
-            <Button
-              className="flex-1"
-              onClick={saveAll}
-              disabled={isSaving || !isAnyDirty}
-            >
-              {t("common.save")}
-            </Button>
-          </>
+            <div className="flex gap-2">
+              {isAnyDirty && (
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={cancelAll}
+                  disabled={isSaving}
+                >
+                  {t("common.cancel")}
+                </Button>
+              )}
+              <Button
+                className="flex-1"
+                onClick={saveAll}
+                disabled={isSaving || !isAnyDirty}
+              >
+                {t("common.save")}
+              </Button>
+            </div>
+          </div>
         }
       />
 
