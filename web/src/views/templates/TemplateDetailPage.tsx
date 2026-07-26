@@ -49,9 +49,12 @@ export function TemplateDetailPage() {
 
   return (
     <PageContainer>
-      {/* Header row */}
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/templates")}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate("/templates")}
+        >
           <ChevronLeft />
         </Button>
         <div className="flex-1 min-w-0">
@@ -63,17 +66,22 @@ export function TemplateDetailPage() {
               placeholder={t("templates.form.name")}
             />
           ) : (
-            <h2 className="text-xl font-bold capitalize truncate">{info.name}</h2>
+            <h2 className="text-xl font-bold capitalize truncate">
+              {info.name}
+            </h2>
           )}
         </div>
         {canEdit && (
-          <Button variant="ghost" size="icon" onClick={() => setDeleteOpen(true)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setDeleteOpen(true)}
+          >
             <Trash2 className="text-destructive" />
           </Button>
         )}
       </div>
 
-      {/* Description */}
       <div className="-mt-2 pl-11">
         {canEdit ? (
           <input
@@ -89,7 +97,6 @@ export function TemplateDetailPage() {
         )}
       </div>
 
-      {/* Stats + save */}
       <div className="border-t border-b py-2.5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <span className="flex items-center gap-1.5">
@@ -123,7 +130,9 @@ export function TemplateDetailPage() {
               <Switch
                 className="scale-75 origin-left"
                 checked={info.isPublic}
-                onCheckedChange={(v: boolean) => handleInfoChange({ isPublic: v })}
+                onCheckedChange={(v: boolean) =>
+                  handleInfoChange({ isPublic: v })
+                }
               />
             )}
           </span>
@@ -133,7 +142,6 @@ export function TemplateDetailPage() {
         </Button>
       </div>
 
-      {/* Exercise list */}
       <TemplateExerciseList
         rows={rows}
         canEdit={canEdit}
