@@ -84,25 +84,34 @@ export function SessionDetailPage() {
     ? templates?.find((t) => t.id === session.template_id)?.name
     : null;
 
+  const showLastSessionBtn = session.last_session_id && templateName;
+
   return (
     <PageContainer>
       <DetailHeader
         onBack={() => navigate("/sessions")}
         title={formatSessionDateLong(session.scheduled_date)}
         onDelete={() => setDeleteOpen(true)}
+        subtitle={
+          templateName
+            ? t("sessions.template", { template: templateName })
+            : undefined
+        }
         subHeader={
-          <div className="flex justify-between w-full items-center">
-            {templateName && (
-              <div>
-                <span
-                  className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary shrink-0 cursor-pointer"
-                  onClick={() => {
-                    navigate(`/templates/${session.template_id}`);
-                  }}
-                >
-                  {templateName}
-                </span>
-              </div>
+          <div
+            className={cn(
+              "flex w-full items-center",
+              showLastSessionBtn ? "justify-between" : "justify-end",
+            )}
+          >
+            {showLastSessionBtn && (
+              <Button
+                onClick={() => navigate(`/sessions/${session.last_session_id}`)}
+                variant="link"
+                size="sm"
+              >
+                {t("sessions.lastSession", { template: templateName })}
+              </Button>
             )}
             <div className="flex gap-2">
               {isAnyDirty && (

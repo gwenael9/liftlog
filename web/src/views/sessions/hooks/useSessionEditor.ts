@@ -9,7 +9,12 @@ import {
   useUpdateSession,
 } from "@/shared/hooks/useSessions";
 import type { SetResponseDto, BulkUpdateSetsDto } from "@/shared/api/sessions";
-import type { SetEditValue, AddRow, ExerciseGroup, SegmentEditValue } from "@/views/sessions/types/session";
+import type {
+  SetEditValue,
+  AddRow,
+  ExerciseGroup,
+  SegmentEditValue,
+} from "@/views/sessions/types/session";
 import { emptyAddRow } from "@/views/sessions/types/session";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -29,14 +34,18 @@ export function useSessionEditor(id: string) {
 
   // notesOverride = undefined signifie "pas encore modifié" — distinct de ""
   // ce qui permet de détecter si l'utilisateur a réellement changé les notes.
-  const [notesOverride, setNotesOverride] = useState<string | undefined>(undefined);
+  const [notesOverride, setNotesOverride] = useState<string | undefined>(
+    undefined,
+  );
   const notes = notesOverride ?? session?.notes ?? "";
   const notesDirty =
     notesOverride !== undefined && notesOverride !== (session?.notes ?? "");
 
   // Overlay des éditions utilisateur, keyed par set ID. Les valeurs serveur
   // restent la référence — patches ne contient que les champs modifiés.
-  const [patches, setPatches] = useState<Record<string, Partial<SetEditValue>>>({});
+  const [patches, setPatches] = useState<Record<string, Partial<SetEditValue>>>(
+    {},
+  );
 
   // Nouvelles séries en attente d'envoi, groupées par exercice.
   const [pendingRows, setPendingRows] = useState<Record<string, AddRow[]>>({});
@@ -45,11 +54,15 @@ export function useSessionEditor(id: string) {
 
   // IDs retirés de l'UI immédiatement, suppression réelle différée à saveAll.
   const [deletingSetIds, setDeletingSetIds] = useState<Set<string>>(new Set());
-  const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<string>>(new Set());
+  const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<string>>(
+    new Set(),
+  );
 
   // Ordre local des exercices, keyed par exerciseId. Permet de réordonner
   // sans toucher au serveur avant la sauvegarde.
-  const [orderOverride, setOrderOverride] = useState<Record<string, number>>({});
+  const [orderOverride, setOrderOverride] = useState<Record<string, number>>(
+    {},
+  );
 
   // Exercices ajoutés localement, pas encore persistés — affichés dans le
   // carousel avec leurs pendingRows, envoyés au serveur à la sauvegarde.
@@ -59,7 +72,9 @@ export function useSessionEditor(id: string) {
   // pendingRows sont envoyées telles quelles à la sauvegarde même si elles sont
   // vides (cas d'une séance issue d'un template, où les séries n'ont pas encore
   // de reps/poids/durée renseignés).
-  const [carriedOverExerciseIds, setCarriedOverExerciseIds] = useState<Set<string>>(new Set());
+  const [carriedOverExerciseIds, setCarriedOverExerciseIds] = useState<
+    Set<string>
+  >(new Set());
 
   const [addOpen, setAddOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -105,7 +120,9 @@ export function useSessionEditor(id: string) {
       pendingGroups.push({
         exerciseId: exId,
         exerciseSlug: exInfo.slug,
-        trackingType: (exInfo.tracking_type ?? "strength") as "strength" | "duration",
+        trackingType: (exInfo.tracking_type ?? "strength") as
+          | "strength"
+          | "duration",
         exerciseOrder:
           orderOverride[exId] ?? serverGroups.length + pendingGroups.length,
         sets: [],
@@ -150,7 +167,9 @@ export function useSessionEditor(id: string) {
   // Calculé uniquement pour le groupe visible — évite de résoudre tous les patches
   // à chaque render.
   const groupEditValues: Record<string, SetEditValue> = group
-    ? Object.fromEntries(group.sets.map((set) => [set.id, resolveEditValue(set)]))
+    ? Object.fromEntries(
+        group.sets.map((set) => [set.id, resolveEditValue(set)]),
+      )
     : {};
 
   function isGroupDirty(g: ExerciseGroup): boolean {
@@ -186,7 +205,10 @@ export function useSessionEditor(id: string) {
       reps: r ? Number(r) : 0,
       weight_kg: w ? Number(w) : null,
     });
-    return [toSegment(reps, weight_kg), ...extraSegments.map((s) => toSegment(s.reps, s.weight_kg))];
+    return [
+      toSegment(reps, weight_kg),
+      ...extraSegments.map((s) => toSegment(s.reps, s.weight_kg)),
+    ];
   }
 
   const orderDirty = Object.keys(orderOverride).length > 0;
@@ -225,7 +247,11 @@ export function useSessionEditor(id: string) {
     }));
   }
 
-  function patchPendingRow(exerciseId: string, i: number, patch: Partial<AddRow>) {
+  function patchPendingRow(
+    exerciseId: string,
+    i: number,
+    patch: Partial<AddRow>,
+  ) {
     setPendingRows((prev) => ({
       ...prev,
       [exerciseId]: prev[exerciseId].map((r, idx) =>
@@ -259,13 +285,22 @@ export function useSessionEditor(id: string) {
     for (const g of setsByExercise) {
       for (const set of g.sets) {
         const vals = resolveEditValue(set);
-        const segments = buildSegments(vals.reps, vals.weight_kg, vals.extraSegments);
+        const segments = buildSegments(
+          vals.reps,
+          vals.weight_kg,
+          vals.extraSegments,
+        );
         body.updates.push({
           id: set.id,
-          exercise_order: orderOverride[g.exerciseId] !== undefined ? g.exerciseOrder : undefined,
+          exercise_order:
+            orderOverride[g.exerciseId] !== undefined
+              ? g.exerciseOrder
+              : undefined,
           reps: vals.reps ? Number(vals.reps) : undefined,
           weight_kg: vals.weight_kg ? Number(vals.weight_kg) : undefined,
-          duration_sec: vals.duration_sec ? Number(vals.duration_sec) : undefined,
+          duration_sec: vals.duration_sec
+            ? Number(vals.duration_sec)
+            : undefined,
           segments,
         });
       }
@@ -276,7 +311,11 @@ export function useSessionEditor(id: string) {
           );
       for (let i = 0; i < pending.length; i++) {
         const row = pending[i];
-        const segments = buildSegments(row.reps, row.weight_kg, row.extraSegments);
+        const segments = buildSegments(
+          row.reps,
+          row.weight_kg,
+          row.extraSegments,
+        );
         body.creates?.push({
           exercise_id: g.exerciseId,
           exercise_order: g.exerciseOrder,
@@ -293,7 +332,9 @@ export function useSessionEditor(id: string) {
     // Les deletes tournent d'abord : bulkUpdateSets passe en dernier pour que
     // son invalidate/refetch reflète bien l'état final (sinon un refetch de
     // delete peut écraser le cache avant que les créations soient committées).
-    await Promise.all([...pendingDeleteIds].map((id) => deleteSet.mutateAsync(id)));
+    await Promise.all(
+      [...pendingDeleteIds].map((id) => deleteSet.mutateAsync(id)),
+    );
 
     const promises: Promise<unknown>[] = [bulkUpdateSets.mutateAsync(body)];
     if (notesDirty) promises.push(updateSession.mutateAsync({ notes }));
@@ -323,7 +364,9 @@ export function useSessionEditor(id: string) {
 
   // Ajoute un exercice localement — aucun appel API, tout est envoyé à saveAll.
   function handleAddExercise(exerciseId: string, rows: AddRow[]) {
-    const existingGroup = setsByExercise.find((g) => g.exerciseId === exerciseId);
+    const existingGroup = setsByExercise.find(
+      (g) => g.exerciseId === exerciseId,
+    );
 
     if (!existingGroup) {
       setPendingExerciseIds((prev) =>
@@ -331,7 +374,9 @@ export function useSessionEditor(id: string) {
       );
     }
 
-    const filledRows = rows.filter((r) => r.reps || r.weight_kg || r.duration_sec);
+    const filledRows = rows.filter(
+      (r) => r.reps || r.weight_kg || r.duration_sec,
+    );
     if (filledRows.length > 0) {
       setPendingRows((prev) => ({
         ...prev,
@@ -340,8 +385,12 @@ export function useSessionEditor(id: string) {
     }
 
     // Navigue vers le groupe ; s'il est nouveau, il apparaîtra en dernier après re-render.
-    const existingIndex = setsByExercise.findIndex((g) => g.exerciseId === exerciseId);
-    setActiveIndex(existingIndex !== -1 ? existingIndex : setsByExercise.length);
+    const existingIndex = setsByExercise.findIndex(
+      (g) => g.exerciseId === exerciseId,
+    );
+    setActiveIndex(
+      existingIndex !== -1 ? existingIndex : setsByExercise.length,
+    );
   }
 
   function openSwitchDialog(exerciseId: string) {
@@ -383,7 +432,9 @@ export function useSessionEditor(id: string) {
         return n;
       });
     } else {
-      const carriedRows: AddRow[] = oldGroup.sets.map((set) => resolveEditValue(set));
+      const carriedRows: AddRow[] = oldGroup.sets.map((set) =>
+        resolveEditValue(set),
+      );
       const oldSetIds = oldGroup.sets.map((s) => s.id);
       setDeletingSetIds((prev) => new Set([...prev, ...oldSetIds]));
       setPendingDeleteIds((prev) => new Set([...prev, ...oldSetIds]));

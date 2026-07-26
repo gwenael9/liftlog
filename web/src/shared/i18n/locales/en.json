@@ -206,7 +206,9 @@
     "notesPlaceholder": "Add notes about this session...",
     "created": "Session created",
     "saved": "Session saved",
-    "deleted": "Session deleted"
+    "deleted": "Session deleted",
+    "template": "Session {{template}}",
+    "lastSession": "Last session {{template}}"
   },
   "templates": {
     "title": "Template",

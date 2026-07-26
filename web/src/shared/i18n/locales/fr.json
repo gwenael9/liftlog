@@ -206,7 +206,9 @@
     "notesPlaceholder": "Ajouter des notes sur cette séance...",
     "created": "Séance créée",
     "saved": "Séance enregistrée",
-    "deleted": "Séance supprimée"
+    "deleted": "Séance supprimée",
+    "template": "Séance {{template}}",
+    "lastSession": "Dernière séance {{template}}"
   },
   "templates": {
     "title": "Template",

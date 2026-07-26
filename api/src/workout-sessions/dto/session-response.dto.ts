@@ -1,23 +1,23 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SetResponseDto } from '../../session-sets/dto/set-response.dto';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { SetResponseDto } from "../../session-sets/dto/set-response.dto";
 
 export class SessionResponseDto {
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ format: "uuid" })
   id: string;
 
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ format: "uuid" })
   user_id: string;
 
-  @ApiPropertyOptional({ format: 'uuid', nullable: true })
+  @ApiPropertyOptional({ format: "uuid", nullable: true })
   template_id: string | null;
 
-  @ApiProperty({ example: '2026-05-08' })
+  @ApiProperty({ example: "2026-05-08" })
   scheduled_date: string;
 
-  @ApiPropertyOptional({ format: 'date-time', nullable: true })
+  @ApiPropertyOptional({ format: "date-time", nullable: true })
   started_at: Date | null;
 
-  @ApiPropertyOptional({ format: 'date-time', nullable: true })
+  @ApiPropertyOptional({ format: "date-time", nullable: true })
   ended_at: Date | null;
 
   @ApiPropertyOptional({ nullable: true })
@@ -25,4 +25,11 @@ export class SessionResponseDto {
 
   @ApiProperty({ type: [SetResponseDto] })
   session_sets: SetResponseDto[];
+
+  @ApiPropertyOptional({
+    format: "uuid",
+    nullable: true,
+    description: "The ID of the last session with same template for this user",
+  })
+  last_session_id?: string | null;
 }
