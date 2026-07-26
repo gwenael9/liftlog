@@ -29,4 +29,11 @@ VALUES
   ('bulgarian_split_squat', 'legs', 'strength', true, NULL, now()),
   ('unilateral_row', 'back', 'strength', true, NULL, now()),
   ('shrug_barbell', 'shoulders', 'strength', true, NULL, now()),
-  ('chin_pull', 'back', 'strength', true, NULL, now());
+  ('chin_pull', 'back', 'strength', true, NULL, now()),
+  ('incline_curl', 'biceps', 'strength', true, NULL, now()),
+  ('incline_barbell_press', 'chest', 'strength', true, NULL, now()),
+  ('butterfly', 'chest', 'strength', true, NULL, now()),
+  ('chest_press', 'chest', 'strength', true, NULL, now()),
+  ('bench_dumbbell_press', 'chest', 'strength', true, NULL, now()),
+  ('deadlift', 'legs', 'strength', true, NULL, now()),
+  ('hip_thrust', 'glutes', 'strength', true, NULL, now());

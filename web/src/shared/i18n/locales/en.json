@@ -36,6 +36,8 @@
     "incline_barbell_press": "Incline Barbell Press",
     "chest_press": "Chest Press",
     "bench_dumbbell_press": "Bench Dumbbell Press",
+    "deadlift": "Deadlift",
+    "hip_thrust": "Hip Thrust",
     "viewImage": "View image"
   },
   "muscleGroups": {
