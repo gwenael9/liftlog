@@ -38,6 +38,11 @@
     "bench_dumbbell_press": "Développé couché haltères",
     "deadlift": "Soulevé de terre",
     "hip_thrust": "Hip thrust",
+    "abduction": "Abduction",
+    "hack_squat": "Hack squat",
+    "leg_extension": "Leg extension",
+    "leg_extension_unilateral": "Leg extension unilatéral",
+    "linear_leg_press": "Leg press unilatéral",
     "viewImage": "Voir l'image"
   },
   "muscleGroups": {
