@@ -21,6 +21,7 @@ import {
 import AdminTable from "./AdminTable";
 import SearchInput from "@/shared/components/SearchInput";
 import { normalizeSearch } from "@/shared/utils";
+import { ExerciseImageButton } from "@/shared/components/ExerciseImageButton";
 
 const MUSCLE_GROUPS = [
   "chest",
@@ -167,8 +168,9 @@ export default function ExercicesTable({
         }
         renderRow={(ex, onDelete) => (
           <>
-            <TableCell className="font-medium">
+            <TableCell className="font-medium flex items-center gap-2">
               {t(`exercises.${ex.slug}`)}
+              <ExerciseImageButton exerciseSlug={ex.slug} />
             </TableCell>
             <TableCell className="text-muted-foreground">
               {t(`muscleGroups.${ex.muscle_group}`)}
