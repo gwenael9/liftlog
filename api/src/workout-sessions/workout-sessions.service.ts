@@ -2,12 +2,12 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between, FindOptionsWhere } from 'typeorm';
-import { WorkoutSession } from './entities/workout-session.entity';
-import { CreateSessionDto } from './dto/create-session.dto';
-import { UpdateSessionDto } from './dto/update-session.dto';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository, Between, FindOptionsWhere, Not } from "typeorm";
+import { WorkoutSession } from "./entities/workout-session.entity";
+import { CreateSessionDto } from "./dto/create-session.dto";
+import { UpdateSessionDto } from "./dto/update-session.dto";
 
 @Injectable()
 export class WorkoutSessionsService {
@@ -20,31 +20,31 @@ export class WorkoutSessionsService {
     const where: FindOptionsWhere<WorkoutSession> = { user_id: userId };
 
     if (month) {
-      const [year, mon] = month.split('-');
+      const [year, mon] = month.split("-");
       const lastDay = new Date(parseInt(year), parseInt(mon), 0).getDate();
       where.scheduled_date = Between(
         `${year}-${mon}-01`,
-        `${year}-${mon}-${String(lastDay).padStart(2, '0')}`,
+        `${year}-${mon}-${String(lastDay).padStart(2, "0")}`,
       );
     }
 
     return this.sessionsRepository.find({
       where,
-      order: { scheduled_date: 'ASC' },
-      relations: ['session_sets'],
+      order: { scheduled_date: "ASC" },
+      relations: ["session_sets"],
     });
   }
 
   async findOne(id: string, userId: string): Promise<WorkoutSession> {
     const session = await this.sessionsRepository.findOne({
       where: { id },
-      relations: ['session_sets', 'session_sets.exercise'],
+      relations: ["session_sets", "session_sets.exercise"],
     });
     if (!session) {
-      throw new NotFoundException('Session not found');
+      throw new NotFoundException("Session not found");
     }
     if (session.user_id !== userId) {
-      throw new ForbiddenException('Access denied');
+      throw new ForbiddenException("Access denied");
     }
     if (session.session_sets) {
       session.session_sets.sort((a, b) =>
@@ -53,12 +53,14 @@ export class WorkoutSessionsService {
           : a.set_index - b.set_index,
       );
 
-      const prRows = await this.sessionsRepository.query<{
-        exercise_id: string;
-        max_weight: string;
-        pr_session_id: string;
-        pr_set_index: string;
-      }[]>(
+      const prRows = await this.sessionsRepository.query<
+        {
+          exercise_id: string;
+          max_weight: string;
+          pr_session_id: string;
+          pr_set_index: string;
+        }[]
+      >(
         `SELECT DISTINCT ON (ss.exercise_id)
            ss.exercise_id,
            ss.weight_kg AS max_weight,
@@ -75,9 +77,12 @@ export class WorkoutSessionsService {
         [userId],
       );
       const prByExercise = new Map(
-        prRows.map(r => [
+        prRows.map((r) => [
           r.exercise_id,
-          { pr_session_id: r.pr_session_id, pr_set_index: parseInt(r.pr_set_index, 10) },
+          {
+            pr_session_id: r.pr_session_id,
+            pr_set_index: parseInt(r.pr_set_index, 10),
+          },
         ]),
       );
 
@@ -101,16 +106,21 @@ export class WorkoutSessionsService {
     return this.sessionsRepository.save(session);
   }
 
-  async update(id: string, dto: UpdateSessionDto, userId: string): Promise<WorkoutSession> {
+  async update(
+    id: string,
+    dto: UpdateSessionDto,
+    userId: string,
+  ): Promise<WorkoutSession> {
     const session = await this.sessionsRepository.findOne({ where: { id } });
     if (!session) {
-      throw new NotFoundException('Session not found');
+      throw new NotFoundException("Session not found");
     }
     if (session.user_id !== userId) {
-      throw new ForbiddenException('Access denied');
+      throw new ForbiddenException("Access denied");
     }
 
-    if (dto.started_at !== undefined) session.started_at = new Date(dto.started_at);
+    if (dto.started_at !== undefined)
+      session.started_at = new Date(dto.started_at);
     if (dto.ended_at !== undefined) session.ended_at = new Date(dto.ended_at);
     if (dto.notes !== undefined) session.notes = dto.notes;
 
@@ -120,11 +130,29 @@ export class WorkoutSessionsService {
   async remove(id: string, userId: string): Promise<void> {
     const session = await this.sessionsRepository.findOne({ where: { id } });
     if (!session) {
-      throw new NotFoundException('Session not found');
+      throw new NotFoundException("Session not found");
     }
     if (session.user_id !== userId) {
-      throw new ForbiddenException('Access denied');
+      throw new ForbiddenException("Access denied");
     }
     await this.sessionsRepository.remove(session);
+  }
+
+  async findLastSessionByTemplate(
+    userId: string,
+    templateId: string,
+    sessionId: string,
+  ): Promise<string | null> {
+    const session = await this.sessionsRepository.findOne({
+      where: {
+        user_id: userId,
+        template_id: templateId,
+        id: Not(sessionId),
+      },
+      order: { scheduled_date: "DESC" },
+      relations: ["session_sets", "session_sets.exercise"],
+    });
+
+    return session ? session.id : null;
   }
 }

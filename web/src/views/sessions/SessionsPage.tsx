@@ -35,6 +35,7 @@ import {
 } from "@/shared/utils";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { Badge } from "@/shared/components/ui/badge";
 
 function getWeekStartStr(dateStr: string): string {
   const d = new Date(dateStr + "T00:00:00");
@@ -286,9 +287,7 @@ export function SessionsPage() {
                       </div>
                       <div className="flex-1 flex items-center gap-2 min-w-0">
                         {templateName && (
-                          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary shrink-0">
-                            {templateName}
-                          </span>
+                          <Badge variant="secondary">{templateName}</Badge>
                         )}
                         {exerciseCount > 0 && (
                           <span className="text-xs text-muted-foreground">

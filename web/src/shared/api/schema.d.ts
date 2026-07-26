@@ -566,6 +566,11 @@ export interface components {
             ended_at?: string | null;
             notes?: string | null;
             session_sets: components["schemas"]["SetResponseDto"][];
+            /**
+             * Format: uuid
+             * @description The ID of the last session with same template for this user
+             */
+            last_session_id?: string | null;
         };
         CreateSessionDto: {
             /** @example 2026-05-08 */

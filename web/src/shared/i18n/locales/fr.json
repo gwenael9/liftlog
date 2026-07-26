@@ -17,7 +17,7 @@
     "dips": "Dips",
     "squat": "Squat",
     "romanian_deadlift": "Soulevé de terre roumain",
-    "leg_press": "Presse à cuisses",
+    "leg_press": "Leg press",
     "leg_curl": "Leg curl",
     "calf_raise": "Mollets",
     "plank": "Planche",
@@ -36,6 +36,8 @@
     "incline_barbell_press": "Développé incliné barre",
     "chest_press": "Presse à pectoraux",
     "bench_dumbbell_press": "Développé couché haltères",
+    "deadlift": "Soulevé de terre",
+    "hip_thrust": "Hip thrust",
     "viewImage": "Voir l'image"
   },
   "muscleGroups": {
@@ -204,7 +206,9 @@
     "notesPlaceholder": "Ajouter des notes sur cette séance...",
     "created": "Séance créée",
     "saved": "Séance enregistrée",
-    "deleted": "Séance supprimée"
+    "deleted": "Séance supprimée",
+    "template": "Séance {{template}}",
+    "lastSession": "Dernière séance {{template}}"
   },
   "templates": {
     "title": "Template",

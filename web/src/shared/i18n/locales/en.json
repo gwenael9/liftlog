@@ -36,6 +36,8 @@
     "incline_barbell_press": "Incline Barbell Press",
     "chest_press": "Chest Press",
     "bench_dumbbell_press": "Bench Dumbbell Press",
+    "deadlift": "Deadlift",
+    "hip_thrust": "Hip Thrust",
     "viewImage": "View image"
   },
   "muscleGroups": {
@@ -204,7 +206,9 @@
     "notesPlaceholder": "Add notes about this session...",
     "created": "Session created",
     "saved": "Session saved",
-    "deleted": "Session deleted"
+    "deleted": "Session deleted",
+    "template": "Session {{template}}",
+    "lastSession": "Last session {{template}}"
   },
   "templates": {
     "title": "Template",
