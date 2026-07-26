@@ -38,6 +38,11 @@
     "bench_dumbbell_press": "Bench Dumbbell Press",
     "deadlift": "Deadlift",
     "hip_thrust": "Hip Thrust",
+    "abduction": "Abduction",
+    "hack_squat": "Hack Squat",
+    "leg_extension": "Leg Extension",
+    "leg_extension_unilateral": "Unilateral Leg Extension",
+    "linear_leg_press": "Linear Leg Press",
     "viewImage": "View image"
   },
   "muscleGroups": {

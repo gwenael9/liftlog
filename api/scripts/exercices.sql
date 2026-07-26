@@ -36,4 +36,9 @@ VALUES
   ('chest_press', 'chest', 'strength', true, NULL, now()),
   ('bench_dumbbell_press', 'chest', 'strength', true, NULL, now()),
   ('deadlift', 'legs', 'strength', true, NULL, now()),
-  ('hip_thrust', 'glutes', 'strength', true, NULL, now());
+  ('hip_thrust', 'glutes', 'strength', true, NULL, now()),
+  ('abduction', 'glutes', 'strength', true, NULL, now()),
+  ('hack_squat', 'legs', 'strength', true, NULL, now()),
+  ('leg_extension', 'legs', 'strength', true, NULL, now()),
+  ('leg_extension_unilateral', 'legs', 'strength', true, NULL, now()),
+  ('linear_leg_press', 'legs', 'strength', true, NULL, now());

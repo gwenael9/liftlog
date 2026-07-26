@@ -41,7 +41,12 @@ INSERT INTO exercises (id, created_by, slug, muscle_group, is_global, notes, cre
 ('3e149796-311b-46c3-ada2-68174131ab43', NULL, 'chest_press', 'chest', true, NULL, '2026-07-13 16:08:43.290436+00', 'strength'),
 ('71d5aeae-356b-43a9-b9cb-1cb6a62596c7', NULL, 'bench_dumbbell_press', 'chest', true, NULL, '2026-07-13 16:48:55.103354+00', 'strength'),
 ('04e0f1c3-2d8b-4a5e-9f6c-7f1b8e5c6d3a', NULL, 'deadlift', 'legs', true, NULL, '2026-07-13 16:49:05.103354+00', 'strength'),
-('b7e1c2d4-3f5a-4b6e-9f7c-8e1b9e5c7d4a', NULL, 'hip_thrust', 'glutes', true, NULL, '2026-07-13 16:49:15.103354+00', 'strength')
+('b7e1c2d4-3f5a-4b6e-9f7c-8e1b9e5c7d4a', NULL, 'hip_thrust', 'glutes', true, NULL, '2026-07-13 16:49:15.103354+00', 'strength'),
+('c3d2e1f4-5a6b-4c7d-8e9f-0a1b2c3d4e5f', NULL, 'abduction', 'glutes', true, NULL, '2026-07-13 16:49:25.103354+00', 'strength'),
+('d4e5f6a7-8b9c-4d0e-9f1a-2b3c4d5e6f7g', NULL, 'hack_squat', 'legs', true, NULL, '2026-07-13 16:49:35.103354+00', 'strength'),
+('e5f6a7b8-9c0d-4e1f-8a2b-3c4d5e6f7g8h', NULL, 'leg_extension', 'legs', true, NULL, '2026-07-13 16:49:45.103354+00', 'strength'),
+('f6a7b8c9-0d1e-4f2g-9b3c-4d5e6f7g8h9i', NULL, 'leg_extension_unilateral', 'legs', true, NULL, '2026-07-13 16:49:55.103354+00', 'strength'),
+('a7b8c9d0-1e2f-4g3h-0c4d-5e6f7g8h9i0j', NULL, 'linear_leg_press', 'legs', true, NULL, '2026-07-13 16:50:05.103354+00', 'strength')
 ON CONFLICT (id) DO NOTHING;
 
 -- ==================== 2. WORKOUT TEMPLATES (3 total) ====================
