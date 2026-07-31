@@ -1,4 +1,4 @@
-import { formatDateFull } from "@/shared/utils";
+import { formatDateFull, formatDateShort } from "@/shared/utils";
 import {
   Card,
   CardContent,
@@ -24,6 +24,8 @@ import { normalizeSearch } from "@/shared/utils";
 import { useState, useEffect } from "react";
 import { useUnitSystem } from "@/shared/hooks/useAuth";
 import { formatWeight } from "@/shared/utils";
+import SelectMuscleGroup from "@/shared/components/SelectMuscleGroup";
+import type { MuscleGroup } from "@/shared/api/exercises";
 
 export default function RecordStats() {
   const { t } = useTranslation();
@@ -31,11 +33,16 @@ export default function RecordStats() {
   const { data: prs, isLoading } = usePersonalRecords();
   const [search, setSearch] = useState("");
 
-  const filtered = (prs ?? []).filter((pr) =>
-    normalizeSearch(t(`exercises.${pr.exercise_slug}`)).includes(
-      normalizeSearch(search),
-    ),
-  );
+  const [muscleFilter, setMuscleFilter] = useState<"all" | MuscleGroup>("all");
+
+  const filtered = (prs ?? []).filter((pr) => {
+    const matchSearch = normalizeSearch(
+      t(`exercises.${pr.exercise_slug}`),
+    ).includes(normalizeSearch(search));
+    const matchMuscle =
+      muscleFilter === "all" || pr.muscle_group === muscleFilter;
+    return matchSearch && matchMuscle;
+  });
 
   const pager = usePagination(filtered);
   const { setPage } = pager;
@@ -52,11 +59,14 @@ export default function RecordStats() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <SearchInput
-          value={search}
-          onChange={setSearch}
-          placeholder={t("stats.searchPlaceholder")}
-        />
+        <div className="flex items-center gap-2">
+          <SearchInput
+            value={search}
+            onChange={setSearch}
+            placeholder={t("stats.searchPlaceholder")}
+          />
+          <SelectMuscleGroup value={muscleFilter} onChange={setMuscleFilter} />
+        </div>
         {isLoading ? (
           <div className="space-y-2 mt-3">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -97,7 +107,16 @@ export default function RecordStats() {
                       {formatWeight(pr.max_weight_kg, unit)}
                     </TableCell>
                     <TableCell className="pr-0 py-2 text-right text-sm text-muted-foreground">
-                      {pr.performed_at ? formatDateFull(pr.performed_at) : "—"}
+                      <span className="hidden sm:inline">
+                        {pr.performed_at
+                          ? formatDateFull(pr.performed_at)
+                          : "—"}
+                      </span>
+                      <span className="sm:hidden">
+                        {pr.performed_at
+                          ? formatDateShort(pr.performed_at)
+                          : "—"}
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))}
