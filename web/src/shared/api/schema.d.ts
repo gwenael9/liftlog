@@ -637,6 +637,7 @@ export interface components {
             exercise_id: string;
             exercise_slug: string;
             max_weight_kg: number;
+            muscle_group: string;
             /** Format: date-time */
             performed_at?: string | null;
         };

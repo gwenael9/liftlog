@@ -9,7 +9,7 @@ import {
 import { TableCell } from "@/shared/components/ui/table";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import type { ExerciseResponseDto } from "@/shared/api/exercises";
+import type { ExerciseResponseDto, MuscleGroup } from "@/shared/api/exercises";
 import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
 import { Label } from "@/shared/components/ui/label";
 import { Input } from "@/shared/components/ui/input";
@@ -20,25 +20,13 @@ import {
 } from "@/views/admin/hooks/useAdmin";
 import AdminTable from "./AdminTable";
 import SearchInput from "@/shared/components/SearchInput";
-import { normalizeSearch } from "@/shared/utils";
+import { MUSCLE_GROUPS, normalizeSearch } from "@/shared/utils";
 import { ExerciseImageButton } from "@/shared/components/ExerciseImageButton";
-
-const MUSCLE_GROUPS = [
-  "chest",
-  "back",
-  "shoulders",
-  "biceps",
-  "triceps",
-  "legs",
-  "glutes",
-  "core",
-  "cardio",
-  "full_body",
-] as const;
+import SelectMuscleGroup from "@/shared/components/SelectMuscleGroup";
 
 interface ExerciseFormState {
   slug: string;
-  muscle_group: string;
+  muscle_group: MuscleGroup;
   tracking_type: "strength" | "duration";
   notes: string;
 }
@@ -68,7 +56,7 @@ export default function ExercicesTable({
   data: ExerciseResponseDto[];
 }) {
   const { t } = useTranslation();
-  const [muscleFilter, setMuscleFilter] = useState("all");
+  const [muscleFilter, setMuscleFilter] = useState<MuscleGroup | "all">("all");
   const [search, setSearch] = useState("");
   const [dialog, setDialog] = useState<DialogState>(closedDialog());
 
@@ -134,30 +122,10 @@ export default function ExercicesTable({
         toolbar={
           <>
             <div className="flex items-center gap-2 w-full">
-              <Select
+              <SelectMuscleGroup
                 value={muscleFilter}
-                onValueChange={(v) => setMuscleFilter(v ?? "all")}
-              >
-                <SelectTrigger className="w-40">
-                  <span
-                    className={
-                      muscleFilter === "all" ? "text-muted-foreground" : ""
-                    }
-                  >
-                    {muscleFilter === "all"
-                      ? t("admin.allMuscles")
-                      : t(`muscleGroups.${muscleFilter}`)}
-                  </span>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("admin.allMuscles")}</SelectItem>
-                  {MUSCLE_GROUPS.map((g) => (
-                    <SelectItem key={g} value={g}>
-                      {t(`muscleGroups.${g}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onChange={setMuscleFilter}
+              />
               <SearchInput value={search} onChange={setSearch} />
             </div>
             <Button size="sm" onClick={openCreate}>

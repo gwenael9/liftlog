@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { SessionSet } from "../session-sets/entities/session-set.entity";
 import { WorkoutSession } from "../workout-sessions/entities/workout-session.entity";
+import { MuscleGroup } from "@exercises/entities/exercise.entity";
 
 export interface ExerciseProgressionPoint {
   date: string;
@@ -12,6 +13,7 @@ export interface ExerciseProgressionPoint {
 export interface PersonalRecord {
   exercise_id: string;
   exercise_slug: string;
+  muscle_group: MuscleGroup;
   max_weight_kg: number;
   performed_at: Date | null;
 }
@@ -76,19 +78,23 @@ export class StatsService {
   }
 
   async getPersonalRecords(userId: string): Promise<PersonalRecord[]> {
-    const rows = await this.setsRepository.query<{
-      exercise_id: string;
-      exercise_slug: string;
-      max_weight_kg: string;
-      performed_at: Date | null;
-    }[]>(
-      `SELECT sub.exercise_id, sub.exercise_slug, sub.max_weight_kg, sub.performed_at
+    const rows = await this.setsRepository.query<
+      {
+        exercise_id: string;
+        exercise_slug: string;
+        max_weight_kg: string;
+        muscle_group: MuscleGroup;
+        performed_at: Date | null;
+      }[]
+    >(
+      `SELECT sub.exercise_id, sub.exercise_slug, sub.max_weight_kg, sub.muscle_group, sub.performed_at
        FROM (
          SELECT DISTINCT ON (ss.exercise_id)
            ss.exercise_id,
            e.slug AS exercise_slug,
            ss.weight_kg AS max_weight_kg,
-           s.scheduled_date::timestamp AS performed_at
+           s.scheduled_date::timestamp AS performed_at,
+           e.muscle_group AS muscle_group
          FROM session_sets ss
          JOIN workout_sessions s ON ss.session_id = s.id
          JOIN exercises e ON ss.exercise_id = e.id
@@ -100,9 +106,10 @@ export class StatsService {
       [userId],
     );
 
-    return rows.map(r => ({
+    return rows.map((r) => ({
       exercise_id: r.exercise_id,
       exercise_slug: r.exercise_slug,
+      muscle_group: r.muscle_group,
       max_weight_kg: parseFloat(r.max_weight_kg),
       performed_at: r.performed_at,
     }));

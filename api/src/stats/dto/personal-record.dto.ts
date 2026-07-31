@@ -1,7 +1,8 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { MuscleGroup } from "@exercises/entities/exercise.entity";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class PersonalRecordDto {
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ format: "uuid" })
   exercise_id: string;
 
   @ApiProperty()
@@ -10,6 +11,9 @@ export class PersonalRecordDto {
   @ApiProperty()
   max_weight_kg: number;
 
-  @ApiPropertyOptional({ format: 'date-time', nullable: true })
+  @ApiProperty()
+  muscle_group: MuscleGroup;
+
+  @ApiPropertyOptional({ format: "date-time", nullable: true })
   performed_at: Date | null;
 }
