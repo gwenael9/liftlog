@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   useCurrentUser,
   useUpdateMe,
   useDeleteMe,
-  useChangePassword,
 } from "@/shared/hooks/useAuth";
 import { usePreferences } from "@/shared/hooks/usePreferences";
 import { PageContainer } from "@/shared/components/layout/PageContainer";
@@ -29,170 +28,7 @@ import { toast } from "sonner";
 import { SUPPORTED_LANGUAGES } from "@/shared/i18n";
 import { Edit, KeyRound } from "lucide-react";
 import Avatar from "@/shared/components/Avatar";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import z from "zod";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/shared/components/ui/form";
-import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
-
-type ChangePasswordValues = {
-  current_password: string;
-  new_password: string;
-  confirm_password: string;
-};
-
-interface ChangePasswordDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-function ChangePasswordDialog({
-  open,
-  onOpenChange,
-}: ChangePasswordDialogProps) {
-  const { t } = useTranslation();
-  const changePassword = useChangePassword();
-
-  const schema = z
-    .object({
-      current_password: z.string().min(1),
-      new_password: z.string().min(8, t("auth.validation.minPassword")),
-      confirm_password: z.string(),
-    })
-    .refine((d) => d.new_password === d.confirm_password, {
-      message: t("auth.validation.passwordMismatch"),
-      path: ["confirm_password"],
-    });
-
-  const form = useForm<ChangePasswordValues>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      current_password: "",
-      new_password: "",
-      confirm_password: "",
-    },
-  });
-
-  useEffect(() => {
-    const sub = form.watch(() => {
-      if (changePassword.isError) changePassword.reset();
-    });
-    return () => sub.unsubscribe();
-  }, [form, changePassword]);
-
-  useEffect(() => {
-    if (!open) {
-      form.reset();
-      changePassword.reset();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
-
-  function onSubmit(values: ChangePasswordValues) {
-    changePassword.mutate(
-      {
-        current_password: values.current_password,
-        new_password: values.new_password,
-      },
-      {
-        onSuccess: () => {
-          toast.success(t("account.passwordChanged"));
-          onOpenChange(false);
-        },
-      },
-    );
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent title={t("account.changePasswordTitle")}>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="current_password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("account.currentPassword")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      autoComplete="current-password"
-                      autoFocus
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="new_password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("account.newPassword")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      autoComplete="new-password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="confirm_password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("account.confirmNewPassword")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      autoComplete="new-password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {changePassword.error && (
-              <p className="text-destructive text-sm">
-                {t(
-                  `auth.errors.${(changePassword.error as { code?: string }).code ?? "fallback"}`,
-                  { defaultValue: t("auth.errors.fallback") },
-                )}
-              </p>
-            )}
-            <div className="flex justify-end gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
-                {t("common.cancel")}
-              </Button>
-              <Button type="submit" disabled={changePassword.isPending}>
-                {t("account.changePassword")}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
-}
+import { ChangePasswordDialog } from "./components/ChangePasswordDialog";
 
 export function AccountPage() {
   const { t } = useTranslation();
@@ -361,8 +197,8 @@ export function AccountPage() {
                   className="px-0 h-auto font-medium text-sm"
                   onClick={() => setPasswordDialogOpen(true)}
                 >
-                  <KeyRound />
                   {t("account.changePassword")}
+                  <KeyRound />
                 </Button>
               </div>
             </div>
@@ -434,7 +270,8 @@ export function AccountPage() {
         </CardContent>
       </Card>
 
-      <Card className="border-destructive/30">
+      {/* Pas utile pour le moment */}
+      {/* <Card className="border-destructive/30">
         <CardHeader>
           <CardTitle className="text-destructive">
             {t("account.dangerZone")}
@@ -452,7 +289,7 @@ export function AccountPage() {
             {t("account.deleteAccount")}
           </Button>
         </CardContent>
-      </Card>
+      </Card> */}
 
       <ConfirmDeleteDialog
         open={deleteOpen}

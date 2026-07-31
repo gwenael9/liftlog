@@ -1,4 +1,4 @@
-import { formatDateFull } from "@/shared/utils";
+import { formatDateFull, formatDateShort } from "@/shared/utils";
 import {
   Card,
   CardContent,
@@ -107,7 +107,16 @@ export default function RecordStats() {
                       {formatWeight(pr.max_weight_kg, unit)}
                     </TableCell>
                     <TableCell className="pr-0 py-2 text-right text-sm text-muted-foreground">
-                      {pr.performed_at ? formatDateFull(pr.performed_at) : "—"}
+                      <span className="hidden sm:inline">
+                        {pr.performed_at
+                          ? formatDateFull(pr.performed_at)
+                          : "—"}
+                      </span>
+                      <span className="sm:hidden">
+                        {pr.performed_at
+                          ? formatDateShort(pr.performed_at)
+                          : "—"}
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))}

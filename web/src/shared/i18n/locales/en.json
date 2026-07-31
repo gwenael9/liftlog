@@ -103,7 +103,7 @@
     "currentPassword": "Current password",
     "newPassword": "New password",
     "confirmNewPassword": "Confirm new password",
-    "changePassword": "Change password",
+    "changePassword": "Update",
     "passwordChanged": "Password updated",
     "changePasswordError": "Failed to change password"
   },

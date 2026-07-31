@@ -103,9 +103,9 @@
     "currentPassword": "Mot de passe actuel",
     "newPassword": "Nouveau mot de passe",
     "confirmNewPassword": "Confirmer le nouveau mot de passe",
-    "changePassword": "Changer le mot de passe",
+    "changePassword": "Modifier",
     "passwordChanged": "Mot de passe mis à jour",
-    "changePasswordError": "Échec du changement de mot de passe"
+    "changePasswordError": "Échec de la modification de mot de passe"
   },
   "common": {
     "save": "Enregistrer",
