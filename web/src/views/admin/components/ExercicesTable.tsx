@@ -169,8 +169,9 @@ export default function ExercicesTable({
         renderRow={(ex, onDelete) => (
           <>
             <TableCell className="font-medium flex items-center gap-2">
-              {t(`exercises.${ex.slug}`)}
-              <ExerciseImageButton exerciseSlug={ex.slug} />
+              <ExerciseImageButton exerciseSlug={ex.slug}>
+                {t(`exercises.${ex.slug}`)}
+              </ExerciseImageButton>
             </TableCell>
             <TableCell className="text-muted-foreground">
               {t(`muscleGroups.${ex.muscle_group}`)}
@@ -193,6 +194,7 @@ export default function ExercicesTable({
             </TableCell>
             <TableCell className="text-center">
               <div className="flex items-center gap-1">
+                <ExerciseImageButton exerciseSlug={ex.slug} />
                 <Button
                   variant="ghost"
                   size="icon-sm"

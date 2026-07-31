@@ -1,14 +1,15 @@
 import { Eye } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
 import { useTranslation } from "react-i18next";
 
 interface Props {
   exerciseSlug: string;
+  children?: ReactNode;
 }
 
-export function ExerciseImageButton({ exerciseSlug }: Props) {
+export function ExerciseImageButton({ exerciseSlug, children }: Props) {
   const { t } = useTranslation();
   const [imageOpen, setImageOpen] = useState(false);
   const [imageAvailable, setImageAvailable] = useState(false);
@@ -26,12 +27,12 @@ export function ExerciseImageButton({ exerciseSlug }: Props) {
   return (
     <>
       <Button
-        variant="ghost"
-        size="icon-sm"
+        variant={children ? "link" : "ghost"}
+        size={children ? "default" : "icon-sm"}
         onClick={() => setImageOpen(true)}
         title={t("exercises.viewImage")}
       >
-        <Eye className="size-4" />
+        {children || <Eye className="size-4" />}
       </Button>
 
       <Dialog open={imageOpen} onOpenChange={setImageOpen}>
