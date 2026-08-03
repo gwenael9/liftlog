@@ -3,7 +3,7 @@ import { ChevronLeft, Clock, Globe, Lock, Trash2 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Switch } from "@/shared/components/ui/switch";
 import { useTemplate } from "@/shared/hooks/useTemplates";
-import { useExercises } from "@/shared/hooks/useSessions";
+import { useExercises } from "@/shared/hooks/useExercices";
 import { useTemplateEditor } from "@/views/templates/hooks/useTemplateEditor";
 import { AddExerciseDialog } from "@/shared/components/AddExerciseDialog";
 import { ConfirmDeleteDialog } from "@/shared/components/ConfirmDeleteDialog";

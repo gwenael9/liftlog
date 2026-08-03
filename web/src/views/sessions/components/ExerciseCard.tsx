@@ -15,6 +15,7 @@ import type {
 } from "@/views/sessions/types/session";
 import { useTranslation } from "react-i18next";
 import { useUnitSystem } from "@/shared/hooks/useAuth";
+import { useExercise } from "@/shared/hooks/useExercices";
 
 interface Props {
   group: ExerciseGroup;
@@ -52,9 +53,13 @@ export function ExerciseCard({
   const totalSets = group.sets.length + pendingRows.length;
   const isDuration = group.trackingType === "duration";
 
-  const colClass = isDuration
-    ? "grid-cols-[1.5rem_1fr_auto]"
-    : "grid-cols-[1.5rem_1fr_1fr_auto]";
+  const { data } = useExercise(group.exerciseId);
+  const isCore = data?.muscle_group === "core";
+
+  const colClass =
+    isDuration || isCore
+      ? "grid-cols-[1.5rem_1fr_auto]"
+      : "grid-cols-[1.5rem_1fr_1fr_auto]";
 
   return (
     <Card>
@@ -111,9 +116,11 @@ export function ExerciseCard({
               <span className="text-xs text-muted-foreground">
                 {t("exerciseForm.reps")}
               </span>
-              <span className="text-xs text-muted-foreground">
-                {t("exerciseForm.weight", { unit })}
-              </span>
+              {isCore ? null : (
+                <span className="text-xs text-muted-foreground">
+                  {t("exerciseForm.weight", { unit })}
+                </span>
+              )}
             </>
           )}
           <span />
@@ -137,6 +144,7 @@ export function ExerciseCard({
             isPr={set.is_pr}
             onPatch={(patch) => onPatchEdit(set.id, patch)}
             onDelete={() => onDeleteSet(set.id)}
+            isCore={isCore}
           />
         ))}
 
@@ -150,6 +158,7 @@ export function ExerciseCard({
             values={row}
             onPatch={(patch) => onPatchPending(i, patch)}
             onDelete={() => onRemovePending(i)}
+            isCore={isCore}
           />
         ))}
 

@@ -47,7 +47,9 @@ INSERT INTO exercises (id, created_by, slug, muscle_group, is_global, notes, cre
 ('e5f6a7b8-9c0d-4e1f-8a2b-3c4d5e6f7g8h', NULL, 'leg_extension', 'legs', true, NULL, '2026-07-13 16:49:45.103354+00', 'strength'),
 ('f6a7b8c9-0d1e-4f2g-9b3c-4d5e6f7g8h9i', NULL, 'leg_extension_unilateral', 'legs', true, NULL, '2026-07-13 16:49:55.103354+00', 'strength'),
 ('a7b8c9d0-1e2f-4g3h-0c4d-5e6f7g8h9i0j', NULL, 'linear_leg_press', 'legs', true, NULL, '2026-07-13 16:50:05.103354+00', 'strength'),
-('b8c9d0e1-2f3g-4h5i-1d6e-7f8g9h0i1j2k', NULL, 'low_pulley_curl', 'biceps', true, NULL, '2026-07-13 16:50:15.103354+00', 'strength')
+('b8c9d0e1-2f3g-4h5i-1d6e-7f8g9h0i1j2k', NULL, 'low_pulley_curl', 'biceps', true, NULL, '2026-07-13 16:50:15.103354+00', 'strength'),
+('c9d0e1f2-3g4h-5i6j-2e7f-8g9h0i1j2k3l', NULL, 'pumps', 'chest', true, NULL, '2026-07-13 16:50:25.103354+00', 'strength'),
+('d0e1f2g3-4h5i-6j7k-3f8g-9h0i1j2k3l4m', NULL, 'dumbble_curl', 'biceps', true, NULL, '2026-07-13 16:50:35.103354+00', 'strength')
 ON CONFLICT (id) DO NOTHING;
 
 -- ==================== 2. WORKOUT TEMPLATES (3 total) ====================

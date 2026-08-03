@@ -5,7 +5,6 @@ import {
   useDeleteSession,
   useBulkUpdateSets,
   useDeleteSet,
-  useExercises,
   useUpdateSession,
 } from "@/shared/hooks/useSessions";
 import type { SetResponseDto, BulkUpdateSetsDto } from "@/shared/api/sessions";
@@ -18,6 +17,7 @@ import type {
 import { emptyAddRow } from "@/views/sessions/types/session";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { useExercises } from "@/shared/hooks/useExercices";
 
 // `session` est optionnel pour la même raison que useTemplateEditor : le hook
 // est appelé avant les guards loading/notFound dans SessionDetailPage.

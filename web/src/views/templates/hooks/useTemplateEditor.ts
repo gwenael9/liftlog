@@ -4,7 +4,7 @@ import {
   useUpdateTemplate,
   useDeleteTemplate,
 } from "@/shared/hooks/useTemplates";
-import { useExercises } from "@/shared/hooks/useSessions";
+import { useExercises } from "@/shared/hooks/useExercices";
 import { useCurrentUser } from "@/shared/hooks/useAuth";
 import { type ExerciseRow } from "@/views/templates/components/ExerciseList";
 import type { TemplateInfoState } from "@/views/templates/components/InfoDialog";

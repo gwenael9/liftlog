@@ -22,7 +22,7 @@ import {
 } from "@/shared/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
-import { useExercises } from "@/shared/hooks/useSessions";
+import { useExercises } from "@/shared/hooks/useExercices";
 import { useExerciseProgression } from "@/views/stats/hooks/useStats";
 import Empty from "@/shared/components/Empty";
 import { Skeleton } from "@/shared/components/ui/skeleton";

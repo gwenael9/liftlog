@@ -7,7 +7,6 @@ import {
   type UpdateSetDto,
   type BulkUpdateSetsDto,
 } from "@/shared/api/sessions";
-import { exercisesApi } from "@/shared/api/exercises";
 
 export function useSessions(month?: string) {
   return useQuery({
@@ -118,16 +117,5 @@ export function useDeleteSet(sessionId: string) {
     },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["session", sessionId] }),
-  });
-}
-
-export function useExercises() {
-  return useQuery({
-    queryKey: ["exercises"],
-    queryFn: async () => {
-      const { data, error } = await exercisesApi.getAll();
-      if (error) throw error;
-      return data!;
-    },
   });
 }
