@@ -7,13 +7,13 @@ import {
   IsDateString,
   IsArray,
   ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SetSegmentDto } from './set-segment.dto';
+} from "class-validator";
+import { Type } from "class-transformer";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { SetSegmentDto } from "./set-segment.dto";
 
 export class CreateSetDto {
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ format: "uuid" })
   @IsUUID()
   exercise_id: string;
 
@@ -44,14 +44,17 @@ export class CreateSetDto {
   @IsOptional()
   @IsInt()
   @Min(0)
-  duration_sec?: number;
+  duration_min?: number;
 
-  @ApiPropertyOptional({ format: 'date-time' })
+  @ApiPropertyOptional({ format: "date-time" })
   @IsOptional()
   @IsDateString()
   performed_at?: string;
 
-  @ApiPropertyOptional({ type: [SetSegmentDto], description: 'Segments successifs (drop set)' })
+  @ApiPropertyOptional({
+    type: [SetSegmentDto],
+    description: "Segments successifs (drop set)",
+  })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })

@@ -81,8 +81,8 @@ function SortableExerciseRow({
       </div>
       <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
         {row.target_sets != null && <span>{row.target_sets}×</span>}
-        {row.target_duration_sec != null ? (
-          <span>{row.target_duration_sec}s</span>
+        {row.target_duration_min != null ? (
+          <span>{row.target_duration_min}s</span>
         ) : (
           row.target_reps != null && <span>{row.target_reps} rép</span>
         )}

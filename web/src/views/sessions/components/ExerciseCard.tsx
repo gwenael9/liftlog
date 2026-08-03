@@ -137,7 +137,7 @@ export function ExerciseCard({
               editValues[set.id] ?? {
                 reps: "",
                 weight_kg: "",
-                duration_sec: "",
+                duration_min: "",
                 extraSegments: [],
               }
             }

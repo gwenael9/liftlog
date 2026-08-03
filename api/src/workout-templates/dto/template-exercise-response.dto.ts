@@ -1,11 +1,11 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ExerciseResponseDto } from '../../exercises/dto/exercise-response.dto';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ExerciseResponseDto } from "../../exercises/dto/exercise-response.dto";
 
 export class TemplateExerciseResponseDto {
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ format: "uuid" })
   id: string;
 
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ format: "uuid" })
   exercise_id: string;
 
   @ApiProperty({ type: () => ExerciseResponseDto })
@@ -24,5 +24,5 @@ export class TemplateExerciseResponseDto {
   rest_seconds: number | null;
 
   @ApiPropertyOptional({ nullable: true })
-  target_duration_sec: number | null;
+  target_duration_min: number | null;
 }

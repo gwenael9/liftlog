@@ -42,8 +42,8 @@ export function SetRow({
             type="number"
             min={0}
             placeholder="—"
-            value={values.duration_sec}
-            onChange={(e) => onPatch({ duration_sec: e.target.value })}
+            value={values.duration_min}
+            onChange={(e) => onPatch({ duration_min: e.target.value })}
           />
         ) : (
           <RepsWeightPair

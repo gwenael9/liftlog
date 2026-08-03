@@ -63,7 +63,7 @@ ON CONFLICT (id) DO NOTHING;
 -- Push: 6 exercises
 -- Pull: 5 exercises
 -- Legs: 5 exercises
-INSERT INTO template_exercises (id, template_id, exercise_id, order_index, target_sets, target_reps, rest_seconds, target_duration_sec) VALUES
+INSERT INTO template_exercises (id, template_id, exercise_id, order_index, target_sets, target_reps, rest_seconds, target_duration_min) VALUES
 ('7cfaab12-b987-4def-a546-06ee51c776ba', 'b1f260cc-9340-4173-b575-b3ef8879ba5e', 'f160e8aa-7ff0-4e2d-9e28-dbfaac6c68df', 1, 3, 8, 90, NULL),
 ('ef7d6989-40c8-4e67-88b0-337c74e12897', 'b1f260cc-9340-4173-b575-b3ef8879ba5e', 'd52ccee4-2d04-492c-8c8e-04874f910dfc', 2, 3, 8, 90, NULL),
 ('dc16e658-2483-4527-b879-ccf2bf5c276c', 'b1f260cc-9340-4173-b575-b3ef8879ba5e', '8bfc9675-01cd-44ce-9010-6a717cee3569', 3, 3, 8, 90, NULL),
@@ -90,7 +90,7 @@ INSERT INTO workout_sessions (id, user_id, template_id, scheduled_date, started_
 ON CONFLICT (id) DO NOTHING;
 
 -- ==================== 5. SESSION SETS (Sets effectuées dans les sessions) ====================
-INSERT INTO session_sets (id, session_id, exercise_id, set_index, reps, weight_kg, duration_sec, performed_at, exercise_order, segments) VALUES
+INSERT INTO session_sets (id, session_id, exercise_id, set_index, reps, weight_kg, duration_min, performed_at, exercise_order, segments) VALUES
 -- Session Pull (e9dff95d-82ba-4f78-95d2-350a3779cf49)
 ('0e2f6526-190a-4fcb-a873-3adc1c2ef948', 'e9dff95d-82ba-4f78-95d2-350a3779cf49', '503db04b-18ad-4f2f-b0c1-641a622cb5e1', 1, 10, 0.50, NULL, '2026-06-18 19:34:23.668+00', 0, NULL),
 ('67711342-5018-469c-a07b-1dc2a9c0618e', 'e9dff95d-82ba-4f78-95d2-350a3779cf49', '4989acd6-d3e4-4194-b7c7-b0679b13c73c', 1, NULL, NULL, NULL, NULL, 0, NULL),
