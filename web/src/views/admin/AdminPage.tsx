@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useExercises } from "@/shared/hooks/useSessions";
 import { useAdminUsers, useAdminTemplates } from "@/views/admin/hooks/useAdmin";
 import TemplatesTable from "@/views/admin/components/TemplatesTable";
 import UsersTable from "@/views/admin/components/UsersTable";
 import ExercicesTable from "@/views/admin/components/ExercicesTable";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { useExercises } from "@/shared/hooks/useExercices";
 
 type Tab = "exercises" | "users" | "templates";
 

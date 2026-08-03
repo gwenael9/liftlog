@@ -15,6 +15,7 @@ interface Props {
   isPr?: boolean;
   onPatch: (patch: Partial<SetEditValue>) => void;
   onDelete: () => void;
+  isCore?: boolean;
 }
 
 export function SetRow({
@@ -26,13 +27,16 @@ export function SetRow({
   isPr,
   onPatch,
   onDelete,
+  isCore = false,
 }: Props) {
   const { t } = useTranslation();
 
   return (
     <div>
       <div className={`grid ${colClass} gap-2 items-center`}>
-        <span className="text-xs text-muted-foreground text-right">{label}</span>
+        <span className="text-xs text-muted-foreground text-right">
+          {label}
+        </span>
         {isDuration ? (
           <Input
             type="number"
@@ -40,6 +44,14 @@ export function SetRow({
             placeholder="—"
             value={values.duration_sec}
             onChange={(e) => onPatch({ duration_sec: e.target.value })}
+          />
+        ) : isCore ? (
+          <Input
+            type="number"
+            min={0}
+            placeholder="—"
+            value={values.reps}
+            onChange={(e) => onPatch({ reps: e.target.value })}
           />
         ) : (
           <RepsWeightPair
@@ -52,14 +64,16 @@ export function SetRow({
         )}
         <div className="flex items-center gap-1">
           {isPr && (
-            <span className="text-xs text-yellow-500 font-semibold">{t("exerciseForm.pr")}</span>
+            <span className="text-xs text-yellow-500 font-semibold">
+              {t("exerciseForm.pr")}
+            </span>
           )}
           <Button variant="ghost" size="icon-sm" onClick={onDelete}>
             <Trash2 className="size-3" />
           </Button>
         </div>
       </div>
-      {!isDuration && (
+      {!isDuration && !isCore && (
         <ExtraSegmentsEditor
           segments={values.extraSegments}
           colClass={colClass}
