@@ -45,14 +45,6 @@ export function SetRow({
             value={values.duration_sec}
             onChange={(e) => onPatch({ duration_sec: e.target.value })}
           />
-        ) : isCore ? (
-          <Input
-            type="number"
-            min={0}
-            placeholder="—"
-            value={values.reps}
-            onChange={(e) => onPatch({ reps: e.target.value })}
-          />
         ) : (
           <RepsWeightPair
             reps={values.reps}
@@ -60,6 +52,7 @@ export function SetRow({
             unit={unit}
             onChangeReps={(value) => onPatch({ reps: value })}
             onChangeWeight={(value) => onPatch({ weight_kg: value })}
+            isCore={isCore}
           />
         )}
         <div className="flex items-center gap-1">
