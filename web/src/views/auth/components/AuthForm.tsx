@@ -16,10 +16,12 @@ import {
 } from "@/shared/components/ui/select";
 import { useLogin, useRegister } from "@/shared/hooks/useAuth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo } from "react";
+import { Zap } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import z from "zod";
+import { PinDialog } from "./PinDialog";
 
 interface AuthFormProps {
   mode: "login" | "register";
@@ -91,8 +93,24 @@ export function AuthForm({ mode, onSwitch }: AuthFormProps) {
     }
   }
 
+  const [showPin, setShowPin] = useState(false);
+
+  function handleDevLogin() {
+    const email = import.meta.env.VITE_DEV_EMAIL ?? "";
+    const password = import.meta.env.VITE_DEV_PASSWORD ?? "";
+    setShowPin(false);
+    login.mutate({ email, password });
+  }
+
   return (
     <>
+      {showPin && (
+        <PinDialog
+          open={showPin}
+          onSuccess={handleDevLogin}
+          onClose={() => setShowPin(false)}
+        />
+      )}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           {isRegister && (
@@ -238,19 +256,28 @@ export function AuthForm({ mode, onSwitch }: AuthFormProps) {
               )}
             </p>
           )}
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={mutation.isPending}
-          >
-            {mutation.isPending
-              ? t(
-                  isRegister
-                    ? "auth.register.submitting"
-                    : "auth.login.submitting",
-                )
-              : t(isRegister ? "auth.register.submit" : "auth.login.submit")}
-          </Button>
+          <div className="flex gap-2 w-full">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowPin(true)}
+            >
+              <Zap />
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1"
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending
+                ? t(
+                    isRegister
+                      ? "auth.register.submitting"
+                      : "auth.login.submitting",
+                  )
+                : t(isRegister ? "auth.register.submit" : "auth.login.submit")}
+            </Button>
+          </div>
         </form>
       </Form>
       <p className="mt-4 text-end text-sm text-muted-foreground">
