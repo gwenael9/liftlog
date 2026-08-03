@@ -161,7 +161,7 @@ export default function ExercicesTable({
               </span>
             </TableCell>
             <TableCell className="text-center">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 justify-end">
                 <ExerciseImageButton exerciseSlug={ex.slug} />
                 <Button
                   variant="ghost"

@@ -22,7 +22,7 @@ export function ExerciseImageButton({ exerciseSlug, children }: Props) {
     img.onerror = () => setImageAvailable(false);
   }, [imageSrc]);
 
-  if (!imageAvailable) return null;
+  if (!imageAvailable) return children ? <>{children}</> : null;
 
   return (
     <>
@@ -31,6 +31,7 @@ export function ExerciseImageButton({ exerciseSlug, children }: Props) {
         size={children ? "default" : "icon-sm"}
         onClick={() => setImageOpen(true)}
         title={t("exercises.viewImage")}
+        className="p-0"
       >
         {children || <Eye className="size-4" />}
       </Button>
