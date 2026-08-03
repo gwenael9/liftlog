@@ -43,4 +43,5 @@ VALUES
   ('leg_extension_unilateral', 'legs', 'strength', true, NULL, now()),
   ('linear_leg_press', 'legs', 'strength', true, NULL, now())
   ('low_pulley_curl', 'biceps', 'strength', true, NULL, now())
-  ('pumps', 'chest', 'strength', true, NULL, now());
+  ('pumps', 'chest', 'strength', true, NULL, now())
+  ('dumbble_curl', 'biceps', 'strength', true, NULL, now());
