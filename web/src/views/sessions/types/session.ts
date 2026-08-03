@@ -12,18 +12,21 @@ export interface SegmentEditValue {
 export interface SetEditValue {
   reps: string;
   weight_kg: string;
-  duration_sec: string;
+  duration_min: string;
   extraSegments: SegmentEditValue[];
 }
 
 export interface AddRow {
   reps: string;
   weight_kg: string;
-  duration_sec: string;
+  duration_min: string;
   extraSegments: SegmentEditValue[];
 }
 
-export const emptySegment = (): SegmentEditValue => ({ reps: "", weight_kg: "" });
+export const emptySegment = (): SegmentEditValue => ({
+  reps: "",
+  weight_kg: "",
+});
 
 export interface ExerciseGroup {
   exerciseId: string;
@@ -36,6 +39,6 @@ export interface ExerciseGroup {
 export const emptyAddRow = (): AddRow => ({
   reps: "",
   weight_kg: "",
-  duration_sec: "",
+  duration_min: "",
   extraSegments: [],
 });

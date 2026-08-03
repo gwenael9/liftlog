@@ -157,9 +157,9 @@ export function useSessionEditor(id: string) {
       reps: patch.reps ?? (set.reps != null ? String(set.reps) : ""),
       weight_kg:
         patch.weight_kg ?? (set.weight_kg != null ? String(set.weight_kg) : ""),
-      duration_sec:
-        patch.duration_sec ??
-        (set.duration_sec != null ? String(set.duration_sec) : ""),
+      duration_min:
+        patch.duration_min ??
+        (set.duration_min != null ? String(set.duration_min) : ""),
       extraSegments: patch.extraSegments ?? serverExtraSegments,
     };
   }
@@ -183,9 +183,9 @@ export function useSessionEditor(id: string) {
         (patch.weight_kg !== undefined &&
           patch.weight_kg !==
             (set.weight_kg != null ? String(set.weight_kg) : "")) ||
-        (patch.duration_sec !== undefined &&
-          patch.duration_sec !==
-            (set.duration_sec != null ? String(set.duration_sec) : "")) ||
+        (patch.duration_min !== undefined &&
+          patch.duration_min !==
+            (set.duration_min != null ? String(set.duration_min) : "")) ||
         (patch.extraSegments !== undefined &&
           JSON.stringify(patch.extraSegments) !==
             JSON.stringify(serverExtraSegmentsOf(set)))
@@ -298,8 +298,8 @@ export function useSessionEditor(id: string) {
               : undefined,
           reps: vals.reps ? Number(vals.reps) : undefined,
           weight_kg: vals.weight_kg ? Number(vals.weight_kg) : undefined,
-          duration_sec: vals.duration_sec
-            ? Number(vals.duration_sec)
+          duration_min: vals.duration_min
+            ? Number(vals.duration_min)
             : undefined,
           segments,
         });
@@ -307,7 +307,7 @@ export function useSessionEditor(id: string) {
       const pending = carriedOverExerciseIds.has(g.exerciseId)
         ? (pendingRows[g.exerciseId] ?? [])
         : (pendingRows[g.exerciseId] ?? []).filter(
-            (r) => r.reps || r.weight_kg || r.duration_sec,
+            (r) => r.reps || r.weight_kg || r.duration_min,
           );
       for (let i = 0; i < pending.length; i++) {
         const row = pending[i];
@@ -322,7 +322,7 @@ export function useSessionEditor(id: string) {
           set_index: g.sets.length + i + 1,
           reps: row.reps ? Number(row.reps) : undefined,
           weight_kg: row.weight_kg ? Number(row.weight_kg) : undefined,
-          duration_sec: row.duration_sec ? Number(row.duration_sec) : undefined,
+          duration_min: row.duration_min ? Number(row.duration_min) : undefined,
           segments: segments ?? undefined,
           performed_at: new Date().toISOString(),
         });
@@ -375,7 +375,7 @@ export function useSessionEditor(id: string) {
     }
 
     const filledRows = rows.filter(
-      (r) => r.reps || r.weight_kg || r.duration_sec,
+      (r) => r.reps || r.weight_kg || r.duration_min,
     );
     if (filledRows.length > 0) {
       setPendingRows((prev) => ({

@@ -8,12 +8,12 @@ import {
   IsUUID,
   Min,
   MaxLength,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+} from "class-validator";
+import { Type } from "class-transformer";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class TemplateExerciseItemDto {
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ format: "uuid" })
   @IsUUID()
   exercise_id: string;
 
@@ -44,11 +44,11 @@ export class TemplateExerciseItemDto {
   @IsOptional()
   @IsInt()
   @Min(0)
-  target_duration_sec?: number;
+  target_duration_min?: number;
 }
 
 export class CreateTemplateDto {
-  @ApiProperty({ example: 'Push Day', maxLength: 150 })
+  @ApiProperty({ example: "Push Day", maxLength: 150 })
   @IsString()
   @MaxLength(150)
   name: string;
@@ -58,7 +58,10 @@ export class CreateTemplateDto {
   @IsString()
   description?: string;
 
-  @ApiPropertyOptional({ minimum: 1, description: 'Estimated duration in minutes' })
+  @ApiPropertyOptional({
+    minimum: 1,
+    description: "Estimated duration in minutes",
+  })
   @IsOptional()
   @IsInt()
   @Min(1)

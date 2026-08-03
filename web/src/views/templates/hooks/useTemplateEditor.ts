@@ -32,7 +32,7 @@ function toExerciseRows(template: TemplateResponseDto): ExerciseRow[] {
       target_sets: ex.target_sets ?? undefined,
       target_reps: ex.target_reps ?? undefined,
       rest_seconds: ex.rest_seconds ?? undefined,
-      target_duration_sec: ex.target_duration_sec ?? undefined,
+      target_duration_min: ex.target_duration_min ?? undefined,
     }),
   );
 }
@@ -133,7 +133,7 @@ export function useTemplateEditor(
         target_sets: data.targetSets,
         target_reps: data.targetReps,
         rest_seconds: data.restSeconds,
-        target_duration_sec: data.targetDurationSec,
+        target_duration_min: data.targetDurationSec,
       },
     ]);
     setRowsDirty(true);

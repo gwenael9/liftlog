@@ -1,15 +1,15 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ExerciseResponseDto } from '../../exercises/dto/exercise-response.dto';
-import { SetSegmentDto } from './set-segment.dto';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ExerciseResponseDto } from "../../exercises/dto/exercise-response.dto";
+import { SetSegmentDto } from "./set-segment.dto";
 
 export class SetResponseDto {
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ format: "uuid" })
   id: string;
 
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ format: "uuid" })
   session_id: string;
 
-  @ApiProperty({ format: 'uuid' })
+  @ApiProperty({ format: "uuid" })
   exercise_id: string;
 
   @ApiProperty({ type: () => ExerciseResponseDto })
@@ -28,7 +28,7 @@ export class SetResponseDto {
   weight_kg: number | null;
 
   @ApiPropertyOptional({ nullable: true })
-  duration_sec: number | null;
+  duration_min: number | null;
 
   @ApiPropertyOptional({ type: [SetSegmentDto], nullable: true })
   segments: SetSegmentDto[] | null;
@@ -36,6 +36,6 @@ export class SetResponseDto {
   @ApiProperty()
   is_pr: boolean;
 
-  @ApiPropertyOptional({ format: 'date-time', nullable: true })
+  @ApiPropertyOptional({ format: "date-time", nullable: true })
   performed_at: Date | null;
 }

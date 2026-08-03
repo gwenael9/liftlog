@@ -6,10 +6,10 @@ import {
   IsDateString,
   IsArray,
   ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { SetSegmentDto } from './set-segment.dto';
+} from "class-validator";
+import { Type } from "class-transformer";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { SetSegmentDto } from "./set-segment.dto";
 
 export class UpdateSetDto {
   @ApiPropertyOptional({ minimum: 0 })
@@ -40,14 +40,19 @@ export class UpdateSetDto {
   @IsOptional()
   @IsInt()
   @Min(0)
-  duration_sec?: number;
+  duration_min?: number;
 
-  @ApiPropertyOptional({ format: 'date-time' })
+  @ApiPropertyOptional({ format: "date-time" })
   @IsOptional()
   @IsDateString()
   performed_at?: string;
 
-  @ApiPropertyOptional({ type: [SetSegmentDto], nullable: true, description: 'Segments successifs (drop set) ; null pour repasser à une série simple' })
+  @ApiPropertyOptional({
+    type: [SetSegmentDto],
+    nullable: true,
+    description:
+      "Segments successifs (drop set) ; null pour repasser à une série simple",
+  })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })

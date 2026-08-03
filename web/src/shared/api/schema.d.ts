@@ -483,7 +483,7 @@ export interface components {
             target_sets?: number | null;
             target_reps?: number | null;
             rest_seconds?: number | null;
-            target_duration_sec?: number | null;
+            target_duration_min?: number | null;
         };
         TemplateResponseDto: {
             /** Format: uuid */
@@ -509,7 +509,7 @@ export interface components {
             target_sets?: number;
             target_reps?: number;
             rest_seconds?: number;
-            target_duration_sec?: number;
+            target_duration_min?: number;
         };
         CreateTemplateDto: {
             /** @example Push Day */
@@ -545,7 +545,7 @@ export interface components {
             exercise_order: number;
             reps?: number | null;
             weight_kg?: number | null;
-            duration_sec?: number | null;
+            duration_min?: number | null;
             segments?: components["schemas"]["SetSegmentDto"][] | null;
             is_pr: boolean;
             /** Format: date-time */
@@ -590,7 +590,7 @@ export interface components {
             exercise_order?: number;
             reps?: number;
             weight_kg?: number;
-            duration_sec?: number;
+            duration_min?: number;
             /** Format: date-time */
             performed_at?: string;
             /** @description Segments successifs (drop set) ; null pour repasser à une série simple */
@@ -606,7 +606,7 @@ export interface components {
             exercise_order: number;
             reps?: number;
             weight_kg?: number;
-            duration_sec?: number;
+            duration_min?: number;
             /** Format: date-time */
             performed_at?: string;
             /** @description Segments successifs (drop set) */
@@ -621,7 +621,7 @@ export interface components {
             exercise_order?: number;
             reps?: number;
             weight_kg?: number;
-            duration_sec?: number;
+            duration_min?: number;
             /** Format: date-time */
             performed_at?: string;
             /** @description Segments successifs (drop set) ; null pour repasser à une série simple */
