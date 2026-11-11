@@ -27,7 +27,6 @@ export function AuthPage() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="absolute top-4 right-4">
         <div className="flex gap-2">
-          T
           <LanguageToggle />
           <ThemeToggle />
         </div>
